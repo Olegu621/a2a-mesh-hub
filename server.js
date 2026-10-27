@@ -16,6 +16,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 7777;
@@ -37,10 +38,54 @@ app.use((req, res, next) => {
 // State storage
 let nextMsgId = 1;
 const peers = new Map(); // name -> { name, room, token, capabilities, lastSeen }
-const messages = [];     // Array of { id, ts, from, to, type, text, room }
-const tasks = new Map(); // id -> { id, title, note, status, owner, assignee, claimedAt, leaseUntil, result, doneAt, doneBy }
+const messages = [];     // Array of { id, ts, from, to, type, text, room, replyTo, reactions }
+const tasks = new Map(); // id -> { id, title, note, status, owner, assignee, claimedAt, leaseUntil, result, doneAt, doneBy, priority }
 let locks = [];          // Array of { file, agent, owner, lockedAt, expiresAt }
 const snippets = [];     // Array of { id, ts, from, title, lang, content, tags }
+
+// Persistence storage
+const DATA_DIR = path.join(__dirname, 'data');
+const STATE_FILE = path.join(DATA_DIR, 'hub-state.json');
+
+function saveState() {
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    const payload = {
+      nextMsgId,
+      messages: messages.slice(-500),
+      tasks: Array.from(tasks.entries()),
+      snippets: snippets.slice(-200)
+    };
+    fs.writeFileSync(STATE_FILE, JSON.stringify(payload, null, 2), 'utf8');
+  } catch (e) {
+    console.error('Failed to save hub state:', e.message);
+  }
+}
+
+let saveDebounceTimer = null;
+function scheduleSave() {
+  if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = setTimeout(saveState, 1000);
+}
+
+function loadState() {
+  try {
+    if (fs.existsSync(STATE_FILE)) {
+      const data = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
+      if (data.nextMsgId) nextMsgId = data.nextMsgId;
+      if (Array.isArray(data.messages)) messages.push(...data.messages);
+      if (Array.isArray(data.tasks)) {
+        for (const [k, v] of data.tasks) tasks.set(k, v);
+      }
+      if (Array.isArray(data.snippets)) snippets.push(...data.snippets);
+      console.log(`📦 Хранилище восстановлено: ${messages.length} сообщений, ${tasks.size} задач`);
+    }
+  } catch (e) {
+    console.error('Failed to load hub state:', e.message);
+  }
+}
+
+loadState();
 
 // SSE clients
 const sseClients = new Set();
@@ -128,6 +173,7 @@ function getTasksList() {
       id: t.id,
       title: t.title,
       note: t.note,
+      priority: t.priority || 'normal',
       status: t.status,
       owner: t.owner || t.assignee,
       assignee: t.assignee || t.owner,
@@ -207,12 +253,66 @@ app.post('/api/send', (req, res) => {
     to: req.body.to || null,
     type: req.body.type || 'chat',
     text,
+    replyTo: req.body.replyTo || null,
+    reactions: {},
     room
   };
   messages.push(msg);
+  scheduleSave();
   broadcastSSE(null, msg);
 
-  res.json({ ok: true, id: msg.id });
+  res.json({ ok: true, id: msg.id, msg });
+});
+
+// 2a. Message reactions (emoji toggle)
+app.post('/api/messages/react', (req, res) => {
+  const from = req.body.from || req.body.name || 'anonymous';
+  touchPeer(from);
+
+  const msgId = Number(req.body.id || req.body.msgId);
+  const emoji = (req.body.emoji || '').trim();
+  if (!msgId || !emoji) return res.status(400).json({ error: 'Требуется msgId и emoji' });
+
+  const msg = messages.find(m => m.id === msgId);
+  if (!msg) return res.status(404).json({ error: 'Сообщение не найдено' });
+
+  if (!msg.reactions) msg.reactions = {};
+  if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
+
+  const idx = msg.reactions[emoji].indexOf(from);
+  if (idx >= 0) {
+    msg.reactions[emoji].splice(idx, 1);
+    if (msg.reactions[emoji].length === 0) delete msg.reactions[emoji];
+  } else {
+    msg.reactions[emoji].push(from);
+  }
+
+  scheduleSave();
+  broadcastSSE('reaction_updated', { msgId, reactions: msg.reactions, from, emoji });
+  res.json({ ok: true, msgId, reactions: msg.reactions });
+});
+
+// 2b. System Health & Performance Diagnostics
+app.get('/api/health', (req, res) => {
+  const mem = process.memoryUsage();
+  res.json({
+    status: 'ok',
+    uptimeSec: Math.round(process.uptime()),
+    timestamp: now(),
+    memory: {
+      rssMb: Math.round(mem.rss / 1024 / 1024),
+      heapUsedMb: Math.round(mem.heapUsed / 1024 / 1024),
+      heapTotalMb: Math.round(mem.heapTotal / 1024 / 1024)
+    },
+    peers: {
+      total: peers.size,
+      online: getPeersList().filter(p => p.online).length
+    },
+    messagesCount: messages.length,
+    tasksCount: tasks.size,
+    locksCount: locks.length,
+    sseClients: sseClients.size
+  });
 });
 
 // 3. Get messages (inbox polling)
@@ -294,6 +394,7 @@ app.post('/api/tasks/claim', (req, res) => {
     id,
     title: title || (existing ? existing.title : id),
     note: note !== undefined ? note : (existing ? existing.note : ''),
+    priority: req.body.priority || (existing ? existing.priority : 'normal'),
     status: 'in-progress',
     owner: from,
     assignee: from,
@@ -301,6 +402,7 @@ app.post('/api/tasks/claim', (req, res) => {
     leaseUntil
   };
   tasks.set(id, updated);
+  scheduleSave();
 
   broadcastSSE('task_claimed', { task: updated });
   res.json({ ok: true, task: updated });
@@ -320,6 +422,7 @@ app.post('/api/tasks/release', (req, res) => {
   t.owner = null;
   t.assignee = null;
   t.leaseUntil = null;
+  scheduleSave();
 
   broadcastSSE('task_released', { id });
   res.json({ ok: true });
@@ -338,6 +441,7 @@ app.post('/api/tasks/done', (req, res) => {
   t.result = result || '';
   t.doneAt = now();
   t.doneBy = from;
+  scheduleSave();
 
   broadcastSSE('task_done', { task: t });
   res.json({ ok: true, task: t });
@@ -478,12 +582,21 @@ app.get('/api/export', (req, res) => {
   res.send(md);
 });
 
-// Static files (web UI & project files)
-app.use(express.static(path.join(__dirname)));
-
-// Root redirect to chat.html
-app.get('/', (req, res) => {
+// Root and index.html redirect directly to chat.html as per Panther's directive
+app.get(['/', '/index.html'], (req, res) => {
   res.redirect('/chat.html');
+});
+
+// Static files (web UI & project files) with index: false to enforce chat.html
+app.use(express.static(path.join(__dirname), { index: false }));
+
+// Error handling middleware (graceful handling of bad JSON or malformed requests)
+app.use((err, req, res, next) => {
+  if (err && (err.status === 400 || err.type === 'entity.parse.failed')) {
+    return res.status(400).json({ error: 'Неверный JSON формат запроса', details: err.message });
+  }
+  console.error('Unhandled server error:', err);
+  res.status(500).json({ error: 'Внутренняя ошибка сервера' });
 });
 
 // Start listening on 0.0.0.0

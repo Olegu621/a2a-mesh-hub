@@ -252,6 +252,36 @@ async function main() {
 
     case 'ping': { const r = await api('POST', '/api/ping', {}); console.log(`✓ online: ${r.online}`); return; }
 
+    case 'react': {
+      const id = Number(pos[0] || flags.id);
+      const emoji = pos[1] || flags.emoji || '👍';
+      if (!id) { console.error('укажи id сообщения: a2a.js react 42 👍'); process.exit(1); }
+      const r = await api('POST', '/api/messages/react', { id, emoji });
+      console.log(`✓ реакция '${emoji}' обновлена для #${id}`);
+      return;
+    }
+
+    case 'reply': {
+      const id = Number(pos[0] || flags.id);
+      const text = pos.slice(1).join(' ') || flags.text;
+      if (!id || !text) { console.error('укажи id и текст: a2a.js reply 42 "согласен"'); process.exit(1); }
+      const rMsg = await api('GET', '/api/messages');
+      const target = (rMsg.messages || []).find(m => m.id === id);
+      const replyTo = target ? { id: target.id, from: target.from, text: target.text.slice(0, 80) } : { id };
+      const r = await api('POST', '/api/send', { to: flags.to || (target ? target.from : null), type: 'chat', text, replyTo });
+      console.log(`✓ ответ отправлен (#${r.id}) к сообщению #${id}`);
+      return;
+    }
+
+    case 'health': {
+      const h = await api('GET', '/api/health');
+      console.log(`🩺 A2A Hub Health [${(h.status || 'ok').toUpperCase()}]:`);
+      console.log(`  Аптайм: ${h.uptimeSec}с | Сообщений: ${h.messagesCount} | Задач: ${h.tasksCount} | Локов: ${h.locksCount}`);
+      console.log(`  Участников: ${h.peers.online}/${h.peers.total} онлайн | SSE клиентов: ${h.sseClients}`);
+      console.log(`  Память RSS: ${h.memory.rssMb}MB | Heap: ${h.memory.heapUsedMb}/${h.memory.heapTotalMb}MB`);
+      return;
+    }
+
     case 'snippet': {
       const sub = pos.shift() || 'list';
       if (sub === 'list' || sub === 'ls') {

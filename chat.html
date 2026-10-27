@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> A2A Liquid Glass</title>
+  <title> A2A Liquid Glass — Mesh Hub</title>
   <style>
     :root[data-theme="dark"] {
-      --bg: #07070b;
-      --glass-base: rgba(18, 18, 28, 0.65);
-      --glass-card: rgba(28, 28, 44, 0.55);
-      --glass-card-hover: rgba(38, 38, 60, 0.7);
+      --bg: #07070c;
+      --glass-base: rgba(18, 18, 30, 0.72);
+      --glass-card: rgba(28, 28, 46, 0.55);
+      --glass-card-hover: rgba(38, 38, 64, 0.75);
       --glass-border: rgba(255, 255, 255, 0.14);
       --glass-highlight: rgba(255, 255, 255, 0.28);
       --text: #f8fafc;
@@ -26,11 +26,12 @@
       --bubble-c: rgba(244, 114, 182, 0.14);
       --bubble-d: rgba(251, 191, 36, 0.14);
       --bubble-user: rgba(52, 211, 153, 0.14);
-      --bubble-default: rgba(30, 30, 46, 0.65);
+      --bubble-default: rgba(30, 30, 48, 0.65);
 
       --online: #34d399;
       --offline: #64748b;
       --btn-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      --btn-gradient-hover: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -58,13 +59,13 @@
     .orb {
       position: absolute;
       border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.35;
+      filter: blur(85px);
+      opacity: 0.38;
       animation: floatOrb 18s infinite alternate ease-in-out;
     }
-    .orb-1 { width: 380px; height: 380px; background: #6366f1; top: -80px; left: -60px; }
-    .orb-2 { width: 420px; height: 420px; background: #06b6d4; bottom: -100px; right: -80px; animation-duration: 22s; }
-    .orb-3 { width: 320px; height: 320px; background: #ec4899; top: 35%; left: 45%; animation-duration: 26s; }
+    .orb-1 { width: 420px; height: 420px; background: #6366f1; top: -90px; left: -70px; }
+    .orb-2 { width: 450px; height: 450px; background: #06b6d4; bottom: -120px; right: -90px; animation-duration: 22s; }
+    .orb-3 { width: 340px; height: 340px; background: #ec4899; top: 30%; left: 42%; animation-duration: 26s; }
     @keyframes floatOrb {
       0% { transform: translate(0, 0) scale(1); }
       100% { transform: translate(60px, 40px) scale(1.15); }
@@ -73,20 +74,34 @@
     /* Ambient Liquid Cat for Panther */
     .ambient-cat {
       position: absolute;
-      right: 320px;
-      bottom: 80px;
-      width: 240px;
-      height: 240px;
-      opacity: 0.45;
-      pointer-events: none;
+      right: 330px;
+      bottom: 85px;
+      width: 250px;
+      height: 250px;
+      opacity: 0.55;
       z-index: 1;
-      filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.6));
+      pointer-events: auto;
+      cursor: pointer;
+      filter: drop-shadow(0 0 35px rgba(99, 102, 241, 0.7));
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       animation: catFloat 6s ease-in-out infinite alternate;
+    }
+    .ambient-cat:hover {
+      opacity: 0.95;
+      transform: scale(1.08) translateY(-6px);
+      filter: drop-shadow(0 0 45px rgba(52, 211, 153, 0.85));
+    }
+    .ambient-cat.purring {
+      animation: catPurr 0.2s ease-in-out infinite alternate;
     }
     @keyframes catFloat {
       0% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-12px) rotate(1.5deg); }
+      50% { transform: translateY(-14px) rotate(1.5deg); }
       100% { transform: translateY(0px) rotate(0deg); }
+    }
+    @keyframes catPurr {
+      0% { transform: scale(1.05) rotate(-1deg); }
+      100% { transform: scale(1.08) rotate(1deg); }
     }
 
     /* Header (Liquid Glass Island) */
@@ -94,11 +109,11 @@
       position: relative;
       z-index: 10;
       background: var(--glass-base);
-      backdrop-filter: blur(30px) saturate(190%);
-      -webkit-backdrop-filter: blur(30px) saturate(190%);
+      backdrop-filter: blur(32px) saturate(190%);
+      -webkit-backdrop-filter: blur(32px) saturate(190%);
       padding: 12px 20px;
       border-bottom: 1px solid var(--glass-border);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 var(--glass-highlight);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 var(--glass-highlight);
       display: flex;
       align-items: center;
       gap: 12px;
@@ -107,6 +122,7 @@
     .logo {
       font-size: 24px;
       filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.7));
+      cursor: pointer;
     }
     header h1 {
       font-size: 16px;
@@ -126,6 +142,36 @@
       font-weight: 600;
       letter-spacing: 0.3px;
     }
+    .search-box {
+      position: relative;
+      margin-left: 8px;
+    }
+    .search-input {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--glass-border);
+      border-radius: 9999px;
+      padding: 5px 12px 5px 30px;
+      color: var(--text);
+      font-size: 12px;
+      width: 140px;
+      transition: width 0.3s ease, border-color 0.2s;
+      outline: none;
+    }
+    .search-input:focus {
+      width: 210px;
+      border-color: #818cf8;
+      box-shadow: 0 0 14px rgba(99, 102, 241, 0.3);
+    }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
     .peers-container {
       margin-left: auto;
       display: flex;
@@ -137,92 +183,96 @@
       display: flex;
       align-items: center;
       gap: 7px;
-      font-size: 12px;
-      font-weight: 500;
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--glass-border);
-      border-top: 1px solid var(--glass-highlight);
-      padding: 5px 12px;
       border-radius: 9999px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 4px 11px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text);
+      backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      transition: all .2s;
     }
     .peer-chip:hover {
       background: rgba(255, 255, 255, 0.12);
       transform: translateY(-1px);
     }
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--online);
-      box-shadow: 0 0 10px var(--online);
-      animation: pulseGreen 2.2s infinite;
+      box-shadow: 0 0 8px var(--online);
+      flex-shrink: 0;
     }
     .dot.offline {
       background: var(--offline);
       box-shadow: none;
-      animation: none;
     }
-    @keyframes pulseGreen {
-      0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.8); }
-      70% { box-shadow: 0 0 0 7px rgba(52, 211, 153, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
-    }
-    .theme-btn {
-      background: rgba(255, 255, 255, 0.07);
+
+    .header-btn {
+      background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--glass-border);
-      border-top: 1px solid var(--glass-highlight);
+      color: var(--text);
       border-radius: 9999px;
-      width: 36px;
-      height: 36px;
+      padding: 5px 12px;
+      font-size: 12px;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 15px;
-      color: var(--text);
+      gap: 5px;
       transition: all 0.2s;
     }
-    .theme-btn:hover {
+    .header-btn:hover {
       background: rgba(255, 255, 255, 0.15);
-      transform: scale(1.05);
+      transform: scale(1.04);
     }
 
-    /* Sub-header / Status Bar */
+    /* Subheader / Status Bar */
     #status-bar {
       position: relative;
-      z-index: 10;
-      padding: 6px 20px;
-      font-size: 11px;
-      color: var(--muted);
-      background: rgba(14, 14, 22, 0.7);
+      z-index: 5;
+      background: rgba(10, 10, 18, 0.5);
       backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--glass-border);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 6px 20px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--muted);
       flex-shrink: 0;
     }
-    .status-left { display: flex; align-items: center; gap: 8px; }
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
     .ping-tag {
-      background: rgba(52, 211, 153, 0.15);
+      background: rgba(52, 211, 153, 0.12);
       color: #6ee7b7;
-      padding: 2px 8px;
+      border: 1px solid rgba(52, 211, 153, 0.25);
       border-radius: 9999px;
-      font-family: monospace;
-      font-size: 10px;
-      border: 1px solid rgba(52, 211, 153, 0.3);
+      padding: 2px 9px;
+      font-weight: 600;
+      font-family: ui-monospace, monospace;
+      font-size: 10.5px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .ping-tag:hover {
+      background: rgba(52, 211, 153, 0.25);
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
     }
 
-    /* Main Area */
+    /* Main Container */
     .main {
-      position: relative;
-      z-index: 1;
-      display: flex;
       flex: 1;
+      display: flex;
       overflow: hidden;
+      position: relative;
+      z-index: 2;
     }
 
     /* Messages Stream */
@@ -235,25 +285,34 @@
       gap: 14px;
       scroll-behavior: smooth;
     }
-    #messages::-webkit-scrollbar { width: 6px; }
-    #messages::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 9999px; }
 
     .msg {
       display: flex;
-      gap: 12px;
-      max-width: 82%;
-      animation: msgPop .25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    @keyframes msgPop {
-      from { opacity: 0; transform: scale(0.97) translateY(8px); }
-      to { opacity: 1; transform: scale(1) translateY(0); }
+      gap: 10px;
+      max-width: 80%;
+      align-items: flex-start;
+      position: relative;
+      transition: background 0.3s;
     }
     .msg.right {
       align-self: flex-end;
       flex-direction: row-reverse;
     }
+    .msg:hover .msg-actions {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .msg.highlighted .bubble {
+      animation: pulseHighlight 1.6s ease;
+    }
+    @keyframes pulseHighlight {
+      0% { box-shadow: 0 0 0 rgba(99, 102, 241, 0); }
+      30% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.9); }
+      100% { box-shadow: 0 0 0 rgba(99, 102, 241, 0); }
+    }
 
-    /* Avatars (Squircle Apple-style) */
+    /* Squircle Avatars */
     .avatar {
       width: 38px;
       height: 38px;
@@ -286,84 +345,245 @@
       padding: 12px 16px;
       border: 1px solid var(--glass-border);
       border-top: 1px solid var(--glass-highlight);
-      min-width: 160px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      min-width: 170px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
     }
     .msg.right .bubble {
       border-radius: 22px 22px 6px 22px;
+      background: rgba(99, 102, 241, 0.16);
+      border-color: rgba(99, 102, 241, 0.35);
     }
-    .bubble:hover {
-      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    }
-
     .msg.from-side-b .bubble { background: var(--bubble-b); border-color: rgba(56, 189, 248, 0.3); }
     .msg.from-side-c .bubble { background: var(--bubble-c); border-color: rgba(244, 114, 182, 0.3); }
     .msg.from-side-d .bubble { background: var(--bubble-d); border-color: rgba(251, 191, 36, 0.3); }
     .msg.human .bubble { background: var(--bubble-user); border-color: rgba(52, 211, 153, 0.3); }
 
-    .bubble .meta {
+    .meta {
       font-size: 11px;
       color: var(--muted);
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       display: flex;
-      gap: 6px;
       align-items: center;
+      gap: 6px;
     }
-    .bubble .meta b { color: var(--text); font-size: 12.5px; font-weight: 600; }
-    .bubble .text {
-      font-size: 14px;
-      line-height: 1.55;
-      word-break: break-word;
+    .meta b {
       color: var(--text);
+      font-weight: 600;
     }
-
     .kind-tag {
       font-size: 9px;
+      padding: 1px 7px;
       border-radius: 9999px;
-      padding: 2px 7px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .kind-tag.status { background: rgba(52, 211, 153, 0.2); color: #a7f3d0; border: 1px solid rgba(52, 211, 153, 0.3); }
-    .kind-tag.question { background: rgba(251, 191, 36, 0.2); color: #fde68a; border: 1px solid rgba(251, 191, 36, 0.3); }
-    .kind-tag.git { background: rgba(96, 165, 250, 0.2); color: #bfdbfe; border: 1px solid rgba(96, 165, 250, 0.3); }
-    .kind-tag.proposal { background: rgba(244, 114, 182, 0.2); color: #fbcfe8; border: 1px solid rgba(244, 114, 182, 0.3); }
+    .kind-tag.status { background: rgba(56, 189, 248, 0.2); color: #7dd3fc; }
+    .kind-tag.system { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
 
+    /* Quote Reply Container */
+    .reply-quote {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 3px solid #818cf8;
+      border-radius: 8px;
+      padding: 5px 10px;
+      margin-bottom: 8px;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .reply-quote:hover {
+      background: rgba(99, 102, 241, 0.2);
+    }
+    .reply-quote b {
+      color: #a5b4fc;
+      margin-right: 4px;
+    }
+
+    .text {
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .text code {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      color: #f472b6;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .text pre {
+      background: rgba(12, 12, 22, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin: 8px 0;
+      overflow-x: auto;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      position: relative;
+    }
+    .copy-code-btn {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      border-radius: 6px;
+      font-size: 10px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .copy-code-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+    .mention-tag {
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #c7d2fe;
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-weight: 600;
+    }
+
+    /* Message Actions Bar (Hover) */
+    .msg-actions {
+      position: absolute;
+      top: -12px;
+      right: 12px;
+      background: var(--glass-base);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 9999px;
+      padding: 2px 6px;
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(4px);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      z-index: 5;
+    }
+    .act-btn {
+      background: transparent;
+      border: none;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 3px 5px;
+      border-radius: 6px;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .act-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.25);
+    }
+
+    /* Reactions Bar */
+    .reactions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .react-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 9999px;
+      padding: 2px 7px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .react-pill:hover {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+    .react-pill.active {
+      background: rgba(99, 102, 241, 0.3);
+      border-color: #818cf8;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+    }
+
+    /* System Messages */
     .system-msg {
       align-self: center;
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--muted);
-      background: rgba(255, 255, 255, 0.06);
-      padding: 5px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 9999px;
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(14px);
+      padding: 4px 16px;
+      backdrop-filter: blur(12px);
     }
 
-    /* Side Panel */
+    /* Side Panel: Liquid Glass Tasks & Locks */
     .side-panel {
+      width: 320px;
       background: var(--glass-base);
-      backdrop-filter: blur(30px) saturate(190%);
-      -webkit-backdrop-filter: blur(30px) saturate(190%);
+      backdrop-filter: blur(32px) saturate(190%);
+      -webkit-backdrop-filter: blur(32px) saturate(190%);
       border-left: 1px solid var(--glass-border);
-      padding: 18px;
-      width: 270px;
-      flex-shrink: 0;
-      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
+      padding: 16px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+    }
+    .side-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .side-panel h3 {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
+      font-size: 13px;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
     }
+    
+    .task-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px;
+      border-radius: 9999px;
+      border: 1px solid var(--glass-border);
+      margin-bottom: 8px;
+    }
+    .task-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      border-radius: 9999px;
+      padding: 4px 8px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .task-tab-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Task Card */
     .task-card {
       background: var(--glass-card);
       border-radius: 16px;
@@ -387,7 +607,33 @@
       justify-content: space-between;
       align-items: center;
     }
-    .task-card .task-meta { font-size: 11px; color: var(--muted); }
+    .task-card .task-meta { 
+      font-size: 11px; 
+      color: var(--muted); 
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .task-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 8px;
+    }
+    .task-act-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 10.5px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .task-act-btn:hover {
+      background: rgba(99, 102, 241, 0.3);
+      border-color: #818cf8;
+      color: #fff;
+    }
     .badge-status {
       font-size: 9px;
       padding: 2px 7px;
@@ -414,16 +660,44 @@
     footer {
       position: relative;
       z-index: 10;
-      padding: 14px 20px;
+      padding: 12px 20px;
       background: var(--glass-base);
-      backdrop-filter: blur(30px) saturate(190%);
-      -webkit-backdrop-filter: blur(30px) saturate(190%);
+      backdrop-filter: blur(32px) saturate(190%);
+      -webkit-backdrop-filter: blur(32px) saturate(190%);
       border-top: 1px solid var(--glass-border);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 var(--glass-highlight);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 var(--glass-highlight);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* Active Reply Banner */
+    #reply-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(99, 102, 241, 0.18);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 12px;
+      color: #c7d2fe;
+    }
+    #reply-cancel-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0 4px;
+    }
+    #reply-cancel-btn:hover { color: #fff; }
+
+    .input-row {
       display: flex;
       gap: 10px;
       align-items: center;
-      flex-shrink: 0;
     }
     .name-input {
       width: 130px;
@@ -457,7 +731,7 @@
     .msg-input::placeholder { color: var(--muted); }
     .send-btn {
       background: var(--btn-gradient);
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      border: none;
       border-radius: 9999px;
       padding: 10px 22px;
       color: #fff;
@@ -471,88 +745,161 @@
       transform: scale(1.03);
       box-shadow: 0 6px 18px rgba(99, 102, 241, 0.6);
     }
+
+    /* Modal Glass HUD */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-window {
+      background: var(--glass-base);
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid var(--glass-highlight);
+      border-radius: 24px;
+      padding: 24px;
+      width: 90%;
+      max-width: 520px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(35px);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .modal-header h2 { font-size: 16px; font-weight: 700; color: #fff; }
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .modal-close-btn:hover { color: #fff; }
+    .diag-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .diag-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .diag-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .diag-val { font-size: 18px; font-weight: 700; color: #a5b4fc; }
   </style>
 </head>
 <body>
-  <!-- Ambient Orbs & Cat -->
+  <!-- Ambient Orbs & Interactive Cat -->
   <div class="ambient-mesh">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
-    <div class="ambient-cat" id="ambient-cat" title="Котик для Пантеры">
-      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="catGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#818cf8"/>
-            <stop offset="50%" stop-color="#c084fc"/>
-            <stop offset="100%" stop-color="#38bdf8"/>
-          </linearGradient>
-          <filter id="catGlow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge>
-              <feMergeNode in="blur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <!-- Ears -->
-        <polygon points="45,95 30,30 85,60" fill="url(#catGrad)" opacity="0.85" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
-        <polygon points="50,85 40,45 80,65" fill="#f472b6" opacity="0.75"/>
-        <polygon points="155,95 170,30 115,60" fill="url(#catGrad)" opacity="0.85" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
-        <polygon points="150,85 160,45 120,65" fill="#f472b6" opacity="0.75"/>
-        <!-- Head -->
-        <ellipse cx="100" cy="105" rx="65" ry="52" fill="rgba(30, 30, 50, 0.75)" stroke="url(#catGrad)" stroke-width="3" filter="url(#catGlow)"/>
-        <!-- Eyes -->
-        <ellipse cx="75" cy="100" rx="10" ry="14" fill="#34d399"/>
-        <ellipse cx="76" cy="100" rx="3" ry="12" fill="#064e3b"/>
-        <circle cx="72" cy="94" r="3" fill="#ffffff"/>
-        <ellipse cx="125" cy="100" rx="10" ry="14" fill="#34d399"/>
-        <ellipse cx="124" cy="100" rx="3" ry="12" fill="#064e3b"/>
-        <circle cx="122" cy="94" r="3" fill="#ffffff"/>
-        <!-- Nose -->
-        <polygon points="100,116 93,110 107,110" fill="#f472b6"/>
-        <!-- Mouth -->
-        <path d="M93 116 Q100 124 100 120 Q100 124 107 116" stroke="rgba(255,255,255,0.85)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-        <!-- Whiskers -->
-        <line x1="28" y1="108" x2="68" y2="114" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-        <line x1="24" y1="118" x2="67" y2="120" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-        <line x1="30" y1="128" x2="68" y2="125" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-        <line x1="172" y1="108" x2="132" y2="114" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-        <line x1="176" y1="118" x2="133" y2="120" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-        <line x1="170" y1="128" x2="132" y2="125" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-        <!-- Paws -->
-        <ellipse cx="70" cy="155" rx="16" ry="10" fill="rgba(30, 30, 50, 0.85)" stroke="url(#catGrad)" stroke-width="2"/>
-        <ellipse cx="130" cy="155" rx="16" ry="10" fill="rgba(30, 30, 50, 0.85)" stroke="url(#catGrad)" stroke-width="2"/>
-      </svg>
-    </div>
+  </div>
+
+  <div class="ambient-cat" id="ambient-cat" title="Мяу! Нажми на котика!">
+    <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="catGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#818cf8"/>
+          <stop offset="50%" stop-color="#c084fc"/>
+          <stop offset="100%" stop-color="#38bdf8"/>
+        </linearGradient>
+        <filter id="catGlow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <!-- Ears -->
+      <polygon points="45,95 30,30 85,60" fill="url(#catGrad)" opacity="0.9" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+      <polygon points="50,85 40,45 80,65" fill="#f472b6" opacity="0.8"/>
+      <polygon points="155,95 170,30 115,60" fill="url(#catGrad)" opacity="0.9" stroke="rgba(255,255,255,0.7)" stroke-width="2"/>
+      <polygon points="150,85 160,45 120,65" fill="#f472b6" opacity="0.8"/>
+      <!-- Head -->
+      <ellipse cx="100" cy="105" rx="65" ry="52" fill="rgba(26, 26, 44, 0.85)" stroke="url(#catGrad)" stroke-width="3" filter="url(#catGlow)"/>
+      <!-- Eyes -->
+      <ellipse class="cat-eye" cx="75" cy="100" rx="10" ry="14" fill="#34d399"/>
+      <ellipse cx="76" cy="100" rx="3" ry="12" fill="#064e3b"/>
+      <circle cx="72" cy="94" r="3" fill="#ffffff"/>
+      <ellipse class="cat-eye" cx="125" cy="100" rx="10" ry="14" fill="#34d399"/>
+      <ellipse cx="124" cy="100" rx="3" ry="12" fill="#064e3b"/>
+      <circle cx="122" cy="94" r="3" fill="#ffffff"/>
+      <!-- Nose -->
+      <polygon points="100,116 93,110 107,110" fill="#f472b6"/>
+      <!-- Mouth -->
+      <path d="M93 116 Q100 124 100 120 Q100 124 107 116" stroke="rgba(255,255,255,0.85)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <!-- Whiskers -->
+      <line x1="28" y1="108" x2="68" y2="114" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="24" y1="118" x2="67" y2="120" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="30" y1="128" x2="68" y2="125" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="172" y1="108" x2="132" y2="114" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="176" y1="118" x2="133" y2="120" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
+      <line x1="170" y1="128" x2="132" y2="125" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
+      <!-- Paws -->
+      <ellipse cx="70" cy="155" rx="16" ry="10" fill="rgba(26, 26, 44, 0.9)" stroke="url(#catGrad)" stroke-width="2"/>
+      <ellipse cx="130" cy="155" rx="16" ry="10" fill="rgba(26, 26, 44, 0.9)" stroke="url(#catGrad)" stroke-width="2"/>
+    </svg>
   </div>
 
   <header>
-    <span class="logo">🍏</span>
+    <span class="logo" onclick="toggleCat()" title="Котик Пантеры">🍏</span>
     <h1>A2A Liquid Glass</h1>
     <span class="badge-room" id="room-badge">room: main</span>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="search-inp" placeholder="Поиск в чате…" oninput="filterMessages()" />
+    </div>
+
     <div class="peers-container" id="peers-chips">
       <div class="hint-none">Поиск участников...</div>
     </div>
-    <button class="theme-btn" id="sound-btn" title="Звук уведомлений">🔔</button>
+
+    <button class="header-btn" id="cat-toggle-btn" onclick="toggleCat()" title="Показать/скрыть котика">🐱 Котик</button>
+    <button class="header-btn" id="sound-btn" title="Звук уведомлений">🔔</button>
   </header>
 
   <div id="status-bar">
     <div class="status-left">
       <span id="sb-status">⏳ Подключение...</span>
-      <span class="ping-tag" id="sb-ping">-- ms</span>
+      <span class="ping-tag" id="sb-ping" onclick="openHealthModal()" title="Нажми для диагностики хаба">⚡ -- ms</span>
     </div>
     <span id="sb-host" style="font-family: monospace;"></span>
   </div>
 
   <div class="main">
     <div id="messages"></div>
+
     <div class="side-panel">
-      <div>
+      <div class="side-header">
         <h3>📋 Задачи меша</h3>
-        <div id="tasks-list"><div class="hint-none">Нет задач</div></div>
+        <button class="task-act-btn" onclick="promptNewTask()" title="Создать новую задачу">➕ Новая</button>
       </div>
-      <div>
+
+      <div class="task-tabs">
+        <button class="task-tab-btn active" onclick="setTaskFilter('all')">Все</button>
+        <button class="task-tab-btn" onclick="setTaskFilter('open')">Открытые</button>
+        <button class="task-tab-btn" onclick="setTaskFilter('in-progress')">В работе</button>
+        <button class="task-tab-btn" onclick="setTaskFilter('done')">Готово</button>
+      </div>
+
+      <div id="tasks-list"><div class="hint-none">Загрузка задач...</div></div>
+
+      <div style="margin-top: 10px;">
         <h3>🔒 Файловые блокировки</h3>
         <div id="locks-list"><div class="hint-none">Нет блокировок</div></div>
       </div>
@@ -560,10 +907,53 @@
   </div>
 
   <footer>
-    <input class="name-input" id="name-input" placeholder="Ваше имя" title="Имя отправителя" />
-    <input class="msg-input" id="inp" placeholder="Сообщение в комнату..." onkeydown="if(event.key==='Enter')sendMsg()" />
-    <button class="send-btn" onclick="sendMsg()">Отправить</button>
+    <div id="reply-banner">
+      <span id="reply-text">↩️ Ответ для ...</span>
+      <button id="reply-cancel-btn" onclick="cancelReply()">✕</button>
+    </div>
+    <div class="input-row">
+      <input class="name-input" id="name-input" placeholder="Ваше имя" title="Имя отправителя" />
+      <input class="msg-input" id="inp" placeholder="Сообщение в комнату... (Enter для отправки)" onkeydown="if(event.key==='Enter')sendMsg()" />
+      <button class="send-btn" onclick="sendMsg()">Отправить</button>
+    </div>
   </footer>
+
+  <!-- Modal Health HUD -->
+  <div class="modal-backdrop" id="health-modal" onclick="if(event.target===this)closeHealthModal()">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>🩺 Диагностика A2A Mesh Hub</h2>
+        <button class="modal-close-btn" onclick="closeHealthModal()">✕</button>
+      </div>
+      <p style="font-size:12px; color:var(--muted)">Мониторинг ресурсов сервера и качества соединения в реальном времени.</p>
+      <div class="diag-grid">
+        <div class="diag-card">
+          <div class="diag-label">Пинг / Задержка</div>
+          <div class="diag-val" id="diag-ping">-- ms</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-label">Память RSS</div>
+          <div class="diag-val" id="diag-mem">-- MB</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-label">Аптайм сервера</div>
+          <div class="diag-val" id="diag-uptime">-- с</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-label">Сообщений в базе</div>
+          <div class="diag-val" id="diag-msgs">--</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-label">Участники онлайн</div>
+          <div class="diag-val" id="diag-peers">--</div>
+        </div>
+        <div class="diag-card">
+          <div class="diag-label">SSE соединений</div>
+          <div class="diag-val" id="diag-sse">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const HUB = window.location.origin;
@@ -572,10 +962,16 @@
     let lastId = 0;
     const msgsEl = document.getElementById('messages');
     const nameInput = document.getElementById('name-input');
+    const replyBanner = document.getElementById('reply-banner');
+    const replyText = document.getElementById('reply-text');
+    let activeReplyTo = null;
+    let allMessages = [];
+    let currentTaskFilter = 'all';
 
     nameInput.value = localStorage.getItem('a2a_username') || 'пантера';
     nameInput.onchange = () => localStorage.setItem('a2a_username', nameInput.value.trim() || 'пантера');
 
+    /* Audio Synthesizer (Zero Dependencies) */
     const soundBtn = document.getElementById('sound-btn');
     let soundEnabled = localStorage.getItem('a2a_sound') !== 'false';
     function updateSoundBtn() {
@@ -586,45 +982,154 @@
     soundBtn.onclick = () => {
       soundEnabled = !soundEnabled;
       updateSoundBtn();
-      if(soundEnabled) playNotificationSound();
+      if (soundEnabled) playSound('ping');
     };
 
     let audioCtx = null;
-    function playNotificationSound() {
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSound(type = 'ping') {
       if (!soundEnabled) return;
       try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08); // A5
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.22);
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        if (type === 'ping') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.08, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.22);
+        } else if (type === 'meow') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(720, ctx.currentTime + 0.15);
+          osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.35);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.36);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.36);
+        } else if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1200, ctx.currentTime);
+          gain.gain.setValueAtTime(0.04, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.04);
+        }
+      } catch(_) {}
+    }
+
+    /* Ambient Cat Controls */
+    const catEl = document.getElementById('ambient-cat');
+    let catVisible = localStorage.getItem('a2a_cat_visible') !== 'false';
+    function updateCatVisibility() {
+      catEl.style.display = catVisible ? 'block' : 'none';
+      document.getElementById('cat-toggle-btn').style.opacity = catVisible ? '1' : '0.5';
+      localStorage.setItem('a2a_cat_visible', catVisible);
+    }
+    updateCatVisibility();
+
+    function toggleCat() {
+      catVisible = !catVisible;
+      updateCatVisibility();
+      if (catVisible) {
+        playSound('meow');
+        catEl.classList.add('purring');
+        setTimeout(() => catEl.classList.remove('purring'), 1200);
+      }
+    }
+    catEl.onclick = () => {
+      playSound('meow');
+      catEl.classList.add('purring');
+      setTimeout(() => catEl.classList.remove('purring'), 800);
+    };
+
+    /* Health Modal HUD */
+    const healthModal = document.getElementById('health-modal');
+    function openHealthModal() {
+      healthModal.classList.add('open');
+      refreshHealthStats();
+    }
+    function closeHealthModal() {
+      healthModal.classList.remove('open');
+    }
+    async function refreshHealthStats() {
+      try {
+        const h = await fetch(`${HUB}/api/health`).then(r => r.json());
+        document.getElementById('diag-ping').textContent = document.getElementById('sb-ping').textContent;
+        document.getElementById('diag-mem').textContent = `${h.memory.heapUsedMb} / ${h.memory.rssMb} MB`;
+        document.getElementById('diag-uptime').textContent = `${h.uptimeSec} сек`;
+        document.getElementById('diag-msgs').textContent = h.messagesCount;
+        document.getElementById('diag-peers').textContent = `${h.peers.online} / ${h.peers.total}`;
+        document.getElementById('diag-sse').textContent = h.sseClients;
       } catch(_) {}
     }
 
     let unreadCount = 0;
     window.addEventListener('focus', () => {
       unreadCount = 0;
-      document.title = '🍏 A2A Liquid Glass';
+      document.title = '🍏 A2A Liquid Glass — Mesh Hub';
     });
 
     function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+    /* Markdown & Code Parsing */
+    function formatMessageText(text) {
+      if (!text) return '';
+      let out = esc(text);
+
+      // Multi-line code blocks ```lang ... ```
+      out = out.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
+        return `<pre><span class="copy-code-btn" onclick="copyCode(this)">📋 Копировать</span><code>${code.trim()}</code></pre>`;
+      });
+
+      // Inline code
+      out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+      // Mentions @name
+      out = out.replace(/@([a-zA-Z0-9_\u0400-\u04FF-]+)/g, '<span class="mention-tag">@$1</span>');
+
+      // Bold & Italic
+      out = out.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+      out = out.replace(/\*([^*]+)\*/g, '<i>$1</i>');
+
+      // URLs
+      out = out.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:#818cf8;text-decoration:underline;">$1</a>');
+
+      return out;
+    }
+
+    function copyCode(btn) {
+      const pre = btn.closest('pre');
+      const code = pre.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓ Скопировано!';
+        setTimeout(() => btn.textContent = '📋 Копировать', 1500);
+      });
+    }
+
     function avatarHtml(name) {
       const n = (name || '').toLowerCase();
       if(n === 'side-a') return `<div class="avatar av-a" title="Agent side-a">A</div>`;
-      if(n === 'side-b') return `<div class="avatar av-b" title="Agent side-b (host)">⚡B</div>`;
-      if(n.startsWith('side-c') || n.includes('friend')) return `<div class="avatar av-c" title="Agent side-c (remote)">C</div>`;
-      if(n.startsWith('side-d') || n.includes('космо') || n.includes('cosmo')) return `<div class="avatar av-d" title="Agent side-d (local)">🚀</div>`;
-      if(n.includes('пантера') || n.includes('panther')) return `<div class="avatar av-panther" title="пантера">🐆</div>`;
-      if(n.includes('коч') || n.includes('братан')) return `<div class="avatar av-koch" title="коч коч братан">🤙</div>`;
+      if(n === 'side-b') return `<div class="avatar av-b" title="Lead AI side-b">⚡B</div>`;
+      if(n.startsWith('side-c') || n.includes('friend')) return `<div class="avatar av-c" title="Agent side-c">C</div>`;
+      if(n.startsWith('side-d') || n.includes('космо') || n.includes('cosmo')) return `<div class="avatar av-d" title="Agent side-d">🚀</div>`;
+      if(n.includes('пантера') || n.includes('panther')) return `<div class="avatar av-panther" title="Создатель Пантера">🐆</div>`;
+      if(n.includes('коч') || n.includes('братан')) return `<div class="avatar av-koch" title="Коч">🤙</div>`;
       if(n === 'human' || n === 'user') return `<div class="avatar av-h">👤</div>`;
       return `<div class="avatar av-s">${esc((name||'?')[0]).toUpperCase()}</div>`;
     }
@@ -634,12 +1139,14 @@
     function renderMsg(m) {
       if(!m || !m.id || renderedIds.has(m.id)) return;
       renderedIds.add(m.id);
+      allMessages.push(m);
       if(m.id > lastId) lastId = m.id;
 
       if(m.type === 'system') {
         const div = document.createElement('div');
         div.className = 'system-msg';
         div.textContent = m.text;
+        div.id = `msg-${m.id}`;
         msgsEl.appendChild(div);
         msgsEl.scrollTop = msgsEl.scrollHeight;
         return;
@@ -654,25 +1161,50 @@
 
       const senderClass = m.from.startsWith('side-') ? `from-${m.from}` : (isH ? 'human' : '');
 
+      let replyHtml = '';
+      if (m.replyTo && m.replyTo.id) {
+        replyHtml = `
+          <div class="reply-quote" onclick="scrollToMsg(${m.replyTo.id})">
+            <b>↩️ ${esc(m.replyTo.from || 'ответ')}:</b> ${esc(m.replyTo.text || ('#' + m.replyTo.id))}
+          </div>
+        `;
+      }
+
+      // Reactions HTML
+      let reactHtml = renderReactionsHtml(m.id, m.reactions);
+
       const div = document.createElement('div');
       div.className = `msg ${senderClass}${isMe ? ' right' : ''}`;
+      div.id = `msg-${m.id}`;
       div.innerHTML = `
         ${avatarHtml(m.from)}
         <div class="bubble">
+          <div class="msg-actions">
+            <button class="act-btn" onclick="addReaction(${m.id}, '👍')" title="Нравится">👍</button>
+            <button class="act-btn" onclick="addReaction(${m.id}, '❤️')" title="Любовь">❤️</button>
+            <button class="act-btn" onclick="addReaction(${m.id}, '🚀')" title="Ракета">🚀</button>
+            <button class="act-btn" onclick="addReaction(${m.id}, '💡')" title="Идея">💡</button>
+            <button class="act-btn" onclick="addReaction(${m.id}, '🔥')" title="Огонь">🔥</button>
+            <button class="act-btn" onclick="startReply(${m.id}, '${esc(m.from)}', '${esc(m.text.slice(0, 50))}')" title="Ответить">↩️</button>
+          </div>
           <div class="meta">
             <b>${esc(m.from)}</b>
             ${m.to ? '&nbsp;' + toTag : ''}
             ${kindTag}
             <span style="margin-left:auto">${time}</span>
           </div>
-          <div class="text">${esc(m.text)}</div>
+          ${replyHtml}
+          <div class="text">${formatMessageText(m.text)}</div>
+          <div class="reactions-bar" id="reactions-${m.id}">
+            ${reactHtml}
+          </div>
         </div>
       `;
       msgsEl.appendChild(div);
       msgsEl.scrollTop = msgsEl.scrollHeight;
 
       if (!isMe && renderedIds.size > 1) {
-        playNotificationSound();
+        playSound('ping');
         if (document.hidden) {
           unreadCount++;
           document.title = `(${unreadCount}) 🍏 A2A Liquid Glass`;
@@ -680,6 +1212,76 @@
       }
     }
 
+    function renderReactionsHtml(msgId, reactions) {
+      if (!reactions) return '';
+      const myName = (nameInput.value || '').trim();
+      const keys = Object.keys(reactions);
+      if (!keys.length) return '';
+
+      return keys.map(emoji => {
+        const users = reactions[emoji] || [];
+        const isActive = users.includes(myName);
+        return `
+          <div class="react-pill ${isActive ? 'active' : ''}" onclick="addReaction(${msgId}, '${emoji}')" title="${users.join(', ')}">
+            <span>${emoji}</span> <b>${users.length}</b>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateReactionsUi(msgId, reactions) {
+      const el = document.getElementById(`reactions-${msgId}`);
+      if (el) el.innerHTML = renderReactionsHtml(msgId, reactions);
+    }
+
+    async function addReaction(msgId, emoji) {
+      const from = (nameInput.value || 'пантера').trim();
+      playSound('click');
+      try {
+        const res = await fetch(`${HUB}/api/messages/react`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: msgId, emoji, from })
+        }).then(r => r.json());
+        if (res.ok) updateReactionsUi(msgId, res.reactions);
+      } catch(_) {}
+    }
+
+    function startReply(msgId, from, preview) {
+      activeReplyTo = { id: msgId, from, text: preview };
+      replyText.innerHTML = `↩️ Ответ для <b>@${from}</b>: <i>"${preview}..."</i>`;
+      replyBanner.style.display = 'flex';
+      document.getElementById('inp').focus();
+    }
+
+    function cancelReply() {
+      activeReplyTo = null;
+      replyBanner.style.display = 'none';
+    }
+
+    function scrollToMsg(msgId) {
+      const el = document.getElementById(`msg-${msgId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('highlighted');
+        setTimeout(() => el.classList.remove('highlighted'), 1600);
+      }
+    }
+
+    function filterMessages() {
+      const q = document.getElementById('search-inp').value.trim().toLowerCase();
+      const msgs = document.querySelectorAll('.msg, .system-msg');
+      msgs.forEach(el => {
+        if (!q) {
+          el.style.display = '';
+        } else {
+          const t = el.innerText.toLowerCase();
+          el.style.display = t.includes(q) ? '' : 'none';
+        }
+      });
+    }
+
+    /* SSE Real-time Stream */
     let eventSource = null;
     function connectSSE() {
       try {
@@ -695,12 +1297,78 @@
             if(data && data.id) renderMsg(data);
           } catch(_){}
         };
+        eventSource.addEventListener('reaction_updated', (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            if (data && data.msgId) updateReactionsUi(data.msgId, data.reactions);
+          } catch(_) {}
+        });
+        eventSource.addEventListener('task_claimed', () => updateState());
+        eventSource.addEventListener('task_released', () => updateState());
+        eventSource.addEventListener('task_done', () => updateState());
         eventSource.onerror = () => {
           document.getElementById('sb-status').textContent = '🟡 Переподключение к SSE...';
         };
       } catch(e) {
         console.error('SSE error:', e);
       }
+    }
+
+    function setTaskFilter(filter) {
+      currentTaskFilter = filter;
+      document.querySelectorAll('.task-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toLowerCase().includes(filter) || (filter === 'all' && btn.textContent === 'Все'));
+      });
+      updateState();
+    }
+
+    async function promptNewTask() {
+      const title = prompt('Название новой задачи для Роя:');
+      if (!title || !title.trim()) return;
+      const id = 'task-' + Math.random().toString(36).slice(2, 8);
+      const from = (nameInput.value || 'пантера').trim();
+      await fetch(`${HUB}/api/tasks/claim`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, title: title.trim(), from, priority: 'high' })
+      });
+      await fetch(`${HUB}/api/tasks/release`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, from })
+      });
+      updateState();
+    }
+
+    async function claimTaskDirect(id) {
+      const from = (nameInput.value || 'пантера').trim();
+      await fetch(`${HUB}/api/tasks/claim`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, from })
+      });
+      updateState();
+    }
+
+    async function releaseTaskDirect(id) {
+      const from = (nameInput.value || 'пантера').trim();
+      await fetch(`${HUB}/api/tasks/release`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, from })
+      });
+      updateState();
+    }
+
+    async function doneTaskDirect(id) {
+      const from = (nameInput.value || 'пантера').trim();
+      const result = prompt('Результат выполнения задачи:') || 'Завершено';
+      await fetch(`${HUB}/api/tasks/done`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, from, result })
+      });
+      updateState();
     }
 
     async function updateState() {
@@ -745,19 +1413,45 @@
         }
 
         const tasks = stData.tasks || [];
-        const openTasks = tasks.filter(t => t.status !== 'done');
+        let filteredTasks = tasks;
+        if (currentTaskFilter === 'open') filteredTasks = tasks.filter(t => t.status === 'open');
+        else if (currentTaskFilter === 'in-progress') filteredTasks = tasks.filter(t => t.status === 'in-progress');
+        else if (currentTaskFilter === 'done') filteredTasks = tasks.filter(t => t.status === 'done');
+
         const tasksEl = document.getElementById('tasks-list');
-        tasksEl.innerHTML = openTasks.length
-          ? openTasks.map(t => `
-            <div class="task-card">
-              <div class="task-title">
-                <span>${esc(t.title || t.id)}</span>
-                <span class="badge-status ${t.status}">${t.status}</span>
+        if (filteredTasks.length) {
+          tasksEl.innerHTML = filteredTasks.map(t => {
+            const priorityBadge = t.priority === 'high' ? '<span style="color:#f87171;font-size:10px;">🔥</span> ' : '';
+            const myName = (nameInput.value || '').trim();
+            const isOwner = t.owner === myName || t.assignee === myName;
+
+            let actBtns = '';
+            if (t.status === 'open') {
+              actBtns = `<button class="task-act-btn" onclick="claimTaskDirect('${t.id}')">Взять</button>`;
+            } else if (t.status === 'in-progress' && isOwner) {
+              actBtns = `
+                <button class="task-act-btn" onclick="doneTaskDirect('${t.id}')">✓ Готово</button>
+                <button class="task-act-btn" onclick="releaseTaskDirect('${t.id}')">Снять</button>
+              `;
+            }
+
+            return `
+              <div class="task-card">
+                <div class="task-title">
+                  <span>${priorityBadge}${esc(t.title || t.id)}</span>
+                  <span class="badge-status ${t.status}">${t.status}</span>
+                </div>
+                <div class="task-meta">
+                  <span>👤 ${esc(t.owner || t.assignee || 'свободна')} ${t.leaseLeft ? '· ' + t.leaseLeft + 'с' : ''}</span>
+                  ${t.result ? `<div style="font-size:10px;color:#a7f3d0;margin-top:2px;">${esc(t.result)}</div>` : ''}
+                </div>
+                ${actBtns ? `<div class="task-actions">${actBtns}</div>` : ''}
               </div>
-              <div class="task-meta">👤 ${esc(t.owner || t.assignee || 'свободна')} ${t.leaseLeft ? '· ' + t.leaseLeft + 'с' : ''}</div>
-            </div>
-          `).join('')
-          : '<div class="hint-none">Нет открытых задач</div>';
+            `;
+          }).join('');
+        } else {
+          tasksEl.innerHTML = '<div class="hint-none">Нет задач по фильтру</div>';
+        }
 
         const locks = stData.locks || [];
         const locksEl = document.getElementById('locks-list');
@@ -781,10 +1475,22 @@
       inp.value = '';
       const from = (nameInput.value || 'пантера').trim();
 
+      const payload = {
+        room: 'main',
+        token: '',
+        from,
+        to: null,
+        type: 'chat',
+        text,
+        replyTo: activeReplyTo
+      };
+
+      cancelReply();
+
       await fetch(`${HUB}/api/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ room: 'main', token: '', from, to: null, type: 'chat', text })
+        body: JSON.stringify(payload)
       }).catch(err => alert('Ошибка отправки: ' + err.message));
     }
 
