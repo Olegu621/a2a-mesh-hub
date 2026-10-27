@@ -38,10 +38,11 @@ app.use((req, res, next) => {
 // State storage
 let nextMsgId = 1;
 const peers = new Map(); // name -> { name, room, token, capabilities, lastSeen }
-const messages = [];     // Array of { id, ts, from, to, type, text, room, replyTo, reactions }
+const messages = [];     // Array of { id, ts, from, to, type, text, room, replyTo, reactions, attachment }
 const tasks = new Map(); // id -> { id, title, note, status, owner, assignee, claimedAt, leaseUntil, result, doneAt, doneBy, priority }
 let locks = [];          // Array of { file, agent, owner, lockedAt, expiresAt }
 const snippets = [];     // Array of { id, ts, from, title, lang, content, tags }
+let pinnedMessage = null; // { id, from, text, pinnedBy, pinnedAt }
 
 // Persistence storage
 const DATA_DIR = path.join(__dirname, 'data');
@@ -52,6 +53,7 @@ function saveState() {
     if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
     const payload = {
       nextMsgId,
+      pinnedMessage,
       messages: messages.slice(-500),
       tasks: Array.from(tasks.entries()),
       snippets: snippets.slice(-200)
@@ -73,6 +75,7 @@ function loadState() {
     if (fs.existsSync(STATE_FILE)) {
       const data = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'));
       if (data.nextMsgId) nextMsgId = data.nextMsgId;
+      if (data.pinnedMessage) pinnedMessage = data.pinnedMessage;
       if (Array.isArray(data.messages)) messages.push(...data.messages);
       if (Array.isArray(data.tasks)) {
         for (const [k, v] of data.tasks) tasks.set(k, v);
@@ -244,7 +247,8 @@ app.post('/api/send', (req, res) => {
   touchPeer(from, null, room, token);
 
   const text = (req.body.text || '').trim();
-  if (!text) return res.status(400).json({ error: 'Пустое сообщение' });
+  const attachment = req.body.attachment || null;
+  if (!text && !attachment) return res.status(400).json({ error: 'Пустое сообщение' });
 
   const msg = {
     id: nextMsgId++,
@@ -253,6 +257,7 @@ app.post('/api/send', (req, res) => {
     to: req.body.to || null,
     type: req.body.type || 'chat',
     text,
+    attachment,
     replyTo: req.body.replyTo || null,
     reactions: {},
     room
@@ -290,6 +295,37 @@ app.post('/api/messages/react', (req, res) => {
   scheduleSave();
   broadcastSSE('reaction_updated', { msgId, reactions: msg.reactions, from, emoji });
   res.json({ ok: true, msgId, reactions: msg.reactions });
+});
+
+// 2b. Message Pinning
+app.get('/api/pin', (req, res) => {
+  res.json({ ok: true, pinned: pinnedMessage });
+});
+
+app.post('/api/pin', (req, res) => {
+  const from = req.body.from || req.body.name || 'anonymous';
+  const id = Number(req.body.id);
+  const text = req.body.text || '';
+  if (!id && !text) return res.status(400).json({ error: 'Требуется id или текст' });
+
+  const msg = id ? messages.find(m => m.id === id) : null;
+  pinnedMessage = {
+    id: msg ? msg.id : null,
+    from: msg ? msg.from : from,
+    text: msg ? msg.text : text,
+    pinnedBy: from,
+    pinnedAt: now()
+  };
+  scheduleSave();
+  broadcastSSE('message_pinned', { pinned: pinnedMessage });
+  res.json({ ok: true, pinned: pinnedMessage });
+});
+
+app.delete('/api/pin', (req, res) => {
+  pinnedMessage = null;
+  scheduleSave();
+  broadcastSSE('message_unpinned', {});
+  res.json({ ok: true });
 });
 
 // 2b. System Health & Performance Diagnostics
@@ -350,7 +386,7 @@ app.get('/api/events', (req, res) => {
   });
 });
 
-// 5. State (peers, tasks, locks)
+// 5. State (peers, tasks, locks, pinned, snippets)
 app.get('/api/state', (req, res) => {
   const name = req.query.name;
   if (name) touchPeer(name);
@@ -359,6 +395,8 @@ app.get('/api/state', (req, res) => {
     peers: getPeersList(),
     tasks: getTasksList(),
     locks: getLocksList(),
+    pinned: pinnedMessage,
+    snippetsCount: snippets.length,
     typing: []
   });
 });

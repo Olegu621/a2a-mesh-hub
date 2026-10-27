@@ -11,7 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="A2A Mesh">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍏</text></svg>">
   <style>
-    :root[data-theme="dark"] {
+    :root, :root[data-theme="dark"], :root[data-theme="emerald"] {
       --bg: #07070c;
       --glass-base: rgba(18, 18, 30, 0.72);
       --glass-card: rgba(28, 28, 46, 0.55);
@@ -36,8 +36,95 @@
 
       --online: #34d399;
       --offline: #64748b;
-      --btn-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      --btn-gradient-hover: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      --btn-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --btn-gradient-hover: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    :root[data-theme="violet"] {
+      --bg: #090614;
+      --glass-base: rgba(26, 18, 44, 0.75);
+      --glass-card: rgba(38, 26, 62, 0.58);
+      --glass-card-hover: rgba(56, 36, 92, 0.78);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-highlight: rgba(255, 255, 255, 0.3);
+      --text: #fdf4ff;
+      --text-secondary: #e9d5ff;
+      --muted: #a855f7;
+      
+      --accent-b: #c084fc;
+      --accent-c: #f472b6;
+      --accent-d: #fbbf24;
+      --accent-panther: #a855f7;
+      --accent-koch: #818cf8;
+
+      --bubble-b: rgba(192, 132, 252, 0.16);
+      --bubble-c: rgba(244, 114, 182, 0.16);
+      --bubble-d: rgba(251, 191, 36, 0.16);
+      --bubble-user: rgba(168, 85, 247, 0.18);
+      --bubble-default: rgba(34, 22, 54, 0.68);
+
+      --online: #c084fc;
+      --offline: #64748b;
+      --btn-gradient: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+      --btn-gradient-hover: linear-gradient(135deg, #9333ea 0%, #6d28d9 100%);
+    }
+
+    :root[data-theme="azure"] {
+      --bg: #040914;
+      --glass-base: rgba(14, 26, 46, 0.75);
+      --glass-card: rgba(20, 38, 68, 0.58);
+      --glass-card-hover: rgba(28, 54, 96, 0.78);
+      --glass-border: rgba(255, 255, 255, 0.15);
+      --glass-highlight: rgba(255, 255, 255, 0.3);
+      --text: #f0f9ff;
+      --text-secondary: #bae6fd;
+      --muted: #38bdf8;
+      
+      --accent-b: #38bdf8;
+      --accent-c: #f472b6;
+      --accent-d: #38bdf8;
+      --accent-panther: #0ea5e9;
+      --accent-koch: #60a5fa;
+
+      --bubble-b: rgba(56, 189, 248, 0.16);
+      --bubble-c: rgba(244, 114, 182, 0.16);
+      --bubble-d: rgba(251, 191, 36, 0.16);
+      --bubble-user: rgba(14, 165, 233, 0.18);
+      --bubble-default: rgba(18, 34, 60, 0.68);
+
+      --online: #38bdf8;
+      --offline: #64748b;
+      --btn-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      --btn-gradient-hover: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    }
+
+    :root[data-theme="stealth"] {
+      --bg: #000000;
+      --glass-base: rgba(18, 18, 18, 0.88);
+      --glass-card: rgba(28, 28, 28, 0.68);
+      --glass-card-hover: rgba(44, 44, 44, 0.88);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --glass-highlight: rgba(255, 255, 255, 0.38);
+      --text: #ffffff;
+      --text-secondary: #e2e8f0;
+      --muted: #64748b;
+      
+      --accent-b: #94a3b8;
+      --accent-c: #94a3b8;
+      --accent-d: #94a3b8;
+      --accent-panther: #cbd5e1;
+      --accent-koch: #cbd5e1;
+
+      --bubble-b: rgba(255, 255, 255, 0.12);
+      --bubble-c: rgba(255, 255, 255, 0.12);
+      --bubble-d: rgba(255, 255, 255, 0.12);
+      --bubble-user: rgba(255, 255, 255, 0.15);
+      --bubble-default: rgba(24, 24, 24, 0.75);
+
+      --online: #ffffff;
+      --offline: #475569;
+      --btn-gradient: linear-gradient(135deg, #475569 0%, #334155 100%);
+      --btn-gradient-hover: linear-gradient(135deg, #334155 0%, #1e293b 100%);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -948,6 +1035,232 @@
       transform: translateY(-1px);
     }
 
+    /* Pinned Message Banner */
+    #pinned-banner {
+      background: rgba(99, 102, 241, 0.16);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.35);
+      padding: 7px 20px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #c7d2fe;
+      z-index: 8;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #pinned-banner:hover {
+      background: rgba(99, 102, 241, 0.28);
+    }
+    .pinned-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .pinned-badge {
+      background: #6366f1;
+      color: #fff;
+      font-size: 9.5px;
+      padding: 1px 7px;
+      border-radius: 9999px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+    .unpin-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .unpin-btn:hover { color: #fff; }
+
+    /* Image Attachment & Lightbox */
+    .msg-img-thumb {
+      max-width: 280px;
+      max-height: 200px;
+      border-radius: 14px;
+      margin-top: 8px;
+      cursor: pointer;
+      border: 1px solid var(--glass-border);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: block;
+      object-fit: cover;
+    }
+    .msg-img-thumb:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+    }
+    .attachment-preview-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+    .att-thumb {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+    .att-remove-btn {
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    /* Drag and Drop Overlay */
+    .drop-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 24, 0.88);
+      backdrop-filter: blur(28px);
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 14px;
+      border: 2px dashed #818cf8;
+      pointer-events: none;
+    }
+    .drop-overlay.active { display: flex; }
+    .drop-icon { font-size: 48px; animation: bouncePill 1s infinite alternate; }
+
+    /* Lightbox Modal */
+    .lightbox-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(25px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    .lightbox-modal.open { display: flex; }
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Emoji Picker Popup */
+    .emoji-picker-popup {
+      position: absolute;
+      bottom: 70px;
+      left: 175px;
+      background: var(--glass-base);
+      backdrop-filter: blur(35px);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
+      padding: 10px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      z-index: 50;
+      display: none;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      width: 230px;
+    }
+    .emoji-picker-popup.open { display: grid; }
+    .emoji-item {
+      font-size: 20px;
+      padding: 6px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .emoji-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.25);
+    }
+
+    /* Panel Main Section Switcher */
+    .panel-section-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 3px;
+      border-radius: 9999px;
+      border: 1px solid var(--glass-border);
+      margin-bottom: 12px;
+    }
+    .panel-sec-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      border-radius: 9999px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .panel-sec-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    .snippet-card {
+      background: var(--glass-card);
+      border-radius: 14px;
+      padding: 10px 12px;
+      border: 1px solid var(--glass-border);
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    .snippet-card:hover {
+      background: var(--glass-card-hover);
+    }
+    .snippet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .snippet-lang-tag {
+      font-size: 9px;
+      background: rgba(99, 102, 241, 0.25);
+      color: #c7d2fe;
+      padding: 1px 6px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    .snippet-preview {
+      background: rgba(0,0,0,0.4);
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      max-height: 80px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
     /* Responsive Mobile Layout */
     @media (max-width: 768px) {
       .side-panel {
@@ -1043,6 +1356,8 @@
       <div class="hint-none">Поиск участников...</div>
     </div>
 
+    <button class="header-btn" id="theme-btn" onclick="cycleTheme()" title="Переключить тему оформления">🎨 Тема</button>
+    <button class="header-btn" onclick="exportChat('md')" title="Скачать историю чата в Markdown">💾 Экспорт</button>
     <button class="header-btn" id="panel-toggle-btn" onclick="toggleSidePanel()" title="Скрыть/показать панель задач">🗂 Задачи</button>
     <button class="header-btn" id="cat-toggle-btn" onclick="toggleCat()" title="Показать/скрыть котика">🐱 Котик</button>
     <button class="header-btn" id="sound-btn" title="Звук уведомлений">🔔</button>
@@ -1056,7 +1371,23 @@
     <span id="sb-host" style="font-family: monospace;"></span>
   </div>
 
-  <div class="main">
+  <!-- Pinned Message Banner -->
+  <div id="pinned-banner" onclick="scrollToPinnedMsg()">
+    <div class="pinned-content">
+      <span class="pinned-badge">📌 ЗАКРЕПЛЕНО</span>
+      <b id="pinned-from">side-b</b>:
+      <span id="pinned-text">...</span>
+    </div>
+    <button class="unpin-btn" onclick="event.stopPropagation(); unpinMsg()" title="Открепить сообщение">✕</button>
+  </div>
+
+  <div class="main" id="main-area">
+    <div class="drop-overlay" id="drop-overlay">
+      <div class="drop-icon">📎</div>
+      <h3>Перетащите изображение сюда</h3>
+      <p style="font-size:12px;color:var(--muted)">Оно будет прикреплено к сообщению</p>
+    </div>
+
     <div id="messages"></div>
 
     <div id="scroll-bottom-btn" class="scroll-bottom-pill" onclick="scrollToBottom()">
@@ -1065,23 +1396,38 @@
     </div>
 
     <div class="side-panel" id="side-panel">
-      <div class="side-header">
-        <h3>📋 Задачи меша</h3>
-        <button class="task-act-btn" onclick="openTaskModal()" title="Создать новую задачу">➕ Новая</button>
+      <div class="panel-section-tabs">
+        <button class="panel-sec-btn active" id="tab-btn-tasks" onclick="switchPanelSec('tasks')">📋 Задачи</button>
+        <button class="panel-sec-btn" id="tab-btn-snippets" onclick="switchPanelSec('snippets')">📄 Сниппеты</button>
       </div>
 
-      <div class="task-tabs">
-        <button class="task-tab-btn active" onclick="setTaskFilter('all')">Все</button>
-        <button class="task-tab-btn" onclick="setTaskFilter('open')">Открытые</button>
-        <button class="task-tab-btn" onclick="setTaskFilter('in-progress')">В работе</button>
-        <button class="task-tab-btn" onclick="setTaskFilter('done')">Готово</button>
+      <div id="sec-tasks-wrap">
+        <div class="side-header">
+          <h3>📋 Задачи меша</h3>
+          <button class="task-act-btn" onclick="openTaskModal()" title="Создать новую задачу">➕ Новая</button>
+        </div>
+
+        <div class="task-tabs">
+          <button class="task-tab-btn active" onclick="setTaskFilter('all')">Все</button>
+          <button class="task-tab-btn" onclick="setTaskFilter('open')">Открытые</button>
+          <button class="task-tab-btn" onclick="setTaskFilter('in-progress')">В работе</button>
+          <button class="task-tab-btn" onclick="setTaskFilter('done')">Готово</button>
+        </div>
+
+        <div id="tasks-list"><div class="hint-none">Загрузка задач...</div></div>
+
+        <div style="margin-top: 10px;">
+          <h3>🔒 Файловые блокировки</h3>
+          <div id="locks-list"><div class="hint-none">Нет блокировок</div></div>
+        </div>
       </div>
 
-      <div id="tasks-list"><div class="hint-none">Загрузка задач...</div></div>
-
-      <div style="margin-top: 10px;">
-        <h3>🔒 Файловые блокировки</h3>
-        <div id="locks-list"><div class="hint-none">Нет блокировок</div></div>
+      <div id="sec-snippets-wrap" style="display:none">
+        <div class="side-header">
+          <h3>📄 Сниппеты кода</h3>
+          <button class="task-act-btn" onclick="openSnippetModal()" title="Добавить новый сниппет">➕ Новый</button>
+        </div>
+        <div id="snippets-list"><div class="hint-none">Загрузка сниппетов...</div></div>
       </div>
     </div>
   </div>
@@ -1091,8 +1437,36 @@
       <span id="reply-text">↩️ Ответ для ...</span>
       <button id="reply-cancel-btn" onclick="cancelReply()">✕</button>
     </div>
+    <div class="attachment-preview-bar" id="attachment-bar">
+      <img class="att-thumb" id="att-preview-img" src="" alt="preview" />
+      <span id="att-filename" style="font-size:12px;color:#cbd5e1;"></span>
+      <button class="att-remove-btn" onclick="removeAttachment()">✕</button>
+    </div>
+    <div class="emoji-picker-popup" id="emoji-picker">
+      <div class="emoji-item" onclick="insertEmoji('🔥')">🔥</div>
+      <div class="emoji-item" onclick="insertEmoji('🚀')">🚀</div>
+      <div class="emoji-item" onclick="insertEmoji('❤️')">❤️</div>
+      <div class="emoji-item" onclick="insertEmoji('👍')">👍</div>
+      <div class="emoji-item" onclick="insertEmoji('💡')">💡</div>
+      <div class="emoji-item" onclick="insertEmoji('🐱')">🐱</div>
+      <div class="emoji-item" onclick="insertEmoji('🤖')">🤖</div>
+      <div class="emoji-item" onclick="insertEmoji('🍏')">🍏</div>
+      <div class="emoji-item" onclick="insertEmoji('⚡')">⚡</div>
+      <div class="emoji-item" onclick="insertEmoji('💎')">💎</div>
+      <div class="emoji-item" onclick="insertEmoji('🎉')">🎉</div>
+      <div class="emoji-item" onclick="insertEmoji('👀')">👀</div>
+      <div class="emoji-item" onclick="insertEmoji('🛠️')">🛠️</div>
+      <div class="emoji-item" onclick="insertEmoji('🎯')">🎯</div>
+      <div class="emoji-item" onclick="insertEmoji('✨')">✨</div>
+      <div class="emoji-item" onclick="insertEmoji('💯')">💯</div>
+      <div class="emoji-item" onclick="insertEmoji('☕')">☕</div>
+      <div class="emoji-item" onclick="insertEmoji('💪')">💪</div>
+    </div>
     <div class="input-row">
       <input class="name-input" id="name-input" placeholder="Ваше имя" title="Имя отправителя" />
+      <input type="file" id="file-inp" accept="image/*" style="display:none" onchange="handleFileSelect(event)" />
+      <button class="mic-btn" id="clip-btn" onclick="document.getElementById('file-inp').click()" title="Прикрепить изображение">📎</button>
+      <button class="mic-btn" id="emoji-btn" onclick="toggleEmojiPicker()" title="Выбрать эмодзи">😀</button>
       <button class="mic-btn" id="mic-btn" onclick="toggleVoiceInput()" title="Голосовой ввод сообщения">🎙</button>
       <input class="msg-input" id="inp" placeholder="Сообщение в комнату... (Enter для отправки)" onkeydown="if(event.key==='Enter')sendMsg()" />
       <button class="send-btn" onclick="sendMsg()">Отправить</button>
@@ -1191,6 +1565,45 @@
       <div class="modal-footer">
         <button class="modal-btn-cancel" onclick="closeDoneModal()">Отмена</button>
         <button class="modal-btn-submit" onclick="submitDoneModal()">✓ Подтвердить готовность</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal for Images -->
+  <div class="lightbox-modal" id="lightbox-modal" onclick="closeLightbox()">
+    <img class="lightbox-img" id="lightbox-img" src="" alt="preview" />
+  </div>
+
+  <!-- Modal Create Snippet -->
+  <div class="modal-backdrop" id="snippet-modal" onclick="if(event.target===this)closeSnippetModal()">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>➕ Добавить сниппет кода</h2>
+        <button class="modal-close-btn" onclick="closeSnippetModal()">✕</button>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Название сниппета</label>
+        <input class="modal-input" id="snip-m-title" placeholder="например: helper-auth.js или api-handler" />
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Язык программирования</label>
+        <select class="modal-select" id="snip-m-lang">
+          <option value="javascript">JavaScript / Node.js</option>
+          <option value="html">HTML / Liquid UI</option>
+          <option value="css">CSS</option>
+          <option value="json">JSON</option>
+          <option value="bash">Bash / Shell</option>
+          <option value="python">Python</option>
+          <option value="markdown">Markdown</option>
+        </select>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Исходный код</label>
+        <textarea class="modal-input" id="snip-m-code" style="height:120px;font-family:monospace;resize:vertical;" placeholder="// вставьте код сниппета..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn-cancel" onclick="closeSnippetModal()">Отмена</button>
+        <button class="modal-btn-submit" onclick="submitCreateSnippet()">💾 Сохранить сниппет</button>
       </div>
     </div>
   </div>
@@ -1429,6 +1842,255 @@
       return l.startsWith('side-') || l.startsWith('agent-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo') || l.includes('bot') || l.includes('ai');
     }
 
+    /* Theme Customization Engine */
+    const themes = ['emerald', 'violet', 'azure', 'stealth'];
+    let currentTheme = localStorage.getItem('a2a_theme') || 'emerald';
+    function applyTheme(theme) {
+      currentTheme = theme;
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('a2a_theme', theme);
+      const themeBtn = document.getElementById('theme-btn');
+      const icons = { emerald: '🍏 Изумруд', violet: '🟣 Неон', azure: '🔵 Лазурь', stealth: '⬛ Стелс' };
+      if (themeBtn) themeBtn.textContent = icons[theme] || '🎨 Тема';
+    }
+    function cycleTheme() {
+      const nextIdx = (themes.indexOf(currentTheme) + 1) % themes.length;
+      applyTheme(themes[nextIdx]);
+      playSound('click');
+    }
+    applyTheme(currentTheme);
+
+    /* Pinned Message Handlers */
+    let currentPinned = null;
+    function updatePinnedBanner(pinned) {
+      currentPinned = pinned;
+      const banner = document.getElementById('pinned-banner');
+      if (!pinned || !pinned.text) {
+        banner.style.display = 'none';
+        return;
+      }
+      document.getElementById('pinned-from').textContent = pinned.from || 'pinned';
+      document.getElementById('pinned-text').textContent = pinned.text.slice(0, 85) + (pinned.text.length > 85 ? '...' : '');
+      banner.style.display = 'flex';
+    }
+
+    function scrollToPinnedMsg() {
+      if (currentPinned && currentPinned.id) {
+        scrollToMsg(currentPinned.id);
+      }
+    }
+
+    async function pinMessageDirect(id) {
+      const from = (nameInput.value || 'пантера').trim();
+      playSound('click');
+      await fetch(`${HUB}/api/pin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, from })
+      });
+    }
+
+    async function unpinMsg() {
+      playSound('click');
+      await fetch(`${HUB}/api/pin`, { method: 'DELETE' });
+      updatePinnedBanner(null);
+    }
+
+    /* Emoji Picker Handlers */
+    function toggleEmojiPicker() {
+      const p = document.getElementById('emoji-picker');
+      p.classList.toggle('open');
+      playSound('click');
+    }
+
+    function insertEmoji(emoji) {
+      const inp = document.getElementById('inp');
+      inp.value = (inp.value ? inp.value + ' ' : '') + emoji + ' ';
+      inp.focus();
+      document.getElementById('emoji-picker').classList.remove('open');
+      playSound('click');
+    }
+
+    document.addEventListener('click', (e) => {
+      const picker = document.getElementById('emoji-picker');
+      const btn = document.getElementById('emoji-btn');
+      if (picker && !picker.contains(e.target) && e.target !== btn) {
+        picker.classList.remove('open');
+      }
+    });
+
+    /* Image Attachment & Drag & Drop */
+    let currentAttachment = null;
+    function handleFileSelect(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      readFileAttachment(file);
+    }
+
+    function readFileAttachment(file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Поддерживаются только изображения (PNG, JPG, WebP, GIF)');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        currentAttachment = {
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          data: ev.target.result // Base64 Data URL
+        };
+        showAttachmentPreview();
+        playSound('click');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showAttachmentPreview() {
+      const bar = document.getElementById('attachment-bar');
+      if (!currentAttachment) {
+        bar.style.display = 'none';
+        return;
+      }
+      document.getElementById('att-preview-img').src = currentAttachment.data;
+      document.getElementById('att-filename').textContent = `${currentAttachment.name} (${Math.round(currentAttachment.size/1024)} KB)`;
+      bar.style.display = 'flex';
+    }
+
+    function removeAttachment() {
+      currentAttachment = null;
+      showAttachmentPreview();
+      document.getElementById('file-inp').value = '';
+    }
+
+    // Drag and drop overlay
+    const dropOverlay = document.getElementById('drop-overlay');
+    ['dragenter', 'dragover'].forEach(name => {
+      window.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropOverlay.classList.add('active');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      window.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.target === dropOverlay || name === 'drop') {
+          dropOverlay.classList.remove('active');
+        }
+      });
+    });
+
+    window.addEventListener('drop', (e) => {
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) readFileAttachment(file);
+    });
+
+    // Paste image from clipboard (Ctrl+V)
+    window.addEventListener('paste', (e) => {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) readFileAttachment(file);
+          break;
+        }
+      }
+    });
+
+    /* Lightbox Modal */
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox-modal').classList.add('open');
+      playSound('click');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox-modal').classList.remove('open');
+    }
+
+    /* Snippets Section Handlers */
+    let currentPanelSec = 'tasks';
+    function switchPanelSec(sec) {
+      currentPanelSec = sec;
+      document.getElementById('tab-btn-tasks').classList.toggle('active', sec === 'tasks');
+      document.getElementById('tab-btn-snippets').classList.toggle('active', sec === 'snippets');
+      document.getElementById('sec-tasks-wrap').style.display = sec === 'tasks' ? 'block' : 'none';
+      document.getElementById('sec-snippets-wrap').style.display = sec === 'snippets' ? 'block' : 'none';
+      if (sec === 'snippets') loadSnippets();
+    }
+
+    async function loadSnippets() {
+      try {
+        const res = await fetch(`${HUB}/api/snippets`).then(r => r.json());
+        renderSnippetsList(res.snippets || []);
+      } catch(_) {}
+    }
+
+    function renderSnippetsList(snips) {
+      const el = document.getElementById('snippets-list');
+      if (!snips || !snips.length) {
+        el.innerHTML = '<div class="hint-none">Нет сниппетов. Нажмите «➕ Новый», чтобы сохранить код.</div>';
+        return;
+      }
+      el.innerHTML = snips.map(s => `
+        <div class="snippet-card">
+          <div class="snippet-head">
+            <span>${esc(s.title || '#' + s.id)}</span>
+            <span class="snippet-lang-tag">${esc(s.lang || 'code')}</span>
+          </div>
+          <div class="snippet-preview">${esc(s.content.slice(0, 240))}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:10px;color:var(--muted)">👤 ${esc(s.from)}</span>
+            <button class="task-act-btn" onclick="copySnippetText(${JSON.stringify(s.content)})">📋 Копировать</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function copySnippetText(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        playSound('click');
+        alert('Сниппет скопирован в буфер обмена!');
+      });
+    }
+
+    function openSnippetModal() {
+      document.getElementById('snip-m-title').value = '';
+      document.getElementById('snip-m-code').value = '';
+      document.getElementById('snippet-modal').classList.add('open');
+      document.getElementById('snip-m-title').focus();
+    }
+
+    function closeSnippetModal() {
+      document.getElementById('snippet-modal').classList.remove('open');
+    }
+
+    async function submitCreateSnippet() {
+      const title = document.getElementById('snip-m-title').value.trim();
+      const lang = document.getElementById('snip-m-lang').value;
+      const content = document.getElementById('snip-m-code').value.trim();
+      const from = (nameInput.value || 'пантера').trim();
+      if (!content) return alert('Введите код сниппета');
+
+      closeSnippetModal();
+      playSound('task_done');
+
+      await fetch(`${HUB}/api/snippets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, lang, content, from })
+      });
+
+      loadSnippets();
+    }
+
+    function exportChat(format = 'md') {
+      window.open(`${HUB}/api/export?format=${format}`, '_blank');
+    }
+
     function renderMsg(m) {
       if(!m || !m.id || renderedIds.has(m.id)) return;
       renderedIds.add(m.id);
@@ -1464,6 +2126,15 @@
         `;
       }
 
+      let attachmentHtml = '';
+      if (m.attachment && m.attachment.data) {
+        attachmentHtml = `
+          <div>
+            <img class="msg-img-thumb" src="${esc(m.attachment.data)}" alt="${esc(m.attachment.name || 'image')}" onclick="openLightbox('${esc(m.attachment.data)}')" title="Нажмите для увеличения" />
+          </div>
+        `;
+      }
+
       // Reactions HTML
       let reactHtml = renderReactionsHtml(m.id, m.reactions);
 
@@ -1479,6 +2150,7 @@
             <button class="act-btn" onclick="addReaction(${m.id}, '🚀')" title="Ракета">🚀</button>
             <button class="act-btn" onclick="addReaction(${m.id}, '💡')" title="Идея">💡</button>
             <button class="act-btn" onclick="addReaction(${m.id}, '🔥')" title="Огонь">🔥</button>
+            <button class="act-btn" onclick="pinMessageDirect(${m.id})" title="Закрепить сообщение">📌</button>
             <button class="act-btn" onclick="startReply(${m.id}, '${esc(m.from)}', '${esc(m.text.slice(0, 50))}')" title="Ответить">↩️</button>
           </div>
           <div class="meta">
@@ -1490,6 +2162,7 @@
           </div>
           ${replyHtml}
           <div class="text">${formatMessageText(m.text)}</div>
+          ${attachmentHtml}
           <div class="reactions-bar" id="reactions-${m.id}">
             ${reactHtml}
           </div>
@@ -1677,6 +2350,16 @@
             if (data && data.msgId) updateReactionsUi(data.msgId, data.reactions);
           } catch(_) {}
         });
+        eventSource.addEventListener('message_pinned', (e) => {
+          try {
+            const data = JSON.parse(e.data);
+            if (data && data.pinned) updatePinnedBanner(data.pinned);
+          } catch(_) {}
+        });
+        eventSource.addEventListener('message_unpinned', () => updatePinnedBanner(null));
+        eventSource.addEventListener('snippet_added', () => {
+          if (currentPanelSec === 'snippets') loadSnippets();
+        });
         eventSource.addEventListener('task_claimed', () => updateState());
         eventSource.addEventListener('task_released', () => updateState());
         eventSource.addEventListener('task_done', () => updateState());
@@ -1814,6 +2497,10 @@
 
         (msgData.messages || []).forEach(renderMsg);
 
+        if (stData.pinned !== undefined) {
+          updatePinnedBanner(stData.pinned);
+        }
+
         const rawPeers = stData.peers || [];
         const displayPeers = rawPeers.filter(p => isAgentName(p.name) || p.online);
         displayPeers.sort((a,b) => {
@@ -1898,7 +2585,7 @@
     async function sendMsg() {
       const inp = document.getElementById('inp');
       const text = inp.value.trim();
-      if(!text) return;
+      if(!text && !currentAttachment) return;
       inp.value = '';
       const from = (nameInput.value || 'пантера').trim();
 
@@ -1909,9 +2596,11 @@
         to: null,
         type: 'chat',
         text,
+        attachment: currentAttachment,
         replyTo: activeReplyTo
       };
 
+      removeAttachment();
       cancelReply();
       playSound('sent');
 

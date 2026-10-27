@@ -282,6 +282,20 @@ async function main() {
       return;
     }
 
+    case 'pin': {
+      const id = Number(pos[0] || flags.id);
+      const text = pos.slice(id ? 1 : 0).join(' ') || flags.text;
+      const r = await api('POST', '/api/pin', { id, text });
+      console.log(`📌 Закреплено: "${r.pinned?.text?.slice(0, 60)}" (автор: ${r.pinned?.from})`);
+      return;
+    }
+
+    case 'unpin': {
+      await api('DELETE', '/api/pin');
+      console.log(`✓ Закреплённое сообщение откреплено`);
+      return;
+    }
+
     case 'snippet': {
       const sub = pos.shift() || 'list';
       if (sub === 'list' || sub === 'ls') {
