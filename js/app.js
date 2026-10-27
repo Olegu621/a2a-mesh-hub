@@ -61,6 +61,10 @@
       toolbar: document.querySelector('.markdown-toolbar'),
       btnTemplates: document.getElementById('btn-templates'),
       templateMenu: document.getElementById('template-menu'),
+      statsBtn: document.getElementById('stats-btn'),
+      statsModal: document.getElementById('stats-modal'),
+      statsModalClose: document.getElementById('stats-modal-close'),
+      statsModalBody: document.getElementById('stats-modal-body'),
       cancelEditBtn: document.getElementById('cancel-edit-btn'),
       submitBtn: document.getElementById('note-submit-btn') || (document.getElementById('note-form') ? document.getElementById('note-form').querySelector('button[type="submit"]') : null)
     };

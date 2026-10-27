@@ -20,6 +20,7 @@
       <div class="header-actions">
         <button id="theme-toggle" class="btn" type="button" title="Переключить тему">🌙 Тёмная</button>
         <button id="sound-toggle" class="btn" type="button" title="Включить / выключить звуковые эффекты">🔊 Звук: Вкл</button>
+        <button id="stats-btn" class="btn" type="button" title="Статистика и аналитика продуктивности">📊 Статистика</button>
         <button id="import-btn" class="btn" type="button" title="Импорт заметок из JSON файла">📤 Импорт JSON</button>
         <input type="file" id="import-file-input" accept=".json" hidden>
         <button id="export-btn" class="btn" type="button" title="Экспорт всех заметок в JSON">📥 Экспорт JSON</button>
@@ -159,6 +160,18 @@
       <span>Синхронизация через A2A-Mesh v2.0</span>
     </footer>
   </main>
+
+  <!-- Statistics & Productivity Modal -->
+  <div id="stats-modal" class="modal-overlay" style="display: none;" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>📊 Аналитика и продуктивность</h2>
+        <button type="button" class="modal-close" id="stats-modal-close" title="Закрыть">✕</button>
+      </div>
+      <div class="modal-body" id="stats-modal-body"></div>
+    </div>
+  </div>
+
   <script src="js/storage.js"></script>
   <script src="js/app.js"></script>
 </body>
