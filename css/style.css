@@ -1,0 +1,2 @@
+/* Joint Notes — базовые стили. TODO(side-b): тёмная тема, карточки заметок, метки */
+body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
