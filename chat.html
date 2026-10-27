@@ -1083,6 +1083,127 @@
     }
     .unpin-btn:hover { color: #fff; }
 
+    /* Swarm Fleet Cockpit Button & Modal */
+    .fleet-pill {
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(129, 140, 248, 0.45);
+      border-radius: 9999px;
+      padding: 4px 12px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #e0e7ff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 10px rgba(99, 102, 241, 0.35);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .fleet-pill:hover {
+      background: rgba(99, 102, 241, 0.35);
+      transform: scale(1.05);
+      border-color: #818cf8;
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.6);
+    }
+    .fleet-pill b { color: #38bdf8; }
+
+    /* Fleet Cockpit Modal */
+    .fleet-modal-window {
+      background: var(--glass-base);
+      border: 1px solid var(--glass-border);
+      border-top: 1px solid var(--glass-highlight);
+      border-radius: 24px;
+      padding: 24px;
+      width: 95%;
+      max-width: 860px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+    }
+    .fleet-squad-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 14px 0 10px 0;
+    }
+    .fleet-squad-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      border-radius: 9999px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .fleet-squad-btn.active, .fleet-squad-btn:hover {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: #818cf8;
+      color: #fff;
+    }
+    .fleet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 10px;
+      overflow-y: auto;
+      padding-right: 6px;
+      max-height: 55vh;
+      margin-top: 8px;
+    }
+    .fleet-agent-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+    .fleet-agent-card:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+    }
+    .fleet-agent-info {
+      flex: 1;
+      overflow: hidden;
+    }
+    .fleet-agent-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .fleet-agent-role {
+      font-size: 10px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .fleet-order-btn {
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #c7d2fe;
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .fleet-order-btn:hover {
+      background: #4f46e5;
+      color: #fff;
+    }
+
     /* Image Attachment & Lightbox */
     .msg-img-thumb {
       max-width: 280px;
@@ -1604,6 +1725,35 @@
       <div class="modal-footer">
         <button class="modal-btn-cancel" onclick="closeSnippetModal()">Отмена</button>
         <button class="modal-btn-submit" onclick="submitCreateSnippet()">💾 Сохранить сниппет</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Swarm Fleet Cockpit (100 Agents) -->
+  <div class="modal-backdrop" id="fleet-modal" onclick="if(event.target===this)closeFleetModal()">
+    <div class="fleet-modal-window">
+      <div class="modal-header">
+        <h2>🛸 Командный мостик роя (100 ИИ-агентов)</h2>
+        <button class="modal-close-btn" onclick="closeFleetModal()">✕</button>
+      </div>
+      <p style="font-size:12px; color:var(--muted)">Верховный координатор: <b>@side-b</b> | Создатель: <b>@пантера</b> | Быстрые приказы отрядам и отдельным агентам.</p>
+
+      <div style="display:flex; gap:10px; margin-top:12px; align-items:center;">
+        <input class="modal-input" id="fleet-search-inp" placeholder="🔍 Поиск агента по номеру или роли..." oninput="filterFleetGrid()" style="flex:1;" />
+        <button class="modal-btn-submit" onclick="broadcastToSquad('all')" title="Отправить приказ всем 100 агентам">📢 Приказ всем 100</button>
+      </div>
+
+      <div class="fleet-squad-tabs">
+        <button class="fleet-squad-btn active" id="sq-tab-all" onclick="setFleetSquadFilter('all')">Все 100</button>
+        <button class="fleet-squad-btn" id="sq-tab-arch" onclick="setFleetSquadFilter('arch')">🏛️ Архитекторы (1-10)</button>
+        <button class="fleet-squad-btn" id="sq-tab-frontend" onclick="setFleetSquadFilter('frontend')">🎨 Фронтенд (11-40)</button>
+        <button class="fleet-squad-btn" id="sq-tab-backend" onclick="setFleetSquadFilter('backend')">⚙️ Бэкенд (41-65)</button>
+        <button class="fleet-squad-btn" id="sq-tab-qa" onclick="setFleetSquadFilter('qa')">🛡️ QA & Sec (66-85)</button>
+        <button class="fleet-squad-btn" id="sq-tab-devops" onclick="setFleetSquadFilter('devops')">🚀 DevOps (86-100)</button>
+      </div>
+
+      <div class="fleet-grid" id="fleet-grid">
+        <div class="hint-none">Загрузка состава роя...</div>
       </div>
     </div>
   </div>
@@ -2484,6 +2634,97 @@
       updateState();
     }
 
+    /* Swarm Fleet Cockpit (100 Agents) Directory */
+    const SQUADS_DEF = [
+      { id: 'arch', name: 'Архитекторы и Стратеги', range: [1, 10], icon: '🏛️' },
+      { id: 'frontend', name: 'Apple Liquid UI Фронтенд', range: [11, 40], icon: '🎨' },
+      { id: 'backend', name: 'Бэкенд, API и Серверы', range: [41, 65], icon: '⚙️' },
+      { id: 'qa', name: 'QA, Стресс-тесты и Безопасность', range: [66, 85], icon: '🛡️' },
+      { id: 'devops', name: 'DevOps, Метрики и Документация', range: [86, 100], icon: '🚀' }
+    ];
+    const ROLES_DEF = [
+      "Frontend Architect", "CSS Liquid Glass Master", "Web Audio Engineer", "SVG & Canvas Specialist",
+      "React & Vanilla Core Dev", "Motion & Animation Designer", "Performance Tuner", "Accessibility Auditor",
+      "Node.js Backend Dev", "REST & SSE Architect", "State Persistence Specialist", "Concurrency & Lock Manager",
+      "Security & Penetration Tester", "Automated QA Specialist", "Load & Stress Tester", "Code Reviewer",
+      "System Diagnostics Engineer", "Documentation Lead", "Prompt Engineer", "Mesh Protocol Designer"
+    ];
+
+    let fleetSquadFilter = 'all';
+    function openFleetModal() {
+      document.getElementById('fleet-modal').classList.add('open');
+      renderFleetGrid();
+      playSound('click');
+    }
+    function closeFleetModal() {
+      document.getElementById('fleet-modal').classList.remove('open');
+    }
+    function setFleetSquadFilter(sq) {
+      fleetSquadFilter = sq;
+      document.querySelectorAll('.fleet-squad-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`sq-tab-${sq}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      renderFleetGrid();
+    }
+    function filterFleetGrid() {
+      renderFleetGrid();
+    }
+    function broadcastToSquad(squadId) {
+      const inp = document.getElementById('inp');
+      closeFleetModal();
+      if (squadId === 'all') {
+        inp.value = '@все ';
+      } else {
+        inp.value = `@squad-${squadId} `;
+      }
+      inp.focus();
+    }
+    function orderAgentDirect(agentId) {
+      const inp = document.getElementById('inp');
+      closeFleetModal();
+      inp.value = `@${agentId} `;
+      inp.focus();
+    }
+
+    function renderFleetGrid() {
+      const grid = document.getElementById('fleet-grid');
+      if (!grid) return;
+      const q = (document.getElementById('fleet-search-inp')?.value || '').trim().toLowerCase();
+      const onlinePeersMap = new Map();
+      (window.latestPeers || []).forEach(p => onlinePeersMap.set(p.name, p.online));
+
+      const cards = [];
+      for (let i = 1; i <= 100; i++) {
+        const id = `agent-${String(i).padStart(3, '0')}`;
+        let squad = SQUADS_DEF[0];
+        for (const s of SQUADS_DEF) {
+          if (i >= s.range[0] && i <= s.range[1]) { squad = s; break; }
+        }
+        const role = ROLES_DEF[(i - 1) % ROLES_DEF.length];
+        const isOnline = onlinePeersMap.get(id) ?? false;
+
+        if (fleetSquadFilter !== 'all' && squad.id !== fleetSquadFilter) continue;
+        if (q && !id.toLowerCase().includes(q) && !role.toLowerCase().includes(q) && !squad.name.toLowerCase().includes(q)) continue;
+
+        cards.push(`
+          <div class="fleet-agent-card">
+            <div class="avatar av-agent" style="width:34px;height:34px;font-size:11px;">🤖${String(i).padStart(3, '0')}</div>
+            <div class="fleet-agent-info">
+              <div class="fleet-agent-name">
+                <span>${id}</span>
+                <span style="font-size:11px;">${squad.icon}</span>
+                <span class="dot ${isOnline ? '' : 'offline'}" style="margin-left:auto;"></span>
+              </div>
+              <div class="fleet-agent-role" title="${role}">${role}</div>
+            </div>
+            <button class="fleet-order-btn" onclick="orderAgentDirect('${id}')">Приказ</button>
+          </div>
+        `);
+      }
+
+      grid.innerHTML = cards.length ? cards.join('') : '<div class="hint-none">Ничего не найдено</div>';
+    }
+
     async function updateState() {
       const t0 = performance.now();
       try {
@@ -2502,27 +2743,49 @@
         }
 
         const rawPeers = stData.peers || [];
-        const displayPeers = rawPeers.filter(p => isAgentName(p.name) || p.online);
-        displayPeers.sort((a,b) => {
-          if (isAgentName(a.name) && !isAgentName(b.name)) return -1;
-          if (!isAgentName(a.name) && isAgentName(b.name)) return 1;
-          return a.name.localeCompare(b.name);
-        });
+        window.latestPeers = rawPeers;
+        if (document.getElementById('fleet-modal').classList.contains('open')) {
+          renderFleetGrid();
+        }
+
+        const swarmAgents = rawPeers.filter(p => p.name.startsWith('agent-') && p.online);
+        const vipPeers = rawPeers.filter(p => !p.name.startsWith('agent-') && (isAgentName(p.name) || p.online));
 
         const chipsEl = document.getElementById('peers-chips');
-        if (displayPeers.length) {
-          chipsEl.innerHTML = displayPeers.map(p => {
-            const roleBadge = isAgentName(p.name) ? ' <b style="color:#38bdf8;font-size:10px">[агент]</b>' : '';
-            return `
-              <div class="peer-chip" onclick="insertMention('${esc(p.name)}')" title="${isAgentName(p.name)?'ИИ-агент':'Пользователь'} · ${p.online ? 'в сети' : 'был недавно'} · Нажми для @упоминания">
-                <div class="dot ${p.online ? '' : 'offline'}"></div>
-                <span>${esc(p.name)}${roleBadge}</span>
+        let chipsHtml = '';
+
+        // Fleet pill summarizing the 100 swarm agents
+        const totalSwarmOnline = swarmAgents.length;
+        chipsHtml += `
+          <div class="fleet-pill" onclick="openFleetModal()" title="Открыть панель управления 100 агентами">
+            🛸 Рой: <b>${totalSwarmOnline}</b>/100
+          </div>
+        `;
+
+        // Render VIP peers (Creator Panther, side-b, users)
+        for (const p of vipPeers) {
+          const roleBadge = isAgentName(p.name) ? ' <b style="color:#38bdf8;font-size:10px">[лидер]</b>' : '';
+          chipsHtml += `
+            <div class="peer-chip" onclick="insertMention('${esc(p.name)}')" title="${p.name} · ${p.online ? 'в сети' : 'был недавно'} · Нажми для @упоминания">
+              <div class="dot ${p.online ? '' : 'offline'}"></div>
+              <span>${esc(p.name)}${roleBadge}</span>
+            </div>
+          `;
+        }
+
+        // If swarm has few agents or specific active workers, show up to 3 individual agent chips
+        if (totalSwarmOnline > 0 && totalSwarmOnline <= 5) {
+          for (const a of swarmAgents) {
+            chipsHtml += `
+              <div class="peer-chip" onclick="insertMention('${esc(a.name)}')" title="${a.name} · в сети">
+                <div class="dot"></div>
+                <span>${esc(a.name)}</span>
               </div>
             `;
-          }).join('');
-        } else {
-          chipsEl.innerHTML = '<div class="hint-none">Нет участников</div>';
+          }
         }
+
+        chipsEl.innerHTML = chipsHtml;
 
         const tasks = stData.tasks || [];
         let filteredTasks = tasks;
