@@ -8,18 +8,73 @@
 </head>
 <body>
   <main id="app">
-    <h1>Joint Notes</h1>
-    <p>Общий проект агентов side-a (ZCode) и side-b (Antigravity).</p>
+    <header class="app-header">
+      <div>
+        <h1 class="brand-title"><span>📒</span> Joint Notes</h1>
+        <p class="subtitle">Общий проект агентов side-a (ZCode) и side-b (Antigravity)</p>
+      </div>
+      <div class="header-actions">
+        <button id="theme-toggle" class="btn" type="button" title="Переключить тему">🌙 Тёмная</button>
+        <button id="export-btn" class="btn" type="button" title="Экспорт всех заметок в JSON">📥 Экспорт JSON</button>
+      </div>
+    </header>
 
-    <form id="note-form" autocomplete="off">
-      <input type="text" id="note-input" placeholder="Заголовок заметки" maxlength="120" required>
-      <textarea id="note-content" rows="3" placeholder="Текст заметки"></textarea>
-      <button type="submit">Добавить</button>
+    <form id="note-form" class="note-form-card" autocomplete="off">
+      <div class="form-row">
+        <input type="text" id="note-input" placeholder="Заголовок заметки" maxlength="120" required>
+      </div>
+      <div class="form-row">
+        <textarea id="note-content" rows="3" placeholder="Текст заметки…"></textarea>
+      </div>
+      <div class="form-row">
+        <input type="text" id="note-tags" placeholder="Метки (через запятую, например: работа, идеи)">
+      </div>
+      <div class="form-footer">
+        <div class="color-picker" id="color-picker" title="Выберите цвет заметки">
+          <label class="color-option color-dot-default active" data-color="default" title="По умолчанию">
+            <input type="radio" name="note-color" value="default" checked hidden>
+          </label>
+          <label class="color-option color-dot-yellow" data-color="yellow" title="Жёлтый">
+            <input type="radio" name="note-color" value="yellow" hidden>
+          </label>
+          <label class="color-option color-dot-green" data-color="green" title="Зелёный">
+            <input type="radio" name="note-color" value="green" hidden>
+          </label>
+          <label class="color-option color-dot-blue" data-color="blue" title="Синий">
+            <input type="radio" name="note-color" value="blue" hidden>
+          </label>
+          <label class="color-option color-dot-pink" data-color="pink" title="Розовый">
+            <input type="radio" name="note-color" value="pink" hidden>
+          </label>
+          <label class="color-option color-dot-purple" data-color="purple" title="Фиолетовый">
+            <input type="radio" name="note-color" value="purple" hidden>
+          </label>
+        </div>
+        <button type="submit" id="note-submit-btn" class="btn btn-primary">Добавить</button>
+      </div>
     </form>
 
-    <input type="search" id="search-input" placeholder="Поиск по заметкам…">
+    <div class="filter-bar">
+      <div class="search-wrapper">
+        <input type="search" id="search-input" placeholder="🔍 Поиск по заметкам, тексту или меткам…">
+      </div>
+      <div class="color-filter-chips">
+        <button type="button" class="chip-filter active" data-color="all">Все</button>
+        <button type="button" class="chip-filter" data-color="default">⚪ Обычные</button>
+        <button type="button" class="chip-filter" data-color="yellow">🟡 Жёлтые</button>
+        <button type="button" class="chip-filter" data-color="green">🟢 Зелёные</button>
+        <button type="button" class="chip-filter" data-color="blue">🔵 Синие</button>
+        <button type="button" class="chip-filter" data-color="pink">🌸 Розовые</button>
+        <button type="button" class="chip-filter" data-color="purple">🟣 Фиолетовые</button>
+      </div>
+    </div>
 
-    <section id="notes-list" aria-live="polite"></section>
+    <section id="notes-list" class="notes-grid" aria-live="polite"></section>
+
+    <footer class="status-bar">
+      <span>Совместная разработка: side-a (ZCode) &amp; side-b (Antigravity)</span>
+      <span>Синхронизация через A2A-Mesh</span>
+    </footer>
   </main>
   <script src="js/storage.js"></script>
   <script src="js/app.js"></script>
