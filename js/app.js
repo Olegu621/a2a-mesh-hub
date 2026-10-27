@@ -662,6 +662,7 @@
         tags
       });
       audio.pop();
+      broadcastChange('update');
       showToast('✓ Заметка обновлена!');
       cancelEdit();
     } else {
@@ -674,6 +675,7 @@
         tags
       });
       audio.pop();
+      broadcastChange('create');
       showToast('✓ Заметка добавлена!');
       resetForm();
     }
@@ -746,6 +748,7 @@
       const res = storage.togglePin(noteId);
       if (res) {
         audio.pin();
+        broadcastChange('pin');
         showToast(res.pinned ? '📌 Заметка закреплена вверху' : '📍 Заметка откреплена');
         renderNotes();
       }
@@ -789,6 +792,7 @@
     if (!deleted) return;
 
     audio.delete();
+    broadcastChange('delete');
     lastDeletedNote = deleted;
     if (editingNoteId === noteId) {
       cancelEdit();
@@ -802,6 +806,7 @@
         if (lastDeletedNote && typeof storage.restore === 'function') {
           storage.restore(lastDeletedNote);
           audio.pop();
+          broadcastChange('restore');
           renderNotes();
           showToast('✓ Заметка восстановлена!');
           lastDeletedNote = null;
@@ -876,6 +881,7 @@
         const res = storage.importJSON(content);
         if (res.success) {
           audio.pop();
+          broadcastChange('import');
           showToast(`✓ Успешно импортировано ${res.count} заметок!`);
           renderNotes();
         } else {
@@ -902,6 +908,7 @@
       lines[lineIdx] = `${match[1]}${isCurrentlyChecked ? ' ' : 'x'}${match[3]}`;
       storage.update(noteId, { content: lines.join('\n') });
       audio.check();
+      broadcastChange('todo');
       renderNotes();
     }
   }
@@ -1114,11 +1121,44 @@
         const ok = storage.reorder(draggedId, targetId);
         if (ok) {
           audio.pop();
+          broadcastChange('reorder');
           renderNotes();
           showToast('✓ Порядок заметок сохранён');
         }
       }
     });
+  }
+
+  // BroadcastChannel for instant zero-latency multi-tab sync
+  let syncChannel = null;
+  try {
+    if (typeof BroadcastChannel !== 'undefined') {
+      syncChannel = new BroadcastChannel('joint-notes-sync');
+    }
+  } catch (_) {}
+
+  function broadcastChange(action) {
+    if (syncChannel) {
+      try {
+        syncChannel.postMessage({ type: 'notes-sync', action, ts: Date.now() });
+      } catch (_) {}
+    }
+  }
+
+  function setupBroadcastSync() {
+    if (!syncChannel) return;
+    syncChannel.onmessage = function (e) {
+      if (e.data && e.data.type === 'notes-sync') {
+        renderNotes();
+        showToast('⚡ Заметки синхронизированы в реальном времени', { duration: 2000 });
+      }
+    };
+  }
+
+  function registerServiceWorker() {
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
   }
 
   // Live multi-tab sync via window storage event
@@ -1226,6 +1266,7 @@
     setupShortcuts();
     setupDragAndDrop();
     setupTabSync();
+    setupBroadcastSync();
   }
 
   // Main init
@@ -1235,6 +1276,7 @@
     initEvents();
     updateCharCounter();
     renderNotes();
+    registerServiceWorker();
   }
 
   if (document.readyState === 'loading') {
