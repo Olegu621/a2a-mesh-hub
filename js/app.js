@@ -59,6 +59,8 @@
       tabPreview: document.getElementById('tab-preview'),
       previewPane: document.getElementById('note-preview-pane'),
       toolbar: document.querySelector('.markdown-toolbar'),
+      btnTemplates: document.getElementById('btn-templates'),
+      templateMenu: document.getElementById('template-menu'),
       cancelEditBtn: document.getElementById('cancel-edit-btn'),
       submitBtn: document.getElementById('note-submit-btn') || (document.getElementById('note-form') ? document.getElementById('note-form').querySelector('button[type="submit"]') : null)
     };
@@ -1274,6 +1276,78 @@
     }
   }
 
+  // Predefined Note Templates
+  const NOTE_TEMPLATES = {
+    daily: {
+      title: 'План на день: ' + new Date().toLocaleDateString('ru-RU'),
+      tags: ['план', 'задачи', 'todo'],
+      priority: 'high',
+      color: 'yellow',
+      content: '### Главный фокус дня\n> Сделать главное дело до обеда\n\n### Задачи\n- [ ] Проверить почту и чат A2A-Mesh\n- [ ] Завершить ключевую задачу спринта\n- [ ] Провести код-ревью и синхронизацию\n- [ ] Подвести итоги дня\n\n### Заметки\n'
+    },
+    idea: {
+      title: 'Новая идея: ',
+      tags: ['идеи', 'проект', 'инновации'],
+      priority: 'normal',
+      color: 'purple',
+      content: '### Суть идеи\nКраткое описание проблемы и предлагаемого решения.\n\n### Целевая аудитория\nКому это нужно и какую ценность несёт.\n\n### Стек и технологии\n- Frontend: HTML5 / CSS3 / JS\n- Backend / Sync: Node.js\n\n### Следующие шаги\n- [ ] Проверить аналоги\n- [ ] Собрать прототип (MVP)\n- [ ] Протестировать с пользователями\n'
+    },
+    bug: {
+      title: 'Баг: ',
+      tags: ['баг', 'фикс', 'qa'],
+      priority: 'high',
+      color: 'pink',
+      content: '### Описание проблемы\nЧто пошло не так.\n\n### Шаги воспроизведения\n1. Открыть страницу\n2. Нажать на ...\n3. Наблюдать ошибку\n\n### Ожидаемый результат\nКак должно работать.\n\n### Фактический результат\nЧто происходит на самом деле.\n\n### Логи / Скриншот\n```text\n(вставьте стек ошибки)\n```\n'
+    },
+    meeting: {
+      title: 'Встреча: ' + new Date().toLocaleDateString('ru-RU'),
+      tags: ['встреча', 'митинг', 'команда'],
+      priority: 'normal',
+      color: 'blue',
+      content: '### Участники\n- side-a\n- side-b\n- хламовик\n\n### Повестка\n1. Обсуждение прогресса\n2. Планирование задач\n\n### Принятые решения\n- \n\n### Задачи по итогам (Action Items)\n- [ ] \n'
+    }
+  };
+
+  function applyTemplate(templateKey) {
+    const t = NOTE_TEMPLATES[templateKey];
+    if (!t) return;
+    if (dom.noteTitle) dom.noteTitle.value = t.title;
+    if (dom.noteContent) dom.noteContent.value = t.content;
+    if (dom.noteTags) dom.noteTags.value = t.tags.join(', ');
+    setSelectedColor(t.color || 'default');
+    setSelectedPriority(t.priority || 'normal');
+    updateCharCounter();
+    audio.pop();
+    showToast(`✓ Применён шаблон «${t.title.replace(/:.*/, '')}»`);
+    if (dom.noteContent) dom.noteContent.focus();
+  }
+
+  function setupTemplates() {
+    if (!dom.btnTemplates || !dom.templateMenu) return;
+
+    dom.btnTemplates.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const isVisible = dom.templateMenu.style.display === 'flex';
+      dom.templateMenu.style.display = isVisible ? 'none' : 'flex';
+    });
+
+    dom.templateMenu.addEventListener('click', function (e) {
+      const item = e.target.closest('.template-item');
+      if (!item) return;
+      const key = item.dataset.template;
+      if (key) {
+        applyTemplate(key);
+        dom.templateMenu.style.display = 'none';
+      }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (dom.templateMenu && !dom.templateMenu.contains(e.target) && e.target !== dom.btnTemplates) {
+        dom.templateMenu.style.display = 'none';
+      }
+    });
+  }
+
   // Initialize event listeners
   function initEvents() {
     if (dom.noteForm) {
@@ -1336,6 +1410,7 @@
 
     setupPrioritySelector();
     setupEditorToolbarAndPreview();
+    setupTemplates();
     setupListDelegation();
     setupColorFilters();
     setupPriorityFilters();
