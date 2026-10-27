@@ -224,6 +224,39 @@
       .replace(/'/g, '&#039;');
   }
 
+  // Highlight search text helper
+  function highlightText(text, query) {
+    if (!text) return '';
+    const safe = escapeHTML(text);
+    if (!query || !query.trim()) return safe;
+    const q = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${q})`, 'gi');
+    return safe.replace(regex, '<mark class="search-highlight">$1</mark>');
+  }
+
+  // Rich content formatting: todo checkboxes and clickable links
+  function formatRichContent(content, query) {
+    if (!content) return '';
+    const lines = String(content).split('\n');
+    const formattedLines = lines.map((line, idx) => {
+      // Todo checklist item
+      const todoMatch = line.match(/^(\s*(?:-\s*)?\[([ xX])\]\s*)(.*)$/);
+      if (todoMatch) {
+        const isChecked = todoMatch[2].toLowerCase() === 'x';
+        const taskText = todoMatch[3];
+        const highlighted = highlightText(taskText, query);
+        return `<label class="todo-line ${isChecked ? 'done' : ''}"><input type="checkbox" class="todo-checkbox" data-line="${idx}" ${isChecked ? 'checked' : ''}><span>${highlighted}</span></label>`;
+      }
+
+      // Normal line with auto-linking URLs
+      let formatted = highlightText(line, query);
+      formatted = formatted.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="note-link">$1</a>');
+      return formatted;
+    });
+
+    return formattedLines.join('<br>');
+  }
+
   // Format date helper
   function formatDate(isoString) {
     if (!isoString) return '';
@@ -329,15 +362,17 @@
       const color = note.color || 'default';
       const isPinned = Boolean(note.pinned);
       const tags = Array.isArray(note.tags) ? note.tags : (note.tags ? String(note.tags).split(',').map(s => s.trim()) : []);
-      const tagsHtml = tags.map(t => `<span class="note-tag" data-tag="${escapeHTML(t)}">#${escapeHTML(t)}</span>`).join(' ');
+      const tagsHtml = tags.map(t => `<span class="note-tag" data-tag="${escapeHTML(t)}">#${highlightText(t, searchQuery)}</span>`).join(' ');
       const dateStr = formatDate(note.updatedAt || note.createdAt);
+      const titleHtml = highlightText(note.title || 'Без названия', searchQuery);
+      const contentHtml = formatRichContent(note.content || '', searchQuery);
 
       return `
         <article class="note-card color-${escapeHTML(color)} ${isPinned ? 'is-pinned' : ''}" data-id="${escapeHTML(note.id)}">
           <div class="note-header">
             <div class="note-title-wrap">
               ${isPinned ? '<span class="pin-indicator" title="Закреплено">📌</span>' : ''}
-              <h3 class="note-title">${escapeHTML(note.title || 'Без названия')}</h3>
+              <h3 class="note-title">${titleHtml}</h3>
             </div>
             <div class="note-card-actions">
               <button class="action-icon-btn btn-pin ${isPinned ? 'active' : ''}" title="${isPinned ? 'Открепить' : 'Закрепить наверху'}" aria-label="Закрепить">${isPinned ? '📌' : '📍'}</button>
@@ -346,7 +381,7 @@
               <button class="action-icon-btn delete btn-delete" title="Удалить" aria-label="Удалить">🗑️</button>
             </div>
           </div>
-          <div class="note-content">${escapeHTML(note.content || '')}</div>
+          <div class="note-content">${contentHtml}</div>
           ${tags.length ? `<div class="note-tags">${tagsHtml}</div>` : ''}
           <div class="note-footer">
             <time datetime="${escapeHTML(note.createdAt || '')}">${dateStr}</time>
@@ -606,6 +641,24 @@
     e.target.value = ''; // reset for re-selecting same file
   }
 
+  // Toggle Todo checkbox in note content
+  function toggleTodoLine(noteId, lineIdx) {
+    const storage = getStorage();
+    const note = storage.get(noteId);
+    if (!note || !note.content) return;
+    const lines = note.content.split('\n');
+    if (lineIdx < 0 || lineIdx >= lines.length) return;
+
+    const line = lines[lineIdx];
+    const match = line.match(/^(\s*(?:-\s*)?\[)([ xX])(\]\s*.*)$/);
+    if (match) {
+      const isCurrentlyChecked = match[2].toLowerCase() === 'x';
+      lines[lineIdx] = `${match[1]}${isCurrentlyChecked ? ' ' : 'x'}${match[3]}`;
+      storage.update(noteId, { content: lines.join('\n') });
+      renderNotes();
+    }
+  }
+
   // Delegated event listener for notes list
   function setupListDelegation() {
     if (!dom.notesList) return;
@@ -614,6 +667,13 @@
       const card = e.target.closest('.note-card');
       if (!card) return;
       const noteId = card.dataset.id;
+
+      if (e.target.classList.contains('todo-checkbox')) {
+        e.stopPropagation();
+        const lineIdx = parseInt(e.target.dataset.line, 10);
+        toggleTodoLine(noteId, lineIdx);
+        return;
+      }
 
       if (e.target.closest('.btn-delete')) {
         e.stopPropagation();

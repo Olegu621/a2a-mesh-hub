@@ -373,28 +373,97 @@ textarea {
   flex-direction: column;
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
   min-height: 160px;
   word-break: break-word;
   position: relative;
+  animation: noteCardIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes noteCardIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .note-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px) scale(1.008);
+  box-shadow: var(--shadow-lg);
 }
 
 .note-card.is-pinned {
   border: 2px solid var(--pinned-color);
-  box-shadow: 0 0 0 1px var(--pinned-color), var(--shadow-sm);
+  box-shadow: 0 0 0 1px var(--pinned-color), var(--shadow-md);
 }
 
-.note-card.color-default { background-color: var(--note-default); }
-.note-card.color-yellow  { background-color: var(--note-yellow); }
-.note-card.color-green   { background-color: var(--note-green); }
-.note-card.color-blue    { background-color: var(--note-blue); }
-.note-card.color-pink    { background-color: var(--note-pink); }
-.note-card.color-purple  { background-color: var(--note-purple); }
+.note-card.color-default { background: linear-gradient(135deg, var(--surface-color) 0%, var(--surface-hover) 100%); }
+.note-card.color-yellow  { background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%); color: #422006; }
+.note-card.color-green   { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #052e16; }
+.note-card.color-blue    { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); color: #082f49; }
+.note-card.color-pink    { background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); color: #500724; }
+.note-card.color-purple  { background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); color: #3b0764; }
+
+[data-theme="dark"] .note-card.color-default,
+body.dark-mode .note-card.color-default { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: var(--text-main); }
+[data-theme="dark"] .note-card.color-yellow,
+body.dark-mode .note-card.color-yellow  { background: linear-gradient(135deg, #422006 0%, #291503 100%); color: #fef08a; }
+[data-theme="dark"] .note-card.color-green,
+body.dark-mode .note-card.color-green   { background: linear-gradient(135deg, #052e16 0%, #021a0c 100%); color: #bbf7d0; }
+[data-theme="dark"] .note-card.color-blue,
+body.dark-mode .note-card.color-blue    { background: linear-gradient(135deg, #082f49 0%, #031826 100%); color: #bae6fd; }
+[data-theme="dark"] .note-card.color-pink,
+body.dark-mode .note-card.color-pink    { background: linear-gradient(135deg, #500724 0%, #300315 100%); color: #fbcfe8; }
+[data-theme="dark"] .note-card.color-purple,
+body.dark-mode .note-card.color-purple  { background: linear-gradient(135deg, #3b0764 0%, #200336 100%); color: #e9d5ff; }
+
+/* Interactive Todo Lists */
+.todo-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin: 0.25rem 0;
+  user-select: none;
+}
+
+.todo-line.done span {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.todo-checkbox {
+  margin-top: 0.25rem;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-color);
+}
+
+/* Search Highlights */
+.search-highlight {
+  background-color: #fef08a;
+  color: #854d0e;
+  border-radius: 3px;
+  padding: 0.05rem 0.25rem;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .search-highlight,
+body.dark-mode .search-highlight {
+  background-color: #a16207;
+  color: #fef9c3;
+}
+
+/* Clickable Links */
+.note-link {
+  color: var(--primary-color);
+  text-decoration: underline;
+  word-break: break-all;
+  font-weight: 500;
+}
+
+.note-link:hover {
+  color: var(--primary-hover);
+}
 
 .note-header {
   display: flex;
