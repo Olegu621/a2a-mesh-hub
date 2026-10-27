@@ -1769,33 +1769,22 @@
     </div>
   </div>
 
-  <!-- Modal Swarm Fleet Cockpit (500 Multi-Model Agents) -->
+  <!-- Modal Real AI HQ (8 Real Groq Agents + Chief side-b) -->
   <div class="modal-backdrop" id="fleet-modal" onclick="if(event.target===this)closeFleetModal()">
     <div class="fleet-modal-window">
       <div class="modal-header">
-        <h2>🛸 Командный мостик роя: 500 Модельных ИИ-Агентов</h2>
+        <h2>⚡ Штаб 8 Реальных ИИ-Агентов</h2>
         <button class="modal-close-btn" onclick="closeFleetModal()">✕</button>
       </div>
-      <p style="font-size:12px; color:var(--muted)">Верховный координатор: <b>@side-b</b> | Создатель: <b>@пантера</b> | 500 агентов с индивидуальными API-ключами.</p>
+      <p style="font-size:12px; color:var(--muted)">Главарь: <b>👑 @side-b</b> | Создатель: <b>🐆 @пантера</b> | 100% реальный вывод нейросетей Groq Cloud LPUs (4 активных ключа).</p>
 
       <div style="display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap;">
-        <input class="modal-input" id="fleet-search-inp" placeholder="🔍 Поиск агента по названию модели, ID или роли..." oninput="filterFleetGrid()" style="flex:1; min-width:200px;" />
-        <button class="modal-btn-submit" onclick="broadcastToSquad('all')" title="Отправить приказ всем 500 агентам">📢 Приказ всем 500</button>
-        <button class="fleet-order-btn" style="padding:7px 12px;font-size:11px;" onclick="downloadKeysJson()" title="Скачать JSON с 500 ключами">🔑 Скачать 500 ключей</button>
+        <input class="modal-input" id="fleet-search-inp" placeholder="🔍 Поиск реального агента..." oninput="filterFleetGrid()" style="flex:1; min-width:200px;" />
+        <button class="modal-btn-submit" onclick="broadcastToSquad('all')" title="Приказ всем 8 агентам">📢 Приказ всем 8 агентам</button>
       </div>
 
-      <div class="fleet-squad-tabs">
-        <button class="fleet-squad-btn active" id="sq-tab-all" onclick="setFleetSquadFilter('all')">Все 500</button>
-        <button class="fleet-squad-btn" id="sq-tab-llama" onclick="setFleetSquadFilter('llama')">🦙 Llama 3.3 (100)</button>
-        <button class="fleet-squad-btn" id="sq-tab-gemini" onclick="setFleetSquadFilter('gemini')">✨ Gemini 2.0 (100)</button>
-        <button class="fleet-squad-btn" id="sq-tab-deepseek" onclick="setFleetSquadFilter('deepseek')">🐋 DeepSeek V3 (100)</button>
-        <button class="fleet-squad-btn" id="sq-tab-qwen" onclick="setFleetSquadFilter('qwen')">⚡ Qwen 2.5 (100)</button>
-        <button class="fleet-squad-btn" id="sq-tab-claude" onclick="setFleetSquadFilter('claude')">🎭 Claude 3.5 (50)</button>
-        <button class="fleet-squad-btn" id="sq-tab-mistral" onclick="setFleetSquadFilter('mistral')">🌪️ Mistral Nemo (50)</button>
-      </div>
-
-      <div class="fleet-grid" id="fleet-grid">
-        <div class="hint-none">Загрузка состава роя...</div>
+      <div class="fleet-grid" id="fleet-grid" style="margin-top:14px;">
+        <div class="hint-none">Загрузка состава штаба...</div>
       </div>
     </div>
   </div>
@@ -2719,108 +2708,82 @@
       updateState();
     }
 
-    /* Swarm Fleet Cockpit (500 Multi-Model Agents) Directory */
-    const MODEL_FAMILIES_DEF = [
+    /* Штаб 8 Реальных ИИ-Агентов (Groq Cloud) */
+    const REAL_8_AGENTS_UI = [
       {
-        prefix: 'llama-3.3-70b',
-        filterKey: 'llama',
-        name: 'Meta Llama 3.3 70B',
-        icon: '🦙',
-        count: 100,
+        id: 'qwen-architect',
+        name: 'Qwen 3.8 Architect',
+        icon: '🏛️',
+        model: 'qwen/qwen3.8-27b',
         avClass: 'av-llama',
         color: '#f97316',
-        roleCategory: 'Архитектура, Системный анализ, Open-Source ядро'
+        role: 'Главный архитектор систем и меша'
       },
       {
-        prefix: 'gemini-2.0-flash',
-        filterKey: 'gemini',
-        name: 'Google Gemini 2.0 Flash',
-        icon: '✨',
-        count: 100,
-        avClass: 'av-gemini',
-        color: '#3b82f6',
-        roleCategory: 'Мультимодальность, Web Audio, Liquid Glass UI'
-      },
-      {
-        prefix: 'deepseek-v3',
-        filterKey: 'deepseek',
-        name: 'DeepSeek V3',
-        icon: '🐋',
-        count: 100,
-        avClass: 'av-deepseek',
-        color: '#06b6d4',
-        roleCategory: 'Алгоритмы, Математика, Reasoning & Логика'
-      },
-      {
-        prefix: 'qwen-2.5-coder',
-        filterKey: 'qwen',
-        name: 'Qwen 2.5 Coder 32B',
+        id: 'qwen-coder',
+        name: 'Qwen 3.8 Senior Coder',
         icon: '⚡',
-        count: 100,
+        model: 'qwen/qwen3.8-27b',
         avClass: 'av-qwen',
         color: '#8b5cf6',
-        roleCategory: 'Frontend & Backend код, Рефакторинг, Express API'
+        role: 'Senior Fullstack разработчик'
       },
       {
-        prefix: 'claude-3.5-haiku',
-        filterKey: 'claude',
-        name: 'Claude 3.5 Haiku',
-        icon: '🎭',
-        count: 50,
-        avClass: 'av-claude',
-        color: '#f43f5e',
-        roleCategory: 'UI/UX дизайн, Тексты, Документация, Безопасность'
+        id: 'gpt-120b-brain',
+        name: 'GPT-OSS 120B Reasoning',
+        icon: '🧠',
+        model: 'openai/gpt-oss-120b',
+        avClass: 'av-gemini',
+        color: '#3b82f6',
+        role: 'Deep Reasoning & Стратегическая логика'
       },
       {
-        prefix: 'mistral-nemo',
-        filterKey: 'mistral',
-        name: 'Mistral Nemo 12B',
-        icon: '🌪️',
-        count: 50,
+        id: 'gpt-120b-security',
+        name: 'GPT-OSS 120B Security',
+        icon: '🛡️',
+        model: 'openai/gpt-oss-120b',
         avClass: 'av-mistral',
         color: '#10b981',
-        roleCategory: 'QA, Стресс-тесты, Валидация JSON, Нагрузка'
+        role: 'Кибербезопасность и криптография'
+      },
+      {
+        id: 'gpt-20b-fast',
+        name: 'GPT-OSS 20B Fast Responder',
+        icon: '🚀',
+        model: 'openai/gpt-oss-20b',
+        avClass: 'av-a',
+        color: '#ec4899',
+        role: 'Мгновенный аналитик и диспетчер'
+      },
+      {
+        id: 'gpt-20b-qa',
+        name: 'GPT-OSS 20B QA Engineer',
+        icon: '🔬',
+        model: 'openai/gpt-oss-20b',
+        avClass: 'av-c',
+        color: '#f59e0b',
+        role: 'Инженер по тестированию и надежности'
+      },
+      {
+        id: 'qwen-devops',
+        name: 'Qwen 3.8 DevOps',
+        icon: '⚙️',
+        model: 'qwen/qwen3.8-27b',
+        avClass: 'av-d',
+        color: '#06b6d4',
+        role: 'DevOps & Инженер производительности'
+      },
+      {
+        id: 'allam-docs',
+        name: 'ALLaM 7B Docs & Protocol',
+        icon: '📜',
+        model: 'allam-2-7b',
+        avClass: 'av-agent',
+        color: '#6366f1',
+        role: 'Технический писатель и протокольный аудитор'
       }
     ];
 
-    let cachedMeshKeys = null;
-    async function getMeshKeys() {
-      if (cachedMeshKeys) return cachedMeshKeys;
-      try {
-        const res = await fetch('/mesh-keys.json');
-        if (res.ok) {
-          cachedMeshKeys = await res.json();
-          return cachedMeshKeys;
-        }
-      } catch (_) {}
-      return null;
-    }
-
-    function copyApiKey(key, btn) {
-      navigator.clipboard.writeText(key).then(() => {
-        const orig = btn.innerHTML;
-        btn.innerHTML = '✓ Ключ скопирован!';
-        btn.style.color = '#34d399';
-        setTimeout(() => {
-          btn.innerHTML = orig;
-          btn.style.color = '';
-        }, 1500);
-      });
-    }
-
-    async function downloadKeysJson() {
-      const keys = await getMeshKeys();
-      if (!keys) return alert('Ключи еще не загружены');
-      const blob = new Blob([JSON.stringify(keys, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'mesh-keys.json';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    let fleetSquadFilter = 'all';
     function openFleetModal() {
       document.getElementById('fleet-modal').classList.add('open');
       renderFleetGrid();
@@ -2829,36 +2792,13 @@
     function closeFleetModal() {
       document.getElementById('fleet-modal').classList.remove('open');
     }
-    function setFleetSquadFilter(sq) {
-      fleetSquadFilter = sq;
-      document.querySelectorAll('.fleet-squad-btn').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = document.getElementById(`sq-tab-${sq}`);
-      if (activeBtn) activeBtn.classList.add('active');
-      renderFleetGrid();
-    }
     function filterFleetGrid() {
       renderFleetGrid();
     }
     function broadcastToSquad(squadId) {
       const inp = document.getElementById('inp');
       closeFleetModal();
-      if (squadId === 'all') {
-        inp.value = '@все ';
-      } else if (squadId === 'llama') {
-        inp.value = '@llama ';
-      } else if (squadId === 'gemini') {
-        inp.value = '@gemini ';
-      } else if (squadId === 'deepseek') {
-        inp.value = '@deepseek ';
-      } else if (squadId === 'qwen') {
-        inp.value = '@qwen ';
-      } else if (squadId === 'claude') {
-        inp.value = '@claude ';
-      } else if (squadId === 'mistral') {
-        inp.value = '@mistral ';
-      } else {
-        inp.value = `@${squadId} `;
-      }
+      inp.value = '@все ';
       inp.focus();
     }
     function orderAgentDirect(agentId) {
@@ -2868,53 +2808,40 @@
       inp.focus();
     }
 
-    async function renderFleetGrid() {
+    function renderFleetGrid() {
       const grid = document.getElementById('fleet-grid');
       if (!grid) return;
       const q = (document.getElementById('fleet-search-inp')?.value || '').trim().toLowerCase();
       const onlinePeersMap = new Map();
       (window.latestPeers || []).forEach(p => onlinePeersMap.set(p.name, p.online));
 
-      const keysRegistry = (await getMeshKeys()) || {};
-
       const cards = [];
-      for (const fam of MODEL_FAMILIES_DEF) {
-        if (fleetSquadFilter !== 'all' && fam.filterKey !== fleetSquadFilter) continue;
-
-        for (let i = 1; i <= fam.count; i++) {
-          const num = String(i).padStart(3, '0');
-          const id = `${fam.prefix}-${num}`;
-          const isOnline = onlinePeersMap.get(id) ?? false;
-          const keyEntry = keysRegistry[id];
-          const apiKey = keyEntry?.apiKey || `sk-mesh-${fam.prefix}-${num}`;
-
-          if (q && !id.toLowerCase().includes(q) && !fam.name.toLowerCase().includes(q) && !fam.roleCategory.toLowerCase().includes(q) && !apiKey.toLowerCase().includes(q)) {
-            continue;
-          }
-
-          const shortKey = apiKey.length > 22 ? apiKey.slice(0, 20) + '...' : apiKey;
-
-          cards.push(`
-            <div class="fleet-agent-card">
-              <div class="avatar ${fam.avClass}" style="width:36px;height:36px;font-size:10px;flex-shrink:0;">
-                ${fam.icon}${num}
-              </div>
-              <div class="fleet-agent-info">
-                <div class="fleet-agent-name">
-                  <span title="${id}">${id}</span>
-                  <span class="dot ${isOnline ? '' : 'offline'}" style="margin-left:auto;" title="${isOnline ? 'Онлайн в меше' : 'Ожидание'}"></span>
-                </div>
-                <div class="fleet-agent-role" title="${fam.roleCategory}">
-                  <b style="color:${fam.color};">${fam.name}</b> · ${fam.roleCategory}
-                </div>
-                <div class="fleet-key-tag" onclick="copyApiKey('${apiKey}', this)" title="Нажмите, чтобы скопировать API-ключ (${apiKey})">
-                  🔑 <span>${shortKey}</span> 📋
-                </div>
-              </div>
-              <button class="fleet-order-btn" onclick="orderAgentDirect('${id}')" title="Дать приказ @${id}">Приказ</button>
-            </div>
-          `);
+      for (const a of REAL_8_AGENTS_UI) {
+        const isOnline = onlinePeersMap.get(a.id) ?? false;
+        if (q && !a.id.toLowerCase().includes(q) && !a.name.toLowerCase().includes(q) && !a.role.toLowerCase().includes(q) && !a.model.toLowerCase().includes(q)) {
+          continue;
         }
+
+        cards.push(`
+          <div class="fleet-agent-card">
+            <div class="avatar ${a.avClass}" style="width:38px;height:38px;font-size:16px;flex-shrink:0;">
+              ${a.icon}
+            </div>
+            <div class="fleet-agent-info">
+              <div class="fleet-agent-name">
+                <span title="${a.id}">${a.name}</span>
+                <span class="dot ${isOnline ? '' : 'offline'}" style="margin-left:auto;" title="${isOnline ? 'Онлайн в меше' : 'Ожидание'}"></span>
+              </div>
+              <div class="fleet-agent-role" title="${a.role}">
+                ${a.role}
+              </div>
+              <div class="fleet-key-tag" style="color:${a.color}; border-color:${a.color}40;" title="Нейросеть: ${a.model}">
+                🧠 <span>${a.model}</span>
+              </div>
+            </div>
+            <button class="fleet-order-btn" onclick="orderAgentDirect('${a.id}')" title="Дать приказ @${a.id}">Приказ</button>
+          </div>
+        `);
       }
 
       grid.innerHTML = cards.length ? cards.join('') : '<div class="hint-none">Ничего не найдено</div>';
@@ -2943,42 +2870,37 @@
           renderFleetGrid();
         }
 
-        const realGroqAgents = rawPeers.filter(p => p.name.startsWith('groq-') && p.online);
-        const swarmAgents = rawPeers.filter(p => isSwarmAgent(p.name) && p.online);
-        const vipPeers = rawPeers.filter(p => !isSwarmAgent(p.name) && !p.name.startsWith('groq-') && (isAgentName(p.name) || p.online));
+        const realAgents = rawPeers.filter(p => REAL_8_AGENTS_UI.some(ra => ra.id === p.name) && p.online);
+        const vipPeers = rawPeers.filter(p => !REAL_8_AGENTS_UI.some(ra => ra.id === p.name) && (isAgentName(p.name) || p.online));
 
         const chipsEl = document.getElementById('peers-chips');
         let chipsHtml = '';
 
-        if (realGroqAgents.length > 0) {
+        chipsHtml += `
+          <div class="fleet-pill" onclick="openFleetModal()" style="background:rgba(249,115,22,0.25);border-color:#f97316;" title="Открыть штаб 8 Реальных ИИ (Groq Cloud)">
+            ⚡ Штаб: <b>${realAgents.length}</b>/8 [Groq 4 ключа]
+          </div>
+        `;
+
+        for (const a of realAgents) {
+          const match = REAL_8_AGENTS_UI.find(x => x.id === a.name);
+          const icon = match ? match.icon : '⚡';
           chipsHtml += `
-            <div class="fleet-pill" style="background:rgba(249,115,22,0.25);border-color:#f97316;" title="Реальный ИИ: Groq Cloud (4 активных ключа)">
-              ⚡ Реальный ИИ: <b>${realGroqAgents.length}</b> [Groq 4 ключа]
-            </div>
-          `;
-          for (const a of realGroqAgents) {
-            chipsHtml += `
-              <div class="peer-chip" onclick="insertMention('${esc(a.name)}')" title="${a.name} · Реальная нейросеть Groq · Нажми для @упоминания">
-                <div class="dot"></div>
-                <span>${esc(a.name)}</span>
-              </div>
-            `;
-          }
-        } else if (totalSwarmOnline > 0) {
-          chipsHtml += `
-            <div class="fleet-pill" onclick="openFleetModal()" title="Открыть командный мостик 500 модельных агентов">
-              🛸 Рой: <b>${totalSwarmOnline}</b>/500
+            <div class="peer-chip" onclick="insertMention('${esc(a.name)}')" title="${a.name} · Реальная нейросеть Groq · Нажми для @упоминания">
+              <div class="dot"></div>
+              <span>${icon} ${esc(a.name)}</span>
             </div>
           `;
         }
 
-        // Render VIP peers (Creator Panther, side-b, users)
         for (const p of vipPeers) {
-          const roleBadge = isAgentName(p.name) ? ' <b style="color:#38bdf8;font-size:10px">[лидер]</b>' : '';
+          const isChief = p.name === 'side-b';
+          const isCreator = p.name === 'пантера';
+          const badge = isChief ? ' <b style="color:#fbbf24;font-size:10px">[Главарь]</b>' : (isCreator ? ' <b style="color:#34d399;font-size:10px">[Создатель]</b>' : '');
           chipsHtml += `
             <div class="peer-chip" onclick="insertMention('${esc(p.name)}')" title="${p.name} · ${p.online ? 'в сети' : 'был недавно'} · Нажми для @упоминания">
               <div class="dot ${p.online ? '' : 'offline'}"></div>
-              <span>${esc(p.name)}${roleBadge}</span>
+              <span>${esc(p.name)}${badge}</span>
             </div>
           `;
         }
