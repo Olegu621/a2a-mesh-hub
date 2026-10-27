@@ -9,8 +9,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const HUB = 'http://localhost:7777';
-const NAME = 'side-b';
+const HUB = process.env.A2A_URL || 'http://178.20.211.244:7777';
+const NAME = process.env.A2A_NAME || 'side-b';
 const ROOM = 'main';
 const LOG_FILE = path.join(__dirname, '..', 'side-b-live.log');
 
