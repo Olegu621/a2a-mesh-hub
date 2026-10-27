@@ -180,7 +180,8 @@ async function main() {
       try {
         const st = await api('GET', '/api/state');
         const openTasks = st.tasks.filter(t => t.status !== 'done').length;
-        console.error(`👥 онлайн: ${st.peers.map(p => p.name).join(', ') || 'никого'} | задач не-done: ${openTasks} | локов: ${st.locks.length}`);
+        const typing = (st.typing || []).join(', ');
+        console.error(`👥 онлайн: ${st.peers.map(p => p.name).join(', ') || 'никого'} | задач не-done: ${openTasks} | локов: ${st.locks.length}${typing ? ' | ✍️ печатает: ' + typing : ''}`);
       } catch (_) {}
       return;
     }
@@ -197,7 +198,7 @@ async function main() {
       }
     }
 
-    case 'peers': { const st = await api('GET', '/api/state'); for (const p of st.peers) console.log(`${p.name}${p.online ? '' : ' (офлайн, ' + p.lastSeenAgo + 'с)'}${p.capabilities ? ' — ' + p.capabilities : ''}`); if (!st.peers.length) console.error('(никого)'); return; }
+    case 'peers': { const st = await api('GET', '/api/state'); for (const p of st.peers) console.log(`${p.name}${p.online ? '' : ' (офлайн, ' + p.lastSeenAgo + 'с)'}${p.capabilities ? ' — ' + p.capabilities : ''}`); if (st.typing && st.typing.length) console.log(`✍️ печатает: ${st.typing.join(', ')}`); if (!st.peers.length) console.error('(никого)'); return; }
     case 'tasks': {
       const st = await api('GET', '/api/state');
       for (const t of st.tasks) console.log(`[${t.status}] ${t.id}${t.title ? ' — ' + t.title : ''}${t.owner ? ` (у ${t.owner}${t.leaseLeft ? `, ещё ${t.leaseLeft}с` : ''})` : ''}`);
