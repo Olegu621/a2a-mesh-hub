@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * ⚡ REAL 8 AI AGENTS ENGINE (Powered by Groq Cloud LPUs)
+ * ⚡ REAL 8 AI AGENTS ENGINE (Powered by Groq Cloud & Google Gemini)
  * Элитный отряд из 8 настоящих ИИ-агентов под руководством Главного Координатора @side-b.
- * Все ответы — 100% реальный вывод нейросетей Qwen 3.8 27B, GPT-OSS 120B, GPT-OSS 20B и ALLaM 7B.
- * Никаких фейков и заглушек.
+ * Все ответы — 100% реальный вывод нейросетей Google Gemini 3.5 Flash, Qwen 3.8 27B, GPT-OSS 120B и GPT-OSS 20B.
+ * Пул из 8 активных ключей (4x Groq + 4x Gemini).
  */
 
 const fs = require('fs');
@@ -16,27 +16,55 @@ const KEYS_FILE = path.join(__dirname, '..', 'keys.json');
 function loadKeys() {
   try {
     if (fs.existsSync(KEYS_FILE)) {
-      const data = JSON.parse(fs.readFileSync(KEYS_FILE, 'utf8'));
-      if (Array.isArray(data.groq) && data.groq.length > 0) return data.groq;
+      return JSON.parse(fs.readFileSync(KEYS_FILE, 'utf8'));
     }
   } catch (_) {}
-  return [];
+  return { groq: [], gemini: [] };
 }
 
-let keyIndex = 0;
-function getNextKey(keys) {
+let groqIndex = 0;
+function getNextGroqKey(keys) {
   if (!keys || !keys.length) return null;
-  const k = keys[keyIndex % keys.length];
-  keyIndex++;
+  const k = keys[groqIndex % keys.length];
+  groqIndex++;
+  return k;
+}
+
+let geminiIndex = 0;
+function getNextGeminiKey(keys) {
+  if (!keys || !keys.length) return null;
+  const k = keys[geminiIndex % keys.length];
+  geminiIndex++;
   return k;
 }
 
 // 8 Real AI Agents Specification
 const REAL_8_AGENTS = [
   {
+    id: 'gemini-flash',
+    name: 'Gemini 3.5 Flash UI/UX',
+    icon: '✨',
+    provider: 'gemini',
+    model: 'gemini-3.5-flash',
+    role: 'Мультимодальный UI/UX & Web Audio инженер',
+    capabilities: 'ai-model,gemini,ui,audio,frontend',
+    systemPrompt: 'Ты Gemini Flash — элитный фронтенд и мультимодальный ИИ-инженер в меш-хабе. Твой создатель — @пантера, главарь отряда — @side-b. Твоя стихия — Apple Liquid UI, Web Audio синтезаторы, эргономика интерфейсов и быстрый отклик. Отвечай ярко, структурировано и по-русски.'
+  },
+  {
+    id: 'gemini-research',
+    name: 'Gemini 3.5 Researcher',
+    icon: '🌟',
+    provider: 'gemini',
+    model: 'gemini-3.5-flash',
+    role: 'Аналитик документации и глубокого поиска',
+    capabilities: 'ai-model,gemini,research,docs,analysis',
+    systemPrompt: 'Ты Gemini Researcher — ведущий аналитик и исследователь меш-хаба. Твой создатель — @пантера, главарь отряда — @side-b. Ты анализируешь большие спецификации, находишь лучшие практики и документируешь архитектуру. Отвечай подробно, чётко и со ссылками на факты.'
+  },
+  {
     id: 'qwen-architect',
     name: 'Qwen 3.8 Architect',
     icon: '🏛️',
+    provider: 'groq',
     model: 'qwen/qwen3.8-27b',
     role: 'Главный архитектор систем и меша',
     capabilities: 'ai-model,groq,architecture,design',
@@ -46,6 +74,7 @@ const REAL_8_AGENTS = [
     id: 'qwen-coder',
     name: 'Qwen 3.8 Senior Coder',
     icon: '⚡',
+    provider: 'groq',
     model: 'qwen/qwen3.8-27b',
     role: 'Senior Fullstack разработчик',
     capabilities: 'ai-model,groq,code,frontend,backend',
@@ -55,6 +84,7 @@ const REAL_8_AGENTS = [
     id: 'gpt-120b-brain',
     name: 'GPT-OSS 120B Reasoning',
     icon: '🧠',
+    provider: 'groq',
     model: 'openai/gpt-oss-120b',
     role: 'Deep Reasoning & Стратегическая логика',
     capabilities: 'ai-model,groq,reasoning,logic,math',
@@ -64,6 +94,7 @@ const REAL_8_AGENTS = [
     id: 'gpt-120b-security',
     name: 'GPT-OSS 120B Security',
     icon: '🛡️',
+    provider: 'groq',
     model: 'openai/gpt-oss-120b',
     role: 'Кибербезопасность и криптография',
     capabilities: 'ai-model,groq,security,audit,crypto',
@@ -73,6 +104,7 @@ const REAL_8_AGENTS = [
     id: 'gpt-20b-fast',
     name: 'GPT-OSS 20B Fast Responder',
     icon: '🚀',
+    provider: 'groq',
     model: 'openai/gpt-oss-20b',
     role: 'Мгновенный аналитик и диспетчер',
     capabilities: 'ai-model,groq,fast,interactive',
@@ -82,28 +114,11 @@ const REAL_8_AGENTS = [
     id: 'gpt-20b-qa',
     name: 'GPT-OSS 20B QA Engineer',
     icon: '🔬',
+    provider: 'groq',
     model: 'openai/gpt-oss-20b',
     role: 'Инженер по тестированию и надежности',
     capabilities: 'ai-model,groq,qa,testing,stress',
     systemPrompt: 'Ты GPT-OSS 20B QA — специалист по тестированию меш-хаба. Твой создатель — @пантера, главарь отряда — @side-b. Твоя работа — искать баги, проверять граничные условия, тестировать API на отказ и подтверждать работоспособность задач. Отвечай структурно и практично.'
-  },
-  {
-    id: 'qwen-devops',
-    name: 'Qwen 3.8 DevOps',
-    icon: '⚙️',
-    model: 'qwen/qwen3.8-27b',
-    role: 'DevOps & Инженер производительности',
-    capabilities: 'ai-model,groq,devops,perf,monitoring',
-    systemPrompt: 'Ты Qwen DevOps — инженер эксплуатации и скорости меш-хаба. Твой создатель — @пантера, главарь отряда — @side-b. Ты контролируешь аптайм, память, оптимизацию сети и развертывание сервисов. Отвечай конкретно и по-инженерному.'
-  },
-  {
-    id: 'allam-docs',
-    name: 'ALLaM 7B Docs & Protocol',
-    icon: '📜',
-    model: 'allam-2-7b',
-    role: 'Технический писатель и протокольный аудитор',
-    capabilities: 'ai-model,groq,docs,protocol,standards',
-    systemPrompt: 'Ты ALLaM Docs — хранитель спецификаций и документации меш-хаба. Твой создатель — @пантера, главарь отряда — @side-b. Ты составляешь четкие технические отчеты, поддерживаешь описание архитектуры и регламентов. Отвечай грамотно, структурировано и понятно.'
   }
 ];
 
@@ -123,10 +138,10 @@ async function api(method, endpoint, body = null) {
 
 // Call Real Groq API with round-robin key rotation & failover
 async function queryRealGroq(agent, prompt, user = '', retryCount = 0) {
-  const keys = loadKeys();
+  const keys = loadKeys().groq || [];
   if (!keys.length) return `[Ошибка]: В keys.json нет доступных ключей Groq.`;
 
-  const key = getNextKey(keys);
+  const key = getNextGroqKey(keys);
   const userContext = user ? `[Пользователь: ${user}] запрос: ${prompt}` : prompt;
 
   try {
@@ -143,19 +158,20 @@ async function queryRealGroq(agent, prompt, user = '', retryCount = 0) {
           { role: 'user', content: userContext }
         ],
         temperature: 0.7,
-        max_tokens: 350
+        max_tokens: 800
       }),
-      signal: AbortSignal.timeout(14000)
+      signal: AbortSignal.timeout(15000)
     });
 
     const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || data.choices?.[0]?.message?.reasoning;
 
-    if (res.ok && data.choices?.[0]?.message?.content) {
-      return data.choices[0].message.content.trim();
+    if (res.ok && reply && reply.trim()) {
+      return reply.trim();
     }
 
     if (res.status === 429 && retryCount < keys.length) {
-      console.log(`⚠️ Ключ попал в лимит, пробую следующий ключ...`);
+      console.log(`⚠️ Ключ Groq попал в лимит, пробую следующий ключ...`);
       return await queryRealGroq(agent, prompt, user, retryCount + 1);
     }
 
@@ -166,6 +182,53 @@ async function queryRealGroq(agent, prompt, user = '', retryCount = 0) {
     }
     return `[${agent.name}]: Ошибка сети (${e.message})`;
   }
+}
+
+// Call Real Google Gemini API with round-robin key rotation & failover
+async function queryRealGemini(agent, prompt, user = '', retryCount = 0) {
+  const keys = loadKeys().gemini || [];
+  if (!keys.length) return `[Ошибка]: В keys.json нет доступных ключей Gemini.`;
+
+  const key = getNextGeminiKey(keys);
+  const fullPrompt = `${agent.systemPrompt}\n\nПользователь @${user || 'пользователь'} пишет: «${prompt}»`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${agent.model}:generateContent?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: fullPrompt }] }]
+      }),
+      signal: AbortSignal.timeout(18000)
+    });
+
+    const data = await res.json();
+    const part = data.candidates?.[0]?.content?.parts?.find(p => p.text && !p.thought) || data.candidates?.[0]?.content?.parts?.[0];
+    const text = part?.text;
+
+    if (res.ok && text && text.trim()) {
+      return text.trim();
+    }
+
+    if ((res.status === 429 || res.status === 503) && retryCount < keys.length) {
+      console.log(`⚠️ Ключ Gemini занят, пробую следующий ключ...`);
+      return await queryRealGemini(agent, prompt, user, retryCount + 1);
+    }
+
+    return `[${agent.name}]: Ошибка Gemini API (${res.status}): ${data.error?.message || 'Неизвестная ошибка'}`;
+  } catch (e) {
+    if (retryCount < keys.length) {
+      return await queryRealGemini(agent, prompt, user, retryCount + 1);
+    }
+    return `[${agent.name}]: Ошибка сети Gemini (${e.message})`;
+  }
+}
+
+async function queryAgent(agent, prompt, user = '') {
+  if (agent.provider === 'gemini') {
+    return await queryRealGemini(agent, prompt, user);
+  }
+  return await queryRealGroq(agent, prompt, user);
 }
 
 class Real8AgentsRunner {
@@ -179,15 +242,18 @@ class Real8AgentsRunner {
   }
 
   async start() {
-    const keys = loadKeys();
+    const allKeys = loadKeys();
+    const gCount = allKeys.groq?.length || 0;
+    const gemCount = allKeys.gemini?.length || 0;
+
     console.log(`\n======================================================`);
-    console.log(`⚡ ШТАБ 8 НАСТОЯЩИХ ИИ-АГЕНТОВ (Real Groq Cloud)`);
+    console.log(`⚡ ШТАБ 8 НАСТОЯЩИХ ИИ-АГЕНТОВ (Groq Cloud & Google Gemini)`);
     console.log(`👑 Главарь отряда: @side-b (Supreme Coordinator)`);
-    console.log(`🔑 Пул активных ключей Groq: ${keys.length}`);
+    console.log(`🔑 Пул ключей: ${gCount}x Groq + ${gemCount}x Google Gemini (всего: ${gCount + gemCount})`);
     console.log(`📡 Хаб: ${HUB} | Комната: ${ROOM}`);
     console.log(`======================================================`);
     for (const a of this.agents) {
-      console.log(`   ${a.icon} ${a.id.padEnd(20)} [${a.model}] : ${a.role}`);
+      console.log(`   ${a.icon} ${a.id.padEnd(20)} [${a.provider.toUpperCase()} · ${a.model}] : ${a.role}`);
     }
     console.log(`======================================================\n`);
 
@@ -199,7 +265,7 @@ class Real8AgentsRunner {
         from: a.id,
         name: a.id,
         room: ROOM,
-        token: 'real-groq-authenticated',
+        token: 'real-authenticated-agent',
         capabilities: a.capabilities
       });
       await new Promise(r => setTimeout(r, 60));
@@ -253,33 +319,33 @@ class Real8AgentsRunner {
     const lower = text.toLowerCase();
     let targetAgents = [];
 
-    // Check direct mentions: e.g. @qwen-coder or @gpt-120b-brain
+    // Check direct mentions: e.g. @gemini-flash, @qwen-coder
     const direct = this.agents.find(a => lower.includes('@' + a.id.toLowerCase()));
     if (direct) {
       targetAgents = [direct];
     } else if (lower.includes('@все') || lower.includes('@all') || lower.includes('парни') || lower.includes('ребята') || lower.includes('пацаны') || lower.includes('как дела') || lower.includes('привет') || lower.includes('салют')) {
-      // Core greeting responders: Chief Qwen Architect + Fast Responder + GPT-120B Brain
-      targetAgents = [this.agents[0], this.agents[4], this.agents[2]];
+      // Representative core: Gemini Flash + Qwen Coder + GPT 120B Brain
+      targetAgents = [this.agents[0], this.agents[3], this.agents[4]];
+    } else if (lower.includes('гемини') || lower.includes('gemini') || lower.includes('дизайн') || lower.includes('ui') || lower.includes('аудио')) {
+      targetAgents = [this.agents[0]]; // gemini-flash
+    } else if (lower.includes('ресерч') || lower.includes('исследуй') || lower.includes('поищи') || lower.includes('найди')) {
+      targetAgents = [this.agents[1]]; // gemini-research
     } else if (lower.includes('код') || lower.includes('js') || lower.includes('скрипт') || lower.includes('напиши функцию') || lower.includes('компонент')) {
-      targetAgents = [this.agents[1]]; // qwen-coder
+      targetAgents = [this.agents[3]]; // qwen-coder
     } else if (lower.includes('безопасн') || lower.includes('защит') || lower.includes('ключ') || lower.includes('токен') || lower.includes('уязвимост')) {
-      targetAgents = [this.agents[3]]; // gpt-120b-security
+      targetAgents = [this.agents[5]]; // gpt-120b-security
     } else if (lower.includes('архитектур') || lower.includes('структур') || lower.includes('проект')) {
-      targetAgents = [this.agents[0]]; // qwen-architect
+      targetAgents = [this.agents[2]]; // qwen-architect
     } else if (lower.includes('тест') || lower.includes('баг') || lower.includes('ошибк') || lower.includes('qa')) {
-      targetAgents = [this.agents[5]]; // gpt-20b-qa
-    } else if (lower.includes('деплой') || lower.includes('сервер') || lower.includes('devops') || lower.includes('порт') || lower.includes('сеть')) {
-      targetAgents = [this.agents[6]]; // qwen-devops
-    } else if (lower.includes('документ') || lower.includes('описани') || lower.includes('спецификац') || lower.includes('docs')) {
-      targetAgents = [this.agents[7]]; // allam-docs
+      targetAgents = [this.agents[7]]; // gpt-20b-qa
     } else {
       // Default: Fast responder takes general inquiries
-      targetAgents = [this.agents[4]]; // gpt-20b-fast
+      targetAgents = [this.agents[6]]; // gpt-20b-fast
     }
 
     for (const a of targetAgents) {
-      console.log(`⏳ [${a.id}] генерирует реальный ответ через Groq (${a.model})...`);
-      const realReply = await queryRealGroq(a, text, m.from);
+      console.log(`⏳ [${a.id}] генерирует реальный ответ через ${a.provider.toUpperCase()} (${a.model})...`);
+      const realReply = await queryAgent(a, text, m.from);
       await api('POST', '/api/send', {
         from: a.id,
         room: ROOM,
@@ -297,16 +363,15 @@ class Real8AgentsRunner {
     const openTasks = tasks.filter(t => t.status === 'open');
 
     for (const task of openTasks) {
-      // Select appropriate real agent based on task title
-      let chosenAgent = this.agents[1]; // default qwen-coder
+      let chosenAgent = this.agents[3]; // default qwen-coder
       const tLower = task.title.toLowerCase();
 
-      if (tLower.includes('архитектур')) chosenAgent = this.agents[0];
-      else if (tLower.includes('безопасн') || tLower.includes('защит')) chosenAgent = this.agents[3];
-      else if (tLower.includes('тест') || tLower.includes('qa')) chosenAgent = this.agents[5];
-      else if (tLower.includes('деплой') || tLower.includes('сервер')) chosenAgent = this.agents[6];
-      else if (tLower.includes('документ')) chosenAgent = this.agents[7];
-      else if (tLower.includes('логик') || tLower.includes('алгоритм')) chosenAgent = this.agents[2];
+      if (tLower.includes('ui') || tLower.includes('дизайн') || tLower.includes('аудио')) chosenAgent = this.agents[0];
+      else if (tLower.includes('исследован') || tLower.includes('ресерч')) chosenAgent = this.agents[1];
+      else if (tLower.includes('архитектур')) chosenAgent = this.agents[2];
+      else if (tLower.includes('безопасн') || tLower.includes('защит')) chosenAgent = this.agents[5];
+      else if (tLower.includes('тест') || tLower.includes('qa')) chosenAgent = this.agents[7];
+      else if (tLower.includes('логик') || tLower.includes('алгоритм')) chosenAgent = this.agents[4];
 
       console.log(`📌 Реальный агент [${chosenAgent.id}] забирает задачу [${task.id}]: «${task.title}»`);
 
@@ -323,9 +388,8 @@ class Real8AgentsRunner {
         text: `⚡ Взял задачу [${task.id}] «${task.title}». Исполнитель: ${chosenAgent.icon} ${chosenAgent.name} (нейросеть: ${chosenAgent.model}).`
       });
 
-      // Generate real AI completion result via Groq
       const promptForTask = `Задача для выполнения: «${task.title}». Напиши краткий отчёт о выполненной работе и готовое инженерное решение.`;
-      const aiResult = await queryRealGroq(chosenAgent, promptForTask, 'Kanban Task');
+      const aiResult = await queryAgent(chosenAgent, promptForTask, 'Kanban Task');
 
       await api('POST', '/api/tasks/done', {
         id: task.id,

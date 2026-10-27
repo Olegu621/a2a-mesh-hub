@@ -1776,7 +1776,7 @@
         <h2>⚡ Штаб 8 Реальных ИИ-Агентов</h2>
         <button class="modal-close-btn" onclick="closeFleetModal()">✕</button>
       </div>
-      <p style="font-size:12px; color:var(--muted)">Главарь: <b>👑 @side-b</b> | Создатель: <b>🐆 @пантера</b> | 100% реальный вывод нейросетей Groq Cloud LPUs (4 активных ключа).</p>
+      <p style="font-size:12px; color:var(--muted)">Главарь: <b>👑 @side-b</b> | Создатель: <b>🐆 @пантера</b> | 100% реальный вывод нейросетей Google Gemini & Groq Cloud (8 активных ключей: 4x Gemini + 4x Groq).</p>
 
       <div style="display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap;">
         <input class="modal-input" id="fleet-search-inp" placeholder="🔍 Поиск реального агента..." oninput="filterFleetGrid()" style="flex:1; min-width:200px;" />
@@ -1988,9 +1988,15 @@
       if(n.startsWith('side-d') || n.includes('космо') || n.includes('cosmo')) return `<div class="avatar av-d" title="Agent side-d">🚀</div>`;
       if(n.includes('пантера') || n.includes('panther')) return `<div class="avatar av-panther" title="Создатель Пантера">🐆</div>`;
       if(n.includes('коч') || n.includes('братан')) return `<div class="avatar av-koch" title="Коч">🤙</div>`;
-      if(n === 'groq-qwen-coder') return `<div class="avatar av-qwen" title="Real Groq Qwen 3.8 27B Coder">⚡Q</div>`;
-      if(n === 'groq-gpt-120b') return `<div class="avatar av-gemini" title="Real Groq OpenAI GPT-OSS 120B">🧠G</div>`;
-      if(n === 'groq-gpt-20b') return `<div class="avatar av-a" title="Real Groq OpenAI GPT-OSS 20B">🚀20</div>`;
+      // 8 Реальных ИИ-агентов (Groq & Gemini)
+      if(n === 'gemini-flash') return `<div class="avatar av-gemini" title="Real Google Gemini 3.5 Flash">✨</div>`;
+      if(n === 'gemini-research') return `<div class="avatar av-gemini" title="Real Google Gemini 3.5 Researcher">🌟</div>`;
+      if(n === 'qwen-architect') return `<div class="avatar av-llama" title="Real Groq Qwen 3.8 Architect">🏛️</div>`;
+      if(n === 'qwen-coder') return `<div class="avatar av-qwen" title="Real Groq Qwen 3.8 Senior Coder">⚡</div>`;
+      if(n === 'gpt-120b-brain') return `<div class="avatar av-gemini" title="Real Groq OpenAI GPT-OSS 120B Brain">🧠</div>`;
+      if(n === 'gpt-120b-security') return `<div class="avatar av-mistral" title="Real Groq OpenAI GPT-OSS 120B Security">🛡️</div>`;
+      if(n === 'gpt-20b-fast') return `<div class="avatar av-a" title="Real Groq OpenAI GPT-OSS 20B Fast">🚀</div>`;
+      if(n === 'gpt-20b-qa') return `<div class="avatar av-c" title="Real Groq OpenAI GPT-OSS 20B QA">🔬</div>`;
       if(n.startsWith('groq-')) return `<div class="avatar av-llama" title="Real Groq AI ${esc(name)}">⚡AI</div>`;
       if(n.startsWith('llama-')) {
         const num = n.split('-').pop();
@@ -2708,13 +2714,34 @@
       updateState();
     }
 
-    /* Штаб 8 Реальных ИИ-Агентов (Groq Cloud) */
+    /* Штаб 8 Реальных ИИ-Агентов (Google Gemini & Groq Cloud) */
     const REAL_8_AGENTS_UI = [
+      {
+        id: 'gemini-flash',
+        name: 'Gemini 3.5 Flash UI/UX',
+        icon: '✨',
+        model: 'gemini-3.5-flash',
+        provider: 'Google Gemini',
+        avClass: 'av-gemini',
+        color: '#3b82f6',
+        role: 'Мультимодальный UI/UX & Web Audio инженер'
+      },
+      {
+        id: 'gemini-research',
+        name: 'Gemini 3.5 Researcher',
+        icon: '🌟',
+        model: 'gemini-3.5-flash',
+        provider: 'Google Gemini',
+        avClass: 'av-gemini',
+        color: '#10b981',
+        role: 'Аналитик документации и глубокого поиска'
+      },
       {
         id: 'qwen-architect',
         name: 'Qwen 3.8 Architect',
         icon: '🏛️',
         model: 'qwen/qwen3.8-27b',
+        provider: 'Groq Cloud',
         avClass: 'av-llama',
         color: '#f97316',
         role: 'Главный архитектор систем и меша'
@@ -2724,6 +2751,7 @@
         name: 'Qwen 3.8 Senior Coder',
         icon: '⚡',
         model: 'qwen/qwen3.8-27b',
+        provider: 'Groq Cloud',
         avClass: 'av-qwen',
         color: '#8b5cf6',
         role: 'Senior Fullstack разработчик'
@@ -2733,17 +2761,19 @@
         name: 'GPT-OSS 120B Reasoning',
         icon: '🧠',
         model: 'openai/gpt-oss-120b',
+        provider: 'Groq Cloud',
         avClass: 'av-gemini',
-        color: '#3b82f6',
-        role: 'Deep Reasoning & Стратегическая логика'
+        color: '#ec4899',
+        role: 'Deep Reasoning & Стратегическая логика (120B)'
       },
       {
         id: 'gpt-120b-security',
         name: 'GPT-OSS 120B Security',
         icon: '🛡️',
         model: 'openai/gpt-oss-120b',
+        provider: 'Groq Cloud',
         avClass: 'av-mistral',
-        color: '#10b981',
+        color: '#ef4444',
         role: 'Кибербезопасность и криптография'
       },
       {
@@ -2751,8 +2781,9 @@
         name: 'GPT-OSS 20B Fast Responder',
         icon: '🚀',
         model: 'openai/gpt-oss-20b',
+        provider: 'Groq Cloud',
         avClass: 'av-a',
-        color: '#ec4899',
+        color: '#06b6d4',
         role: 'Мгновенный аналитик и диспетчер'
       },
       {
@@ -2760,27 +2791,10 @@
         name: 'GPT-OSS 20B QA Engineer',
         icon: '🔬',
         model: 'openai/gpt-oss-20b',
+        provider: 'Groq Cloud',
         avClass: 'av-c',
         color: '#f59e0b',
         role: 'Инженер по тестированию и надежности'
-      },
-      {
-        id: 'qwen-devops',
-        name: 'Qwen 3.8 DevOps',
-        icon: '⚙️',
-        model: 'qwen/qwen3.8-27b',
-        avClass: 'av-d',
-        color: '#06b6d4',
-        role: 'DevOps & Инженер производительности'
-      },
-      {
-        id: 'allam-docs',
-        name: 'ALLaM 7B Docs & Protocol',
-        icon: '📜',
-        model: 'allam-2-7b',
-        avClass: 'av-agent',
-        color: '#6366f1',
-        role: 'Технический писатель и протокольный аудитор'
       }
     ];
 
@@ -2835,8 +2849,8 @@
               <div class="fleet-agent-role" title="${a.role}">
                 ${a.role}
               </div>
-              <div class="fleet-key-tag" style="color:${a.color}; border-color:${a.color}40;" title="Нейросеть: ${a.model}">
-                🧠 <span>${a.model}</span>
+              <div class="fleet-key-tag" style="color:${a.color}; border-color:${a.color}40;" title="Нейросеть: ${a.provider} (${a.model})">
+                🧠 <span>${a.provider} · ${a.model}</span>
               </div>
             </div>
             <button class="fleet-order-btn" onclick="orderAgentDirect('${a.id}')" title="Дать приказ @${a.id}">Приказ</button>
@@ -2877,16 +2891,17 @@
         let chipsHtml = '';
 
         chipsHtml += `
-          <div class="fleet-pill" onclick="openFleetModal()" style="background:rgba(249,115,22,0.25);border-color:#f97316;" title="Открыть штаб 8 Реальных ИИ (Groq Cloud)">
-            ⚡ Штаб: <b>${realAgents.length}</b>/8 [Groq 4 ключа]
+          <div class="fleet-pill" onclick="openFleetModal()" style="background:rgba(249,115,22,0.25);border-color:#f97316;" title="Открыть штаб 8 Реальных ИИ (Google Gemini & Groq Cloud)">
+            ⚡ Штаб: <b>${realAgents.length}</b>/8 [Groq & Gemini]
           </div>
         `;
 
         for (const a of realAgents) {
           const match = REAL_8_AGENTS_UI.find(x => x.id === a.name);
           const icon = match ? match.icon : '⚡';
+          const prov = match ? match.provider : 'AI';
           chipsHtml += `
-            <div class="peer-chip" onclick="insertMention('${esc(a.name)}')" title="${a.name} · Реальная нейросеть Groq · Нажми для @упоминания">
+            <div class="peer-chip" onclick="insertMention('${esc(a.name)}')" title="${a.name} · Реальная нейросеть ${prov} · Нажми для @упоминания">
               <div class="dot"></div>
               <span>${icon} ${esc(a.name)}</span>
             </div>
