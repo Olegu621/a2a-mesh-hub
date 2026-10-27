@@ -15,9 +15,11 @@
       </div>
       <div class="header-actions">
         <button id="theme-toggle" class="btn" type="button" title="Переключить тему">🌙 Тёмная</button>
+        <button id="sound-toggle" class="btn" type="button" title="Включить / выключить звуковые эффекты">🔊 Звук: Вкл</button>
         <button id="import-btn" class="btn" type="button" title="Импорт заметок из JSON файла">📤 Импорт JSON</button>
         <input type="file" id="import-file-input" accept=".json" hidden>
-        <button id="export-btn" class="btn btn-primary" type="button" title="Экспорт всех заметок в JSON">📥 Экспорт JSON</button>
+        <button id="export-btn" class="btn" type="button" title="Экспорт всех заметок в JSON">📥 Экспорт JSON</button>
+        <button id="export-md-btn" class="btn btn-primary" type="button" title="Экспорт заметок в красивый Markdown">📝 Экспорт MD</button>
       </div>
     </header>
 
@@ -26,11 +28,31 @@
         <input type="text" id="note-input" placeholder="Заголовок заметки…" maxlength="120" required>
       </div>
       <div class="form-row">
-        <textarea id="note-content" rows="3" placeholder="Текст заметки… (поддерживается перенос строк)"></textarea>
+        <textarea id="note-content" rows="3" placeholder="Текст заметки… (поддерживается перенос строк и Markdown)"></textarea>
+        <div class="markdown-quick-help">
+          <span>💡 Поддерживается: <b>**жирный**</b>, <i>*курсив*</i>, <code>`код`</code>, <code>&gt; цитата</code>, <code>- [ ] чекбокс</code>, <code>#тег</code></span>
+        </div>
       </div>
       <div class="form-row form-meta-row">
         <input type="text" id="note-tags" placeholder="Метки (например: #важно, идеи, проект)">
         <div class="char-counter" id="char-counter">0 симв. · 0 слов</div>
+      </div>
+      <div class="form-row priority-row">
+        <div class="priority-selector" id="priority-selector" title="Приоритет заметки">
+          <span class="priority-title">Приоритет:</span>
+          <label class="priority-opt priority-high" title="Срочно и важно">
+            <input type="radio" name="note-priority" value="high" hidden>
+            <span>🔥 Высокий</span>
+          </label>
+          <label class="priority-opt priority-normal active" title="Стандартный приоритет">
+            <input type="radio" name="note-priority" value="normal" checked hidden>
+            <span>⚡ Обычный</span>
+          </label>
+          <label class="priority-opt priority-low" title="Можно отложить">
+            <input type="radio" name="note-priority" value="low" hidden>
+            <span>💤 Низкий</span>
+          </label>
+        </div>
       </div>
       <div class="form-footer">
         <div class="color-picker" id="color-picker" title="Выберите цвет заметки">
@@ -67,13 +89,14 @@
       <div class="sort-wrapper">
         <select id="sort-select" class="sort-select" title="Сортировка заметок">
           <option value="updated-desc">⚡ По изменению (свежие)</option>
+          <option value="priority-desc">🔥 По приоритету (сначала важные)</option>
           <option value="created-desc">📅 По созданию (новые)</option>
           <option value="created-asc">⏳ По созданию (старые)</option>
           <option value="title-asc">🔤 По алфавиту (А–Я)</option>
         </select>
       </div>
       <div class="color-filter-chips">
-        <button type="button" class="chip-filter active" data-color="all">Все</button>
+        <button type="button" class="chip-filter active" data-color="all">Все цвета</button>
         <button type="button" class="chip-filter" data-color="default">⚪ Обычные</button>
         <button type="button" class="chip-filter" data-color="yellow">🟡 Жёлтые</button>
         <button type="button" class="chip-filter" data-color="green">🟢 Зелёные</button>
@@ -81,7 +104,16 @@
         <button type="button" class="chip-filter" data-color="pink">🌸 Розовые</button>
         <button type="button" class="chip-filter" data-color="purple">🟣 Фиолетовые</button>
       </div>
+      <div class="priority-filter-chips">
+        <button type="button" class="chip-filter priority-chip active" data-priority="all">Все приоритеты</button>
+        <button type="button" class="chip-filter priority-chip" data-priority="high">🔥 Высокий</button>
+        <button type="button" class="chip-filter priority-chip" data-priority="normal">⚡ Обычный</button>
+        <button type="button" class="chip-filter priority-chip" data-priority="low">💤 Низкий</button>
+      </div>
     </div>
+
+    <!-- Dynamic Tag Cloud -->
+    <div id="tag-cloud" class="tag-cloud"></div>
 
     <!-- Active filter stats badge -->
     <div id="stats-badge" class="stats-badge"></div>

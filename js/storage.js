@@ -44,6 +44,7 @@
         content: String(data.content || ''),
         color: String(data.color || 'default'),
         tags: Array.isArray(data.tags) ? data.tags.slice() : [],
+        priority: (data.priority === 'high' || data.priority === 'low') ? data.priority : 'normal',
         pinned: Boolean(data.pinned),
         createdAt: now,
         updatedAt: now
@@ -62,6 +63,7 @@
           if (f.title !== undefined) notes[i].title = String(f.title);
           if (f.content !== undefined) notes[i].content = String(f.content);
           if (f.color !== undefined) notes[i].color = String(f.color);
+          if (f.priority !== undefined) notes[i].priority = (f.priority === 'high' || f.priority === 'low') ? f.priority : 'normal';
           if (f.tags !== undefined) notes[i].tags = Array.isArray(f.tags) ? f.tags.slice() : [];
           if (f.pinned !== undefined) notes[i].pinned = Boolean(f.pinned);
           notes[i].updatedAt = new Date().toISOString();
@@ -128,6 +130,7 @@
             title: String(item.title || 'Без названия'),
             content: String(item.content || ''),
             color: String(item.color || 'default'),
+            priority: (item.priority === 'high' || item.priority === 'low') ? item.priority : 'normal',
             tags: Array.isArray(item.tags) ? item.tags : [],
             pinned: Boolean(item.pinned),
             createdAt: item.createdAt || new Date().toISOString(),
@@ -143,6 +146,30 @@
       } catch (err) {
         return { success: false, error: err.message };
       }
+    },
+
+    exportMarkdown: function (filterFn) {
+      var notes = readAll();
+      if (typeof filterFn === 'function') {
+        notes = notes.filter(filterFn);
+      }
+      var md = '# Joint Notes — Экспорт заметок\n\n' +
+        '_Дата экспорта: ' + new Date().toLocaleString('ru-RU') + '_\n' +
+        '_Всего заметок: ' + notes.length + '_\n\n---\n\n';
+
+      for (var i = 0; i < notes.length; i++) {
+        var n = notes[i];
+        var pLabel = n.priority === 'high' ? '🔥 Высокий' : (n.priority === 'low' ? '💤 Низкий' : '⚡ Обычный');
+        var pinLabel = n.pinned ? ' [📌 Закреплено]' : '';
+        md += '## ' + (n.title || 'Без названия') + pinLabel + '\n\n';
+        md += '- **Приоритет:** ' + pLabel + '\n';
+        if (n.tags && n.tags.length > 0) {
+          md += '- **Теги:** ' + n.tags.map(function (t) { return t.startsWith('#') ? t : '#' + t; }).join(', ') + '\n';
+        }
+        md += '- **Создано:** ' + new Date(n.createdAt).toLocaleString('ru-RU') + '\n\n';
+        md += (n.content || '_Текст отсутствует_') + '\n\n---\n\n';
+      }
+      return md;
     }
   };
 

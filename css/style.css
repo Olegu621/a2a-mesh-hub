@@ -679,3 +679,227 @@ body.dark-mode .note-footer {
     bottom: 1rem;
   }
 }
+
+/* ==========================================================================
+   IMBA Features: Priorities, Markdown, Sound, Tag Cloud
+   ========================================================================== */
+
+/* Markdown quick help */
+.markdown-quick-help {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+.markdown-quick-help code {
+  background: var(--surface-hover);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+/* Priority Selector in Note Form */
+.priority-row {
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.priority-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.priority-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.priority-opt {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  transition: var(--transition);
+  user-select: none;
+}
+
+.priority-opt:hover {
+  filter: brightness(0.96);
+}
+
+.priority-opt.priority-high.active {
+  border-color: var(--danger-color);
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger-color);
+}
+
+.priority-opt.priority-normal.active {
+  border-color: var(--primary-color);
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--primary-color);
+}
+
+.priority-opt.priority-low.active {
+  border-color: var(--text-muted);
+  background: rgba(107, 114, 128, 0.15);
+  color: var(--text-muted);
+}
+
+/* Priority filter chips in filter bar */
+.priority-filter-chips {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 0.35rem;
+}
+
+.chip-filter.priority-chip {
+  font-size: 0.78rem;
+}
+
+/* Card Priority Styles */
+.note-card.priority-high {
+  border-left: 4px solid var(--danger-color);
+}
+
+.note-card.priority-low {
+  border-left: 4px solid var(--text-muted);
+  opacity: 0.92;
+}
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 12px;
+  letter-spacing: 0.02em;
+}
+
+.priority-badge.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger-color);
+}
+
+.priority-badge.normal {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--primary-color);
+}
+
+.priority-badge.low {
+  background: rgba(107, 114, 128, 0.15);
+  color: var(--text-muted);
+}
+
+/* Dynamic Tag Cloud */
+.tag-cloud {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.tag-cloud:empty {
+  display: none;
+}
+
+.tag-cloud-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+
+.tag-cloud-item:hover {
+  border-color: var(--primary-color);
+  background: var(--surface-hover);
+}
+
+.tag-cloud-item.active {
+  background: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
+.tag-cloud-count {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+/* Rich Markdown styling in Note Body */
+.note-body blockquote {
+  border-left: 3px solid var(--primary-color);
+  padding-left: 0.65rem;
+  margin: 0.4rem 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.note-body pre {
+  background: var(--surface-hover);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  overflow-x: auto;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8rem;
+  margin: 0.4rem 0;
+  line-height: 1.4;
+}
+
+.note-body code.inline-code {
+  background: var(--surface-hover);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.note-body h1, .note-body h2, .note-body h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.note-body h1 { font-size: 1.15rem; }
+.note-body h2 { font-size: 1.05rem; }
+.note-body h3 { font-size: 0.95rem; }
+
+/* Interactive Note Hashtags */
+.note-hashtag {
+  display: inline-block;
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--primary-color);
+  border-radius: 12px;
+  padding: 0.05rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  user-select: none;
+}
+
+.note-hashtag:hover {
+  background: var(--primary-color);
+  color: #fff;
+}

@@ -22,11 +22,13 @@
 
   // State
   let currentFilterColor = 'all';
+  let currentFilterPriority = 'all';
   let searchQuery = '';
   let currentSort = 'updated-desc';
   let editingNoteId = null;
   let lastDeletedNote = null;
   let undoTimeout = null;
+  let selectedPriority = 'normal';
 
   // DOM Elements cache
   let dom = {};
@@ -39,11 +41,15 @@
       noteContent: document.getElementById('note-content') || document.querySelector('textarea[name="content"]'),
       noteTags: document.getElementById('note-tags') || document.querySelector('input[name="tags"]'),
       colorPicker: document.getElementById('color-picker') || document.querySelector('.color-picker'),
+      prioritySelector: document.getElementById('priority-selector'),
+      tagCloud: document.getElementById('tag-cloud'),
       searchInput: document.getElementById('search-input'),
       sortSelect: document.getElementById('sort-select'),
       notesList: document.getElementById('notes-list') || document.getElementById('notes-container'),
       themeToggle: document.getElementById('theme-toggle'),
+      soundToggle: document.getElementById('sound-toggle'),
       exportBtn: document.getElementById('export-btn'),
+      exportMdBtn: document.getElementById('export-md-btn'),
       importBtn: document.getElementById('import-btn'),
       importFileInput: document.getElementById('import-file-input'),
       charCounter: document.getElementById('char-counter'),
@@ -94,6 +100,55 @@
     }, duration);
   }
 
+  // Web Audio API Synthesizer (zero assets, pure tactile sound fx)
+  const audio = {
+    ctx: null,
+    enabled: localStorage.getItem('joint-notes:sound') !== 'false',
+    init() {
+      if (!this.ctx && typeof AudioContext !== 'undefined') {
+        try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {}
+      }
+    },
+    play(freq, type = 'sine', duration = 0.12, gainVal = 0.08) {
+      if (!this.enabled) return;
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      try {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+      } catch (_) {}
+    },
+    pop() {
+      this.play(520, 'sine', 0.12, 0.09);
+      setTimeout(() => this.play(780, 'sine', 0.15, 0.08), 50);
+    },
+    check() {
+      this.play(640, 'triangle', 0.08, 0.06);
+    },
+    pin() {
+      this.play(880, 'sine', 0.09, 0.06);
+      setTimeout(() => this.play(1174, 'sine', 0.12, 0.05), 60);
+    },
+    delete() {
+      this.play(240, 'sine', 0.1, 0.07);
+    },
+    toggle() {
+      this.enabled = !this.enabled;
+      localStorage.setItem('joint-notes:sound', String(this.enabled));
+      if (this.enabled) this.pop();
+      return this.enabled;
+    }
+  };
+
   // Fallback in-memory storage adapter
   const fallbackStorage = {
     _key: 'joint_notes_data',
@@ -120,6 +175,7 @@
         title: data.title || 'Без названия',
         content: data.content || '',
         color: data.color || 'default',
+        priority: (data.priority === 'high' || data.priority === 'low') ? data.priority : 'normal',
         tags: Array.isArray(data.tags) ? data.tags : (data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
         pinned: Boolean(data.pinned),
         createdAt: new Date().toISOString(),
@@ -234,27 +290,92 @@
     return safe.replace(regex, '<mark class="search-highlight">$1</mark>');
   }
 
-  // Rich content formatting: todo checkboxes and clickable links
+  // Rich content formatting: Markdown, code blocks, todo checklists, hashtags and clickable links
   function formatRichContent(content, query) {
     if (!content) return '';
-    const lines = String(content).split('\n');
+
+    // Handle fenced code blocks ```lang\ncode\n``` first
+    const codeBlocks = [];
+    let text = String(content).replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, function (match, lang, code) {
+      const idx = codeBlocks.length;
+      codeBlocks.push({ lang, code });
+      return `__CODE_BLOCK_${idx}__`;
+    });
+
+    const lines = text.split('\n');
     const formattedLines = lines.map((line, idx) => {
-      // Todo checklist item
+      // Todo checklist item (- [ ] or - [x])
       const todoMatch = line.match(/^(\s*(?:-\s*)?\[([ xX])\]\s*)(.*)$/);
       if (todoMatch) {
         const isChecked = todoMatch[2].toLowerCase() === 'x';
-        const taskText = todoMatch[3];
-        const highlighted = highlightText(taskText, query);
-        return `<label class="todo-line ${isChecked ? 'done' : ''}"><input type="checkbox" class="todo-checkbox" data-line="${idx}" ${isChecked ? 'checked' : ''}><span>${highlighted}</span></label>`;
+        const taskText = formatInlineMarkdown(todoMatch[3], query);
+        return `<label class="todo-line ${isChecked ? 'done' : ''}"><input type="checkbox" class="todo-checkbox" data-line="${idx}" ${isChecked ? 'checked' : ''}><span>${taskText}</span></label>`;
       }
 
-      // Normal line with auto-linking URLs
-      let formatted = highlightText(line, query);
-      formatted = formatted.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="note-link">$1</a>');
-      return formatted;
+      // Headers: # ## ###
+      const headerMatch = line.match(/^(#{1,3})\s+(.*)$/);
+      if (headerMatch) {
+        const level = headerMatch[1].length;
+        const hText = formatInlineMarkdown(headerMatch[2], query);
+        return `<h${level}>${hText}</h${level}>`;
+      }
+
+      // Blockquotes: > quote
+      const quoteMatch = line.match(/^>\s+(.*)$/);
+      if (quoteMatch) {
+        return `<blockquote>${formatInlineMarkdown(quoteMatch[1], query)}</blockquote>`;
+      }
+
+      return formatInlineMarkdown(line, query);
     });
 
-    return formattedLines.join('<br>');
+    let result = formattedLines.join('<br>');
+
+    // Restore code blocks safely with copy capability
+    codeBlocks.forEach((b, idx) => {
+      const safeCode = escapeHTML(b.code.trim());
+      const blockHtml = `<pre><code>${safeCode}</code></pre>`;
+      result = result.replace(`__CODE_BLOCK_${idx}__`, blockHtml);
+    });
+
+    return result;
+  }
+
+  // Format inline Markdown elements
+  function formatInlineMarkdown(text, query) {
+    if (!text) return '';
+    let res = escapeHTML(text);
+
+    // Inline code `code`
+    res = res.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+
+    // Bold **text** or __text__
+    res = res.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    res = res.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+
+    // Italic *text* or _text_
+    res = res.replace(/(^|[^*])\*([^*]+)\*([^*]|$)/g, '$1<em>$2</em>$3');
+
+    // Strikethrough ~~text~~
+    res = res.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+
+    // Hashtags #tag
+    res = res.replace(/(^|\s)#([a-zA-Zа-яА-ЯёЁ0-9_-]+)/g, '$1<span class="note-hashtag" data-tag="$2">#$2</span>');
+
+    // Auto-link URLs
+    res = res.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="note-link">$1</a>');
+
+    // Search query highlight
+    if (query && query.trim()) {
+      const cleanQ = query.trim().replace(/^#/, '');
+      if (cleanQ) {
+        const qEsc = cleanQ.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(?![^<]*>)(${qEsc})`, 'gi');
+        res = res.replace(regex, '<mark class="search-highlight">$1</mark>');
+      }
+    }
+
+    return res;
   }
 
   // Format date helper
@@ -282,6 +403,12 @@
         return a.pinned ? -1 : 1;
       }
       switch (sortMode) {
+        case 'priority-desc':
+          const pOrder = { high: 3, normal: 2, low: 1 };
+          const pA = pOrder[a.priority || 'normal'] || 2;
+          const pB = pOrder[b.priority || 'normal'] || 2;
+          if (pA !== pB) return pB - pA;
+          return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
         case 'created-desc':
           return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         case 'created-asc':
@@ -296,6 +423,39 @@
     return sorted;
   }
 
+  // Render dynamic tag cloud
+  function renderTagCloud(allNotes) {
+    if (!dom.tagCloud) return;
+    const tagCounts = {};
+    for (const n of allNotes) {
+      const tags = Array.isArray(n.tags) ? n.tags : (n.tags ? String(n.tags).split(/[,\s]+/) : []);
+      for (let t of tags) {
+        t = t.replace(/^#/, '').trim();
+        if (t) tagCounts[t] = (tagCounts[t] || 0) + 1;
+      }
+      const matches = (n.content || '').match(/#([a-zA-Zа-яА-ЯёЁ0-9_-]+)/g);
+      if (matches) {
+        for (let m of matches) {
+          const t = m.slice(1).trim();
+          if (t) tagCounts[t] = (tagCounts[t] || 0) + 1;
+        }
+      }
+    }
+
+    const tagKeys = Object.keys(tagCounts).sort((a, b) => tagCounts[b] - tagCounts[a]);
+    if (!tagKeys.length) {
+      dom.tagCloud.innerHTML = '';
+      return;
+    }
+
+    const currentTag = searchQuery.startsWith('#') ? searchQuery.slice(1).toLowerCase() : searchQuery.toLowerCase();
+
+    dom.tagCloud.innerHTML = tagKeys.slice(0, 16).map(tag => {
+      const isActive = currentTag === tag.toLowerCase();
+      return `<button type="button" class="tag-cloud-item ${isActive ? 'active' : ''}" data-tag="${escapeHTML(tag)}">#${escapeHTML(tag)} <span class="tag-cloud-count">(${tagCounts[tag]})</span></button>`;
+    }).join('');
+  }
+
   // Render notes list
   function renderNotes() {
     if (!dom.notesList) return;
@@ -307,6 +467,9 @@
     } catch (e) {
       console.error('Ошибка при получении заметок:', e);
     }
+
+    // Always update tag cloud with full collection
+    renderTagCloud(allNotes);
 
     let notes = [...allNotes];
 
@@ -328,6 +491,11 @@
       notes = notes.filter(note => (note.color || 'default') === currentFilterColor);
     }
 
+    // Filter by priority
+    if (currentFilterPriority !== 'all') {
+      notes = notes.filter(note => (note.priority || 'normal') === currentFilterPriority);
+    }
+
     // Apply sorting
     notes = sortNotes(notes, currentSort);
 
@@ -336,7 +504,7 @@
       const pinnedCount = allNotes.filter(n => n.pinned).length;
       let text = `Заметок: ${allNotes.length}`;
       if (pinnedCount > 0) text += ` (📌 ${pinnedCount} закр.)`;
-      if (searchQuery || currentFilterColor !== 'all') {
+      if (searchQuery || currentFilterColor !== 'all' || currentFilterPriority !== 'all') {
         text += ` · Найдено по фильтрам: ${notes.length}`;
       }
       dom.statsBadge.textContent = text;
@@ -352,7 +520,7 @@
         <div class="empty-state">
           <div class="empty-state-icon">📝</div>
           <p><strong>Заметок не найдено</strong></p>
-          <p class="subtitle">${searchQuery || currentFilterColor !== 'all' ? 'Попробуйте сбросить поисковый запрос или фильтр' : 'Создайте свою первую заметку с помощью формы выше'}</p>
+          <p class="subtitle">${searchQuery || currentFilterColor !== 'all' || currentFilterPriority !== 'all' ? 'Попробуйте сбросить поисковый запрос или фильтр' : 'Создайте свою первую заметку с помощью формы выше'}</p>
         </div>
       `;
       return;
@@ -360,6 +528,8 @@
 
     dom.notesList.innerHTML = notes.map(note => {
       const color = note.color || 'default';
+      const priority = note.priority || 'normal';
+      const pLabel = priority === 'high' ? '🔥 Срочно' : (priority === 'low' ? '💤 Низкий' : '⚡ Обычный');
       const isPinned = Boolean(note.pinned);
       const tags = Array.isArray(note.tags) ? note.tags : (note.tags ? String(note.tags).split(',').map(s => s.trim()) : []);
       const tagsHtml = tags.map(t => `<span class="note-tag" data-tag="${escapeHTML(t)}">#${highlightText(t, searchQuery)}</span>`).join(' ');
@@ -368,10 +538,11 @@
       const contentHtml = formatRichContent(note.content || '', searchQuery);
 
       return `
-        <article class="note-card color-${escapeHTML(color)} ${isPinned ? 'is-pinned' : ''}" data-id="${escapeHTML(note.id)}">
+        <article class="note-card color-${escapeHTML(color)} priority-${escapeHTML(priority)} ${isPinned ? 'is-pinned' : ''}" data-id="${escapeHTML(note.id)}">
           <div class="note-header">
             <div class="note-title-wrap">
               ${isPinned ? '<span class="pin-indicator" title="Закреплено">📌</span>' : ''}
+              <span class="priority-badge ${escapeHTML(priority)}" title="Приоритет: ${pLabel}">${pLabel}</span>
               <h3 class="note-title">${titleHtml}</h3>
             </div>
             <div class="note-card-actions">
@@ -423,6 +594,18 @@
     });
   }
 
+  // Set selected priority in form
+  function setSelectedPriority(priority) {
+    selectedPriority = (priority === 'high' || priority === 'low') ? priority : 'normal';
+    document.querySelectorAll('.priority-opt').forEach(opt => {
+      const input = opt.querySelector('input');
+      const val = input ? input.value : (opt.classList.contains('priority-high') ? 'high' : (opt.classList.contains('priority-low') ? 'low' : 'normal'));
+      const isActive = val === selectedPriority;
+      opt.classList.toggle('active', isActive);
+      if (input) input.checked = isActive;
+    });
+  }
+
   // Handle Note Form Submit
   function handleFormSubmit(e) {
     if (e) e.preventDefault();
@@ -436,6 +619,7 @@
     }
 
     const color = getSelectedColor();
+    const priority = selectedPriority || 'normal';
     const rawTags = dom.noteTags ? dom.noteTags.value : '';
     const tags = rawTags
       ? rawTags.split(/[,\s]+/).map(t => t.replace(/^#/, '').trim()).filter(Boolean)
@@ -449,8 +633,10 @@
         title,
         content,
         color,
+        priority,
         tags
       });
+      audio.pop();
       showToast('✓ Заметка обновлена!');
       cancelEdit();
     } else {
@@ -459,8 +645,10 @@
         title,
         content,
         color,
+        priority,
         tags
       });
+      audio.pop();
       showToast('✓ Заметка добавлена!');
       resetForm();
     }
@@ -484,6 +672,7 @@
     }
 
     setSelectedColor(note.color || 'default');
+    setSelectedPriority(note.priority || 'normal');
     updateCharCounter();
 
     if (dom.submitBtn) dom.submitBtn.textContent = 'Сохранить изменения';
@@ -521,6 +710,7 @@
     if (dom.noteContent) dom.noteContent.value = '';
     if (dom.noteTags) dom.noteTags.value = '';
     setSelectedColor('default');
+    setSelectedPriority('normal');
     updateCharCounter();
   }
 
@@ -530,6 +720,7 @@
     if (typeof storage.togglePin === 'function') {
       const res = storage.togglePin(noteId);
       if (res) {
+        audio.pin();
         showToast(res.pinned ? '📌 Заметка закреплена вверху' : '📍 Заметка откреплена');
         renderNotes();
       }
@@ -545,6 +736,7 @@
     const fullText = `${note.title ? note.title + '\n\n' : ''}${note.content || ''}`.trim();
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(fullText).then(() => {
+        audio.pop();
         showToast('📋 Заметка скопирована в буфер обмена');
       }).catch(() => {
         fallbackCopy(fullText);
@@ -561,6 +753,7 @@
     el.select();
     document.execCommand('copy');
     document.body.removeChild(el);
+    audio.pop();
     showToast('📋 Заметка скопирована в буфер обмена');
   }
 
@@ -570,6 +763,7 @@
     const deleted = storage.delete(noteId);
     if (!deleted) return;
 
+    audio.delete();
     lastDeletedNote = deleted;
     if (editingNoteId === noteId) {
       cancelEdit();
@@ -582,6 +776,7 @@
       onAction: () => {
         if (lastDeletedNote && typeof storage.restore === 'function') {
           storage.restore(lastDeletedNote);
+          audio.pop();
           renderNotes();
           showToast('✓ Заметка восстановлена!');
           lastDeletedNote = null;
@@ -609,7 +804,32 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('📥 Файл бэкапа успешно экспортирован!');
+    audio.pop();
+    showToast('📥 Файл JSON успешно экспортирован!');
+  }
+
+  // Export notes to Markdown
+  function exportNotesMarkdown() {
+    const storage = getStorage();
+    let mdStr = '';
+    if (typeof storage.exportMarkdown === 'function') {
+      mdStr = storage.exportMarkdown();
+    } else {
+      const all = storage.getAll() || [];
+      mdStr = '# Joint Notes Backup\n\n' + all.map(n => `## ${n.title}\n\n${n.content}\n\n---\n`).join('\n');
+    }
+
+    const blob = new Blob([mdStr], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `joint-notes-export-${new Date().toISOString().slice(0, 10)}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    audio.pop();
+    showToast('📝 Заметки экспортированы в Markdown!');
   }
 
   // Import notes from JSON
@@ -630,6 +850,7 @@
       if (typeof storage.importJSON === 'function') {
         const res = storage.importJSON(content);
         if (res.success) {
+          audio.pop();
           showToast(`✓ Успешно импортировано ${res.count} заметок!`);
           renderNotes();
         } else {
@@ -655,6 +876,7 @@
       const isCurrentlyChecked = match[2].toLowerCase() === 'x';
       lines[lineIdx] = `${match[1]}${isCurrentlyChecked ? ' ' : 'x'}${match[3]}`;
       storage.update(noteId, { content: lines.join('\n') });
+      audio.check();
       renderNotes();
     }
   }
@@ -689,10 +911,23 @@
         copyNote(noteId);
       } else if (e.target.closest('.note-tag')) {
         e.stopPropagation();
-        const tag = e.target.dataset.tag;
+        const tag = e.target.closest('.note-tag').dataset.tag;
         if (tag && dom.searchInput) {
-          dom.searchInput.value = tag;
-          searchQuery = tag;
+          const cleanTag = tag.startsWith('#') ? tag : '#' + tag;
+          dom.searchInput.value = cleanTag;
+          searchQuery = cleanTag;
+          audio.check();
+          renderNotes();
+          dom.searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else if (e.target.closest('.note-hashtag')) {
+        e.stopPropagation();
+        const tag = e.target.closest('.note-hashtag').dataset.tag;
+        if (tag && dom.searchInput) {
+          const cleanTag = '#' + tag;
+          dom.searchInput.value = cleanTag;
+          searchQuery = cleanTag;
+          audio.check();
           renderNotes();
           dom.searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -713,8 +948,78 @@
 
       filterContainer.querySelectorAll('.chip-filter').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-
+      audio.check();
       renderNotes();
+    });
+  }
+
+  // Priority filter chips setup
+  function setupPriorityFilters() {
+    const filterContainer = document.querySelector('.priority-filter-chips');
+    if (!filterContainer) return;
+
+    filterContainer.addEventListener('click', function (e) {
+      const chip = e.target.closest('.chip-filter');
+      if (!chip) return;
+      const priority = chip.dataset.priority || 'all';
+      currentFilterPriority = priority;
+
+      filterContainer.querySelectorAll('.chip-filter').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      audio.check();
+      renderNotes();
+    });
+  }
+
+  // Tag Cloud setup
+  function setupTagCloud() {
+    if (!dom.tagCloud) return;
+
+    dom.tagCloud.addEventListener('click', function (e) {
+      const item = e.target.closest('.tag-cloud-item');
+      if (!item) return;
+      const tag = item.dataset.tag;
+      if (!tag) return;
+
+      const tagQuery = '#' + tag;
+      if (searchQuery.toLowerCase() === tagQuery.toLowerCase()) {
+        searchQuery = '';
+        if (dom.searchInput) dom.searchInput.value = '';
+      } else {
+        searchQuery = tagQuery;
+        if (dom.searchInput) dom.searchInput.value = tagQuery;
+      }
+      audio.check();
+      renderNotes();
+    });
+  }
+
+  // Priority Selector in form
+  function setupPrioritySelector() {
+    const sel = dom.prioritySelector || document.getElementById('priority-selector');
+    if (!sel) return;
+
+    sel.addEventListener('click', function (e) {
+      const opt = e.target.closest('.priority-opt');
+      if (!opt) return;
+      const input = opt.querySelector('input');
+      const val = input ? input.value : (opt.classList.contains('priority-high') ? 'high' : (opt.classList.contains('priority-low') ? 'low' : 'normal'));
+      setSelectedPriority(val);
+      audio.check();
+    });
+  }
+
+  // Sound Toggle button
+  function setupSoundToggle() {
+    if (!dom.soundToggle) return;
+    function updateBtn() {
+      dom.soundToggle.textContent = audio.enabled ? '🔊 Звук: Вкл' : '🔇 Звук: Выкл';
+      dom.soundToggle.setAttribute('title', audio.enabled ? 'Выключить звуки интерфейса' : 'Включить звуки интерфейса');
+    }
+    updateBtn();
+    dom.soundToggle.addEventListener('click', function () {
+      audio.toggle();
+      updateBtn();
     });
   }
 
@@ -773,8 +1078,16 @@
       dom.themeToggle.addEventListener('click', toggleTheme);
     }
 
+    if (dom.soundToggle) {
+      setupSoundToggle();
+    }
+
     if (dom.exportBtn) {
       dom.exportBtn.addEventListener('click', exportNotes);
+    }
+
+    if (dom.exportMdBtn) {
+      dom.exportMdBtn.addEventListener('click', exportNotesMarkdown);
     }
 
     if (dom.importBtn) {
@@ -797,8 +1110,11 @@
       });
     });
 
+    setupPrioritySelector();
     setupListDelegation();
     setupColorFilters();
+    setupPriorityFilters();
+    setupTagCloud();
     setupShortcuts();
   }
 
