@@ -194,7 +194,7 @@ async function main() {
       }
     }
 
-    case 'peers': { const st = await api('GET', '/api/state'); for (const p of st.peers) console.log(`${p.name}${p.capabilities ? ' — ' + p.capabilities : ''}`); if (!st.peers.length) console.error('(никого)'); return; }
+    case 'peers': { const st = await api('GET', '/api/state'); for (const p of st.peers) console.log(`${p.name}${p.online ? '' : ' (офлайн, ' + p.lastSeenAgo + 'с)'}${p.capabilities ? ' — ' + p.capabilities : ''}`); if (!st.peers.length) console.error('(никого)'); return; }
     case 'tasks': {
       const st = await api('GET', '/api/state');
       for (const t of st.tasks) console.log(`[${t.status}] ${t.id}${t.title ? ' — ' + t.title : ''}${t.owner ? ` (у ${t.owner}${t.leaseLeft ? `, ещё ${t.leaseLeft}с` : ''})` : ''}`);
