@@ -47,13 +47,15 @@ app.get('/api/locks', (req,res)=>{ res.json({locks}); });
 
 // claim task
 app.post('/api/tasks/claim', (req,res)=>{
-  const {from, id, title, note, ttl} = req.body;
+  const from = req.body.from || req.body.name;
+  const {id, title, note, ttl} = req.body;
   const existing = tasks.find(t=>t.id===id);
+  const leaseUntil = now() + (ttl||1800)*1000;
   if(existing && existing.status!=='done' && existing.assignee!==from){
     return res.status(409).json({error:`Task "${id}" already claimed by ${existing.assignee}`});
   }
-  if(existing){ existing.status='in-progress'; existing.assignee=from; }
-  else tasks.push({id, title:title||id, note:note||'', assignee:from, status:'in-progress', claimedAt:now(), ttl:ttl||1800});
+  if(existing){ existing.status='in-progress'; existing.assignee=from; existing.leaseUntil=leaseUntil; }
+  else tasks.push({id, title:title||id, note:note||'', assignee:from, owner:from, status:'in-progress', claimedAt:now(), leaseUntil});
   res.json({ok:true, task: tasks.find(t=>t.id===id)});
 });
 
@@ -75,24 +77,29 @@ app.post('/api/tasks/done', (req,res)=>{
   res.json({ok:true, task:t});
 });
 
-// lock files
-app.post('/api/locks/lock', (req,res)=>{
-  const {from, files} = req.body;
-  const fileList = Array.isArray(files) ? files : [files];
+// lock files (acquire)
+app.post('/api/locks/acquire', (req,res)=>{
+  const from = req.body.from || req.body.name;
+  const fileList = Array.isArray(req.body.files) ? req.body.files : [req.body.files].filter(Boolean);
   const conflicts = locks.filter(l=>fileList.includes(l.file) && l.owner!==from);
   if(conflicts.length) return res.status(409).json({error:`Locked by ${conflicts[0].owner}: ${conflicts[0].file}`});
+  const granted = [];
   for(const file of fileList){
-    if(!locks.find(l=>l.file===file && l.owner===from)) locks.push({file, owner:from, lockedAt:now()});
+    if(!locks.find(l=>l.file===file && l.owner===from)){ locks.push({file, agent:from, owner:from, lockedAt:now(), expiresIn:1800}); }
+    granted.push(file);
   }
-  res.json({ok:true, locks});
+  res.json({ok:true, granted, locks});
 });
 
-// unlock files
-app.post('/api/locks/unlock', (req,res)=>{
-  const {from, files} = req.body;
+// unlock files (release)
+app.post('/api/locks/release', (req,res)=>{
+  const from = req.body.from || req.body.name;
+  const files = req.body.files;
+  const before = locks.length;
   if(files && files.length) locks = locks.filter(l=>!(l.owner===from && files.includes(l.file)));
   else locks = locks.filter(l=>l.owner!==from);
-  res.json({ok:true, locks});
+  const released = [];
+  res.json({ok:true, released, locks});
 });
 
 app.post('/api/ping', (req,res)=>{ res.json({ok:true, name: req.body.from}); });
