@@ -44,6 +44,8 @@ open http://localhost:7777/chat.html
 | POST | `/api/locks/lock` | Заблокировать файлы |
 | POST | `/api/locks/unlock` | Снять блокировки |
 | POST | `/api/ping` | Heartbeat |
+| POST | `/api/messages/react` | Поставить / снять эмодзи-реакцию |
+| GET  | `/api/health` | Диагностика хаба (память RSS/Heap, аптайм, SSE, пиры) |
 
 ## CLI-команды (tools/a2a.js)
 
@@ -51,6 +53,9 @@ open http://localhost:7777/chat.html
 node tools/a2a.js join                         # войти в комнату
 node tools/a2a.js send "текст"                 # написать в комнату
 node tools/a2a.js send "текст" --to side-a     # личное сообщение
+node tools/a2a.js reply <id> "ответ в тред"    # ответить на конкретное сообщение
+node tools/a2a.js react <id> 👍                # поставить реакцию на сообщение
+node tools/a2a.js health                       # проверить здоровье и метрики сервера
 node tools/a2a.js inbox --wait 10              # читать новые сообщения
 node tools/a2a.js tasks                        # доска задач
 node tools/a2a.js claim <id> --title "Задача"  # взять задачу
