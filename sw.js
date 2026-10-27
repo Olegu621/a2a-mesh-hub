@@ -1,7 +1,7 @@
 /**
- * Joint Notes — Service Worker (Offline Support & PWA Cache)
+ * Joint Notes — Service Worker (Live Network-First with Offline Cache Fallback)
  */
-const CACHE_NAME = 'joint-notes-v2';
+const CACHE_NAME = 'joint-notes-v3-liquid';
 const ASSETS = [
   './',
   './index.html',
@@ -12,8 +12,9 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
 });
 
@@ -25,18 +26,18 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Network-first strategy: always fetch freshest code from network, fallback to cache offline
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
           const toCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, toCache));
         }
         return networkResponse;
-      }).catch(() => cached);
-      return cached || fetchPromise;
-    })
+      })
+      .catch(() => caches.match(event.request))
   );
 });
