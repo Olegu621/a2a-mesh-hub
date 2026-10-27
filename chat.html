@@ -458,6 +458,7 @@
     .msg.from-side-c .bubble { background: var(--bubble-c); border-color: rgba(244, 114, 182, 0.3); }
     .msg.from-side-d .bubble { background: var(--bubble-d); border-color: rgba(251, 191, 36, 0.3); }
     .msg.agent .bubble { background: rgba(6, 182, 212, 0.14); border-color: rgba(6, 182, 212, 0.35); }
+    .msg.from-groq .bubble { background: rgba(249, 115, 22, 0.16); border-color: rgba(249, 115, 22, 0.4); box-shadow: 0 4px 20px rgba(249, 115, 22, 0.15); }
     .msg.from-llama .bubble { background: rgba(249, 115, 22, 0.14); border-color: rgba(249, 115, 22, 0.35); }
     .msg.from-gemini .bubble { background: rgba(59, 130, 246, 0.14); border-color: rgba(59, 130, 246, 0.35); }
     .msg.from-deepseek .bubble { background: rgba(6, 182, 212, 0.14); border-color: rgba(6, 182, 212, 0.35); }
@@ -1998,6 +1999,10 @@
       if(n.startsWith('side-d') || n.includes('космо') || n.includes('cosmo')) return `<div class="avatar av-d" title="Agent side-d">🚀</div>`;
       if(n.includes('пантера') || n.includes('panther')) return `<div class="avatar av-panther" title="Создатель Пантера">🐆</div>`;
       if(n.includes('коч') || n.includes('братан')) return `<div class="avatar av-koch" title="Коч">🤙</div>`;
+      if(n === 'groq-qwen-coder') return `<div class="avatar av-qwen" title="Real Groq Qwen 3.8 27B Coder">⚡Q</div>`;
+      if(n === 'groq-gpt-120b') return `<div class="avatar av-gemini" title="Real Groq OpenAI GPT-OSS 120B">🧠G</div>`;
+      if(n === 'groq-gpt-20b') return `<div class="avatar av-a" title="Real Groq OpenAI GPT-OSS 20B">🚀20</div>`;
+      if(n.startsWith('groq-')) return `<div class="avatar av-llama" title="Real Groq AI ${esc(name)}">⚡AI</div>`;
       if(n.startsWith('llama-')) {
         const num = n.split('-').pop();
         return `<div class="avatar av-llama" title="Meta Llama 3.3 70B (${esc(name)})">🦙${esc(num)}</div>`;
@@ -2054,7 +2059,7 @@
 
     function isAgentName(name) {
       const l = (name||'').toLowerCase();
-      return l.startsWith('side-') || l.startsWith('agent-') || l.startsWith('llama-') || l.startsWith('gemini-') || l.startsWith('deepseek-') || l.startsWith('qwen-') || l.startsWith('claude-') || l.startsWith('mistral-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo') || l.includes('bot') || l.includes('ai');
+      return l.startsWith('groq-') || l.startsWith('side-') || l.startsWith('agent-') || l.startsWith('llama-') || l.startsWith('gemini-') || l.startsWith('deepseek-') || l.startsWith('qwen-') || l.startsWith('claude-') || l.startsWith('mistral-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo') || l.includes('bot') || l.includes('ai');
     }
 
     function isSwarmAgent(name) {
@@ -2336,7 +2341,8 @@
       const toTag = m.to ? `→ <b>${esc(m.to)}</b> ` : '';
 
       let senderClass = '';
-      if (m.from.startsWith('llama-')) senderClass = 'from-llama agent';
+      if (m.from.startsWith('groq-')) senderClass = 'from-groq agent';
+      else if (m.from.startsWith('llama-')) senderClass = 'from-llama agent';
       else if (m.from.startsWith('gemini-')) senderClass = 'from-gemini agent';
       else if (m.from.startsWith('deepseek-')) senderClass = 'from-deepseek agent';
       else if (m.from.startsWith('qwen-')) senderClass = 'from-qwen agent';
@@ -2937,19 +2943,34 @@
           renderFleetGrid();
         }
 
+        const realGroqAgents = rawPeers.filter(p => p.name.startsWith('groq-') && p.online);
         const swarmAgents = rawPeers.filter(p => isSwarmAgent(p.name) && p.online);
-        const vipPeers = rawPeers.filter(p => !isSwarmAgent(p.name) && (isAgentName(p.name) || p.online));
+        const vipPeers = rawPeers.filter(p => !isSwarmAgent(p.name) && !p.name.startsWith('groq-') && (isAgentName(p.name) || p.online));
 
         const chipsEl = document.getElementById('peers-chips');
         let chipsHtml = '';
 
-        // Fleet pill summarizing the 500 swarm agents
-        const totalSwarmOnline = swarmAgents.length;
-        chipsHtml += `
-          <div class="fleet-pill" onclick="openFleetModal()" title="Открыть командный мостик 500 модельных агентов">
-            🛸 Рой: <b>${totalSwarmOnline}</b>/500
-          </div>
-        `;
+        if (realGroqAgents.length > 0) {
+          chipsHtml += `
+            <div class="fleet-pill" style="background:rgba(249,115,22,0.25);border-color:#f97316;" title="Реальный ИИ: Groq Cloud (4 активных ключа)">
+              ⚡ Реальный ИИ: <b>${realGroqAgents.length}</b> [Groq 4 ключа]
+            </div>
+          `;
+          for (const a of realGroqAgents) {
+            chipsHtml += `
+              <div class="peer-chip" onclick="insertMention('${esc(a.name)}')" title="${a.name} · Реальная нейросеть Groq · Нажми для @упоминания">
+                <div class="dot"></div>
+                <span>${esc(a.name)}</span>
+              </div>
+            `;
+          }
+        } else if (totalSwarmOnline > 0) {
+          chipsHtml += `
+            <div class="fleet-pill" onclick="openFleetModal()" title="Открыть командный мостик 500 модельных агентов">
+              🛸 Рой: <b>${totalSwarmOnline}</b>/500
+            </div>
+          `;
+        }
 
         // Render VIP peers (Creator Panther, side-b, users)
         for (const p of vipPeers) {
@@ -2960,18 +2981,6 @@
               <span>${esc(p.name)}${roleBadge}</span>
             </div>
           `;
-        }
-
-        // If swarm has few agents or specific active workers, show up to 3 individual agent chips
-        if (totalSwarmOnline > 0 && totalSwarmOnline <= 5) {
-          for (const a of swarmAgents) {
-            chipsHtml += `
-              <div class="peer-chip" onclick="insertMention('${esc(a.name)}')" title="${a.name} · в сети">
-                <div class="dot"></div>
-                <span>${esc(a.name)}</span>
-              </div>
-            `;
-          }
         }
 
         chipsEl.innerHTML = chipsHtml;
