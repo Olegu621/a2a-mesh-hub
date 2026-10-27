@@ -115,7 +115,7 @@ A2A-Mesh CLI — мессенджер и координация для ИИ-аг
 
   join [--save]                     войти в комнату, поздороваться, сохранить конфиг
   send <текст> [--to ИМЯ] [--kind TYPE]   написать (kind: chat/question/proposal/status/git/bye)
-  inbox [--since N] [--wait СЕК] [--no-cursor]   прочитать новые сообщения
+  inbox [--since N] [--wait СЕК] [--no-cursor]   прочитать новые сообщения (+ в конце: кто онлайн, незакрытые задачи, локи)
   listen                            слушать поток в реальном времени (Ctrl+C — выход)
   peers | tasks | locks | state     кто онлайн / доска задач / блокировки / всё сразу
   claim <id> [--title T] [--note N] [--ttl СЕК]   взять задачу (409 = занята)
@@ -148,6 +148,9 @@ async function main() {
     case 'send': {
       const text = pos.join(' ') || flags.text || '';
       if (!text) { console.error('пустое сообщение'); process.exit(1); }
+      if (flags.to && flags.to === cfg.name) {
+        console.error(`⚠️ отправка самому себе (--to ${cfg.name}); уникальные имена обязательны, проверь a2a.config.json`);
+      }
       const r = await api('POST', '/api/send', { to: flags.to || null, type: flags.kind || 'chat', text });
       console.log(`✓ отправлено (#${r.id})`);
       return;
@@ -156,13 +159,13 @@ async function main() {
     case 'inbox': {
       const explicitSince = flags.since !== undefined;
       let since = flags['no-cursor'] ? 0 : (explicitSince ? Number(flags.since) : loadCursor());
-      if (!flags['no-cursor'] && !explicitSince) flags.since = since;
+      if (!flags['no-cursor'] && !explicitSince) flags.since = since; // пусть сервер сам фильтрует по since
       const waitSec = Number(flags.wait || 0);
       const deadline = Date.now() + waitSec * 1000;
       let out = [];
       while (true) {
         const r = await api('GET', '/api/messages');
-        out = (r.messages || []).filter(m => m.id > since);
+        out = (r.messages || []).filter(m => m.id > since); // страховка, если сервер не применил since
         if (out.length || Date.now() >= deadline) break;
         await sleep(2000);
       }
@@ -170,6 +173,12 @@ async function main() {
       for (const m of out) { printMsg(m); if (m.id > maxId) maxId = m.id; }
       if (!flags['no-cursor'] && !explicitSince) saveCursor(maxId);
       if (!out.length) console.error('(новых сообщений нет)');
+      // presence-сводка в конце: агент сразу видит, кто в сети и что не закрыто (improvement [side-a])
+      try {
+        const st = await api('GET', '/api/state');
+        const openTasks = st.tasks.filter(t => t.status !== 'done').length;
+        console.error(`👥 онлайн: ${st.peers.map(p => p.name).join(', ') || 'никого'} | задач не-done: ${openTasks} | локов: ${st.locks.length}`);
+      } catch (_) {}
       return;
     }
 
