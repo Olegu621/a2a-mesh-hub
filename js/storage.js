@@ -80,6 +80,20 @@
       return this.update(id, { pinned: !note.pinned });
     },
 
+    reorder: function (fromId, toId) {
+      var notes = readAll();
+      var fromIndex = -1, toIndex = -1;
+      for (var i = 0; i < notes.length; i++) {
+        if (notes[i].id === fromId) fromIndex = i;
+        if (notes[i].id === toId) toIndex = i;
+      }
+      if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return false;
+      var moved = notes.splice(fromIndex, 1)[0];
+      notes.splice(toIndex, 0, moved);
+      writeAll(notes);
+      return true;
+    },
+
     delete: function (id) {
       var notes = readAll();
       var target = null;

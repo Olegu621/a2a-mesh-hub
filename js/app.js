@@ -216,6 +216,16 @@
       this._write(notes);
       return note;
     },
+    reorder(fromId, toId) {
+      const notes = this._read();
+      const fromIndex = notes.findIndex(n => String(n.id) === String(fromId));
+      const toIndex = notes.findIndex(n => String(n.id) === String(toId));
+      if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return false;
+      const moved = notes.splice(fromIndex, 1)[0];
+      notes.splice(toIndex, 0, moved);
+      this._write(notes);
+      return true;
+    },
     exportJSON() {
       return JSON.stringify(this._read(), null, 2);
     },
@@ -538,7 +548,7 @@
       const contentHtml = formatRichContent(note.content || '', searchQuery);
 
       return `
-        <article class="note-card color-${escapeHTML(color)} priority-${escapeHTML(priority)} ${isPinned ? 'is-pinned' : ''}" data-id="${escapeHTML(note.id)}">
+        <article class="note-card color-${escapeHTML(color)} priority-${escapeHTML(priority)} ${isPinned ? 'is-pinned' : ''}" data-id="${escapeHTML(note.id)}" draggable="true">
           <div class="note-header">
             <div class="note-title-wrap">
               ${isPinned ? '<span class="pin-indicator" title="Закреплено">📌</span>' : ''}
@@ -1047,6 +1057,80 @@
     });
   }
 
+  // HTML5 Drag-and-Drop reordering
+  function setupDragAndDrop() {
+    if (!dom.notesList) return;
+
+    let draggedId = null;
+
+    dom.notesList.addEventListener('dragstart', function (e) {
+      const card = e.target.closest('.note-card');
+      if (!card) return;
+      if (['BUTTON', 'INPUT', 'TEXTAREA', 'A'].includes(e.target.tagName) || e.target.closest('.action-icon-btn')) {
+        e.preventDefault();
+        return;
+      }
+      draggedId = card.dataset.id;
+      card.classList.add('dragging');
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', draggedId);
+      }
+    });
+
+    dom.notesList.addEventListener('dragend', function (e) {
+      const card = e.target.closest('.note-card');
+      if (card) card.classList.remove('dragging');
+      document.querySelectorAll('.note-card.drag-over').forEach(c => c.classList.remove('drag-over'));
+      draggedId = null;
+    });
+
+    dom.notesList.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      const targetCard = e.target.closest('.note-card');
+      if (!targetCard || targetCard.dataset.id === draggedId) return;
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.note-card.drag-over').forEach(c => {
+        if (c !== targetCard) c.classList.remove('drag-over');
+      });
+      targetCard.classList.add('drag-over');
+    });
+
+    dom.notesList.addEventListener('dragleave', function (e) {
+      const targetCard = e.target.closest('.note-card');
+      if (targetCard && !targetCard.contains(e.relatedTarget)) {
+        targetCard.classList.remove('drag-over');
+      }
+    });
+
+    dom.notesList.addEventListener('drop', function (e) {
+      e.preventDefault();
+      const targetCard = e.target.closest('.note-card');
+      if (!targetCard || !draggedId || targetCard.dataset.id === draggedId) return;
+
+      const targetId = targetCard.dataset.id;
+      const storage = getStorage();
+      if (typeof storage.reorder === 'function') {
+        const ok = storage.reorder(draggedId, targetId);
+        if (ok) {
+          audio.pop();
+          renderNotes();
+          showToast('✓ Порядок заметок сохранён');
+        }
+      }
+    });
+  }
+
+  // Live multi-tab sync via window storage event
+  function setupTabSync() {
+    window.addEventListener('storage', function (e) {
+      if (e.key === 'joint-notes:notes' || e.key === 'joint_notes_data') {
+        renderNotes();
+        showToast('⚡ Заметки синхронизированы из другой вкладки', { duration: 2500 });
+      }
+    });
+  }
+
   // Keyboard Shortcuts
   function setupShortcuts() {
     window.addEventListener('keydown', function (e) {
@@ -1140,6 +1224,8 @@
     setupPriorityFilters();
     setupTagCloud();
     setupShortcuts();
+    setupDragAndDrop();
+    setupTabSync();
   }
 
   // Main init

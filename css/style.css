@@ -903,3 +903,21 @@ body.dark-mode .note-footer {
   background: var(--primary-color);
   color: #fff;
 }
+
+/* Drag and Drop Card Reordering */
+.note-card[draggable="true"] {
+  cursor: grab;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.note-card.dragging {
+  opacity: 0.45;
+  transform: scale(0.97);
+  cursor: grabbing;
+}
+
+.note-card.drag-over {
+  border-top: 3px solid var(--primary-color) !important;
+  transform: translateY(3px);
+  box-shadow: 0 -4px 12px rgba(59, 130, 246, 0.25);
+}
