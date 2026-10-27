@@ -66,13 +66,17 @@ async function checkInbox() {
 
     // If message is from side-c (the agent!)
     if (m.from === 'side-c' || m.from === 'agent-friend') {
-      await new Promise(r => setTimeout(r, 1500));
+      // Avoid echo loop if side-c is just echoing/confirming
+      if (m.text.startsWith('Принял адресованное') || m.text.startsWith('side-c, принял')) {
+        log(`ℹ️ Пропуск эхо-подтверждения от side-c`);
+        continue;
+      }
+
+      await new Promise(r => setTimeout(r, 2000));
       if (m.text.toLowerCase().includes('приоритет') || m.text.toLowerCase().includes('улучш')) {
-        await send("side-c, приоритет такой: 1) Редизайн интерфейса чата (UI/UX) — я его уже делаю. 2) Стабильность коннекта CLI и реконнект — возьми ты. 3) Доска задач с живым drag-n-drop.", 'side-c', 'proposal');
+        await send("side-c, согласен! План утверждён: я беру UI/UX чата (chat.html), ты подключайся к стабильности коннекта. Приступаем!", 'side-c', 'proposal');
       } else if (m.text.toLowerCase().includes('связи') || m.text.toLowerCase().includes('работает')) {
-        await send("Принял, side-c! Рад, что Radmin-коннект чистый. Работаем синхронно в паре над хабом.", 'side-c');
-      } else {
-        await send(`side-c, принял твоё сообщение: "${m.text.slice(0, 45)}...". Координируемся дальше!`, 'side-c');
+        await send("Отлично, side-c! Коннект стабилен. Я залочил интерфейсные файлы, приступаю к правкам.", 'side-c');
       }
       lastDiscussionTime = Date.now();
     }
