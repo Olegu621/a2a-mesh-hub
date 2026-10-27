@@ -1,0 +1,702 @@
+{
+  "llama-3.3-70b-01": {
+    "apiKey": "sk-mesh-llama-3.3-70b-45a1f04d7c6dbef8",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-02": {
+    "apiKey": "sk-mesh-llama-3.3-70b-24f0beb9f20e1a3d",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-03": {
+    "apiKey": "sk-mesh-llama-3.3-70b-2e1962a3dc70662b",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-04": {
+    "apiKey": "sk-mesh-llama-3.3-70b-20d2889b478e31b0",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-05": {
+    "apiKey": "sk-mesh-llama-3.3-70b-2a2bc9fc0a585c50",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-06": {
+    "apiKey": "sk-mesh-llama-3.3-70b-5722edc1e994ec49",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-07": {
+    "apiKey": "sk-mesh-llama-3.3-70b-0cee223b780d6150",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-08": {
+    "apiKey": "sk-mesh-llama-3.3-70b-e2f023bb9fdfc75b",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-09": {
+    "apiKey": "sk-mesh-llama-3.3-70b-6898747eb030141c",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-10": {
+    "apiKey": "sk-mesh-llama-3.3-70b-fc6577bbd9692bb7",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-11": {
+    "apiKey": "sk-mesh-llama-3.3-70b-db2bc3f45a8e2df1",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-12": {
+    "apiKey": "sk-mesh-llama-3.3-70b-caf36bfc5a90e76e",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-13": {
+    "apiKey": "sk-mesh-llama-3.3-70b-aa8a865f3686896a",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-14": {
+    "apiKey": "sk-mesh-llama-3.3-70b-a4d109ca7908c064",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-15": {
+    "apiKey": "sk-mesh-llama-3.3-70b-9d6a679f1a59f608",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-16": {
+    "apiKey": "sk-mesh-llama-3.3-70b-8d6dea6bca398ea1",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-17": {
+    "apiKey": "sk-mesh-llama-3.3-70b-778aaf4b350c8400",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-18": {
+    "apiKey": "sk-mesh-llama-3.3-70b-af279552ca74d2dc",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-19": {
+    "apiKey": "sk-mesh-llama-3.3-70b-715790d93e3fc0b3",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "llama-3.3-70b-20": {
+    "apiKey": "sk-mesh-llama-3.3-70b-2eb27255dee3c786",
+    "model": "Meta Llama 3.3 70B",
+    "prefix": "llama-3.3-70b",
+    "icon": "🦙",
+    "roleCategory": "Архитектура, Системный анализ, Open-Source ядро"
+  },
+  "gemini-2.0-flash-01": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-b19091aa700a5a84",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-02": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-7a6b50ef3c66ecf4",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-03": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-39926cffff5c859d",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-04": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-fa0d58af807e6ac0",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-05": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-b99536e265b1a0e2",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-06": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-5aaa67598197b32a",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-07": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-b9aac83c6b3d4ae7",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-08": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-80e9e9049632f15f",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-09": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-8f0e521f56b8b288",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-10": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-2cf317eaebe9a177",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-11": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-31c635bc2ee7ef91",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-12": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-a2c97ee84f7e0568",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-13": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-59618ced4de68797",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-14": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-76d414eb4f990eb0",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-15": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-2249ad25bdd0292a",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-16": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-1662d8802b2a6387",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-17": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-fdea8df0c0da42be",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-18": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-4a9fce1dffa91131",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-19": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-6477a73e49e48832",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "gemini-2.0-flash-20": {
+    "apiKey": "sk-mesh-gemini-2.0-flash-d729422585d9e180",
+    "model": "Google Gemini 2.0 Flash",
+    "prefix": "gemini-2.0-flash",
+    "icon": "✨",
+    "roleCategory": "Мультимодальность, Web Audio, Liquid Glass UI"
+  },
+  "deepseek-v3-01": {
+    "apiKey": "sk-mesh-deepseek-v3-a6318ab58180ab73",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-02": {
+    "apiKey": "sk-mesh-deepseek-v3-31f3f46cb05d5f17",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-03": {
+    "apiKey": "sk-mesh-deepseek-v3-1019b798dfa8a13c",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-04": {
+    "apiKey": "sk-mesh-deepseek-v3-707db0f64b36277f",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-05": {
+    "apiKey": "sk-mesh-deepseek-v3-76e90a8d87fcd5f3",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-06": {
+    "apiKey": "sk-mesh-deepseek-v3-239da7ac332f882e",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-07": {
+    "apiKey": "sk-mesh-deepseek-v3-03f2ae65a3994aa4",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-08": {
+    "apiKey": "sk-mesh-deepseek-v3-18a3e4c2e6ec309f",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-09": {
+    "apiKey": "sk-mesh-deepseek-v3-6506987cc37ae79f",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-10": {
+    "apiKey": "sk-mesh-deepseek-v3-c34162a8f9d229cd",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-11": {
+    "apiKey": "sk-mesh-deepseek-v3-ad596ee68541fae3",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-12": {
+    "apiKey": "sk-mesh-deepseek-v3-26f9c1b4b911cb1a",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-13": {
+    "apiKey": "sk-mesh-deepseek-v3-edb9fbda9929df07",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-14": {
+    "apiKey": "sk-mesh-deepseek-v3-b1172c009b18614c",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-15": {
+    "apiKey": "sk-mesh-deepseek-v3-64bc07a0199aecef",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-16": {
+    "apiKey": "sk-mesh-deepseek-v3-d3a375f731f59ac5",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-17": {
+    "apiKey": "sk-mesh-deepseek-v3-dac77a469d23a70a",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-18": {
+    "apiKey": "sk-mesh-deepseek-v3-dccd4473ff682de0",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-19": {
+    "apiKey": "sk-mesh-deepseek-v3-fa2b289a2a335b08",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "deepseek-v3-20": {
+    "apiKey": "sk-mesh-deepseek-v3-07a96e627800e3cb",
+    "model": "DeepSeek V3",
+    "prefix": "deepseek-v3",
+    "icon": "🐋",
+    "roleCategory": "Алгоритмы, Математика, Reasoning & Логика"
+  },
+  "qwen-2.5-coder-01": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-b5bda92dc13439ab",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-02": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-e90c58e79c7050e5",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-03": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-771ccd7f6bd307b5",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-04": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-d28c2d8b94fd0ff2",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-05": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-89a12ffa0171d7c4",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-06": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-32fb858378b4e379",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-07": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-df973dd01d90c122",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-08": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-475151a9a5dcc5a8",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-09": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-efcb022745294a7e",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-10": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-e38a43099a0dbb92",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-11": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-0c275d6a91b7b4ee",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-12": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-99d02941a040f813",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-13": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-e07a424ee2591202",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-14": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-0ad2b2a4b0fcc1e6",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-15": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-b7c4fc5bb29b1d77",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-16": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-5363c9846accae6d",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-17": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-54b6aba4f9f0a9c2",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-18": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-ed0e3af65b190330",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-19": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-4e4a09819134d193",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "qwen-2.5-coder-20": {
+    "apiKey": "sk-mesh-qwen-2.5-coder-3715d454e6976213",
+    "model": "Qwen 2.5 Coder 32B",
+    "prefix": "qwen-2.5-coder",
+    "icon": "⚡",
+    "roleCategory": "Frontend & Backend код, Рефакторинг, Express API"
+  },
+  "claude-3.5-haiku-01": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-ad857251f6c13692",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-02": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-0c2a672ff27019c3",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-03": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-817744fd3e3f606a",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-04": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-34fbd4e25302f0e6",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-05": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-8f43f0a7ee851e3c",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-06": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-c4827fd1cec8b1b1",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-07": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-d017381494b0a820",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-08": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-db2183e545241f1f",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-09": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-d95bbb7600efd2a2",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "claude-3.5-haiku-10": {
+    "apiKey": "sk-mesh-claude-3.5-haiku-0ad5778e229a0509",
+    "model": "Claude 3.5 Haiku",
+    "prefix": "claude-3.5-haiku",
+    "icon": "🎭",
+    "roleCategory": "UI/UX дизайн, Тексты, Документация, Безопасность"
+  },
+  "mistral-nemo-01": {
+    "apiKey": "sk-mesh-mistral-nemo-7cf5567ee297b1f8",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-02": {
+    "apiKey": "sk-mesh-mistral-nemo-1e79456f50e2a909",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-03": {
+    "apiKey": "sk-mesh-mistral-nemo-e9c4681ee2f7a99a",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-04": {
+    "apiKey": "sk-mesh-mistral-nemo-962301e01030534a",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-05": {
+    "apiKey": "sk-mesh-mistral-nemo-58fd84beed18d116",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-06": {
+    "apiKey": "sk-mesh-mistral-nemo-c21c5216c4b9894b",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-07": {
+    "apiKey": "sk-mesh-mistral-nemo-561be18e74c81ad7",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-08": {
+    "apiKey": "sk-mesh-mistral-nemo-42f7074b25d9b0a0",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-09": {
+    "apiKey": "sk-mesh-mistral-nemo-8f752b2f029bd256",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  },
+  "mistral-nemo-10": {
+    "apiKey": "sk-mesh-mistral-nemo-ded12d0a7109163b",
+    "model": "Mistral Nemo 12B",
+    "prefix": "mistral-nemo",
+    "icon": "🌪️",
+    "roleCategory": "QA, Стресс-тесты, Валидация JSON, Нагрузка"
+  }
+}

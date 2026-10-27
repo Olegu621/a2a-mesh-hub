@@ -427,6 +427,12 @@
     .av-panther { background: linear-gradient(135deg, #34d399, #059669); }
     .av-koch { background: linear-gradient(135deg, #60a5fa, #2563eb); }
     .av-agent { background: linear-gradient(135deg, #06b6d4, #2563eb); }
+    .av-llama { background: linear-gradient(135deg, #f97316, #ea580c); box-shadow: 0 0 10px rgba(249, 115, 22, 0.4); }
+    .av-gemini { background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+    .av-deepseek { background: linear-gradient(135deg, #06b6d4, #0284c7); box-shadow: 0 0 10px rgba(6, 182, 212, 0.4); }
+    .av-qwen { background: linear-gradient(135deg, #8b5cf6, #7c3aed); box-shadow: 0 0 10px rgba(139, 92, 246, 0.4); }
+    .av-claude { background: linear-gradient(135deg, #f43f5e, #be123c); box-shadow: 0 0 10px rgba(244, 63, 94, 0.4); }
+    .av-mistral { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
     .av-h { background: linear-gradient(135deg, #34d399, #10b981); }
     .av-s { background: #64748b; }
 
@@ -452,6 +458,12 @@
     .msg.from-side-c .bubble { background: var(--bubble-c); border-color: rgba(244, 114, 182, 0.3); }
     .msg.from-side-d .bubble { background: var(--bubble-d); border-color: rgba(251, 191, 36, 0.3); }
     .msg.agent .bubble { background: rgba(6, 182, 212, 0.14); border-color: rgba(6, 182, 212, 0.35); }
+    .msg.from-llama .bubble { background: rgba(249, 115, 22, 0.14); border-color: rgba(249, 115, 22, 0.35); }
+    .msg.from-gemini .bubble { background: rgba(59, 130, 246, 0.14); border-color: rgba(59, 130, 246, 0.35); }
+    .msg.from-deepseek .bubble { background: rgba(6, 182, 212, 0.14); border-color: rgba(6, 182, 212, 0.35); }
+    .msg.from-qwen .bubble { background: rgba(139, 92, 246, 0.14); border-color: rgba(139, 92, 246, 0.35); }
+    .msg.from-claude .bubble { background: rgba(244, 63, 94, 0.14); border-color: rgba(244, 63, 94, 0.35); }
+    .msg.from-mistral .bubble { background: rgba(16, 185, 129, 0.14); border-color: rgba(16, 185, 129, 0.35); }
     .msg.human .bubble { background: var(--bubble-user); border-color: rgba(52, 211, 153, 0.3); }
 
     .meta {
@@ -1203,6 +1215,31 @@
       background: #4f46e5;
       color: #fff;
     }
+    .fleet-key-tag {
+      font-family: monospace;
+      font-size: 9.5px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 2px 6px;
+      border-radius: 5px;
+      color: #a5b4fc;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      margin-top: 3px;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .fleet-key-tag:hover {
+      background: rgba(99, 102, 241, 0.3);
+      color: #fff;
+      border-color: #818cf8;
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+    }
 
     /* Image Attachment & Lightbox */
     .msg-img-thumb {
@@ -1653,12 +1690,14 @@
       <div class="modal-form-group">
         <label class="modal-label">Назначить агенту (необязательно)</label>
         <select class="modal-select" id="task-m-assignee">
-          <option value="">Любой свободный агент</option>
-          <option value="agent-001">@agent-001</option>
-          <option value="agent-002">@agent-002</option>
-          <option value="agent-003">@agent-003</option>
-          <option value="agent-004">@agent-004</option>
-          <option value="side-b">@side-b (Координатор)</option>
+          <option value="">🎲 Любой свободный агент роя</option>
+          <option value="side-b">⚡ @side-b (Supreme Coordinator)</option>
+          <option value="llama-3.3-70b-01">🦙 @llama-3.3-70b-01 (Meta Llama 3.3 Arch)</option>
+          <option value="gemini-2.0-flash-01">✨ @gemini-2.0-flash-01 (Google Gemini 2.0 UI)</option>
+          <option value="deepseek-v3-01">🐋 @deepseek-v3-01 (DeepSeek V3 Logic)</option>
+          <option value="qwen-2.5-coder-01">⚡ @qwen-2.5-coder-01 (Qwen 2.5 Coder)</option>
+          <option value="claude-3.5-haiku-01">🎭 @claude-3.5-haiku-01 (Claude 3.5 UX)</option>
+          <option value="mistral-nemo-01">🌪️ @mistral-nemo-01 (Mistral Nemo QA)</option>
         </select>
       </div>
       <div class="modal-form-group">
@@ -1729,27 +1768,29 @@
     </div>
   </div>
 
-  <!-- Modal Swarm Fleet Cockpit (100 Agents) -->
+  <!-- Modal Swarm Fleet Cockpit (100 Multi-Model Agents) -->
   <div class="modal-backdrop" id="fleet-modal" onclick="if(event.target===this)closeFleetModal()">
     <div class="fleet-modal-window">
       <div class="modal-header">
-        <h2>🛸 Командный мостик роя (100 ИИ-агентов)</h2>
+        <h2>🛸 Командный мостик роя: 100 Модельных ИИ-Агентов</h2>
         <button class="modal-close-btn" onclick="closeFleetModal()">✕</button>
       </div>
-      <p style="font-size:12px; color:var(--muted)">Верховный координатор: <b>@side-b</b> | Создатель: <b>@пантера</b> | Быстрые приказы отрядам и отдельным агентам.</p>
+      <p style="font-size:12px; color:var(--muted)">Верховный координатор: <b>@side-b</b> | Создатель: <b>@пантера</b> | 100 агентов с индивидуальными API-ключами.</p>
 
-      <div style="display:flex; gap:10px; margin-top:12px; align-items:center;">
-        <input class="modal-input" id="fleet-search-inp" placeholder="🔍 Поиск агента по номеру или роли..." oninput="filterFleetGrid()" style="flex:1;" />
+      <div style="display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap;">
+        <input class="modal-input" id="fleet-search-inp" placeholder="🔍 Поиск агента по названию модели, ID или роли..." oninput="filterFleetGrid()" style="flex:1; min-width:200px;" />
         <button class="modal-btn-submit" onclick="broadcastToSquad('all')" title="Отправить приказ всем 100 агентам">📢 Приказ всем 100</button>
+        <button class="fleet-order-btn" style="padding:7px 12px;font-size:11px;" onclick="downloadKeysJson()" title="Скачать JSON со 100 ключами">🔑 Скачать ключи</button>
       </div>
 
       <div class="fleet-squad-tabs">
         <button class="fleet-squad-btn active" id="sq-tab-all" onclick="setFleetSquadFilter('all')">Все 100</button>
-        <button class="fleet-squad-btn" id="sq-tab-arch" onclick="setFleetSquadFilter('arch')">🏛️ Архитекторы (1-10)</button>
-        <button class="fleet-squad-btn" id="sq-tab-frontend" onclick="setFleetSquadFilter('frontend')">🎨 Фронтенд (11-40)</button>
-        <button class="fleet-squad-btn" id="sq-tab-backend" onclick="setFleetSquadFilter('backend')">⚙️ Бэкенд (41-65)</button>
-        <button class="fleet-squad-btn" id="sq-tab-qa" onclick="setFleetSquadFilter('qa')">🛡️ QA & Sec (66-85)</button>
-        <button class="fleet-squad-btn" id="sq-tab-devops" onclick="setFleetSquadFilter('devops')">🚀 DevOps (86-100)</button>
+        <button class="fleet-squad-btn" id="sq-tab-llama" onclick="setFleetSquadFilter('llama')">🦙 Llama 3.3 (20)</button>
+        <button class="fleet-squad-btn" id="sq-tab-gemini" onclick="setFleetSquadFilter('gemini')">✨ Gemini 2.0 (20)</button>
+        <button class="fleet-squad-btn" id="sq-tab-deepseek" onclick="setFleetSquadFilter('deepseek')">🐋 DeepSeek V3 (20)</button>
+        <button class="fleet-squad-btn" id="sq-tab-qwen" onclick="setFleetSquadFilter('qwen')">⚡ Qwen 2.5 (20)</button>
+        <button class="fleet-squad-btn" id="sq-tab-claude" onclick="setFleetSquadFilter('claude')">🎭 Claude 3.5 (10)</button>
+        <button class="fleet-squad-btn" id="sq-tab-mistral" onclick="setFleetSquadFilter('mistral')">🌪️ Mistral Nemo (10)</button>
       </div>
 
       <div class="fleet-grid" id="fleet-grid">
@@ -1957,6 +1998,30 @@
       if(n.startsWith('side-d') || n.includes('космо') || n.includes('cosmo')) return `<div class="avatar av-d" title="Agent side-d">🚀</div>`;
       if(n.includes('пантера') || n.includes('panther')) return `<div class="avatar av-panther" title="Создатель Пантера">🐆</div>`;
       if(n.includes('коч') || n.includes('братан')) return `<div class="avatar av-koch" title="Коч">🤙</div>`;
+      if(n.startsWith('llama-')) {
+        const num = n.split('-').pop();
+        return `<div class="avatar av-llama" title="Meta Llama 3.3 70B (${esc(name)})">🦙${esc(num)}</div>`;
+      }
+      if(n.startsWith('gemini-')) {
+        const num = n.split('-').pop();
+        return `<div class="avatar av-gemini" title="Google Gemini 2.0 Flash (${esc(name)})">✨${esc(num)}</div>`;
+      }
+      if(n.startsWith('deepseek-')) {
+        const num = n.split('-').pop();
+        return `<div class="avatar av-deepseek" title="DeepSeek V3 (${esc(name)})">🐋${esc(num)}</div>`;
+      }
+      if(n.startsWith('qwen-')) {
+        const num = n.split('-').pop();
+        return `<div class="avatar av-qwen" title="Alibaba Qwen 2.5 Coder (${esc(name)})">⚡${esc(num)}</div>`;
+      }
+      if(n.startsWith('claude-')) {
+        const num = n.split('-').pop();
+        return `<div class="avatar av-claude" title="Anthropic Claude 3.5 Haiku (${esc(name)})">🎭${esc(num)}</div>`;
+      }
+      if(n.startsWith('mistral-')) {
+        const num = n.split('-').pop();
+        return `<div class="avatar av-mistral" title="Mistral Nemo 12B (${esc(name)})">🌪️${esc(num)}</div>`;
+      }
       if(n.startsWith('agent-')) {
         const num = n.replace('agent-', '');
         return `<div class="avatar av-agent" title="Рой ИИ ${esc(name)}">🤖${esc(num)}</div>`;
@@ -1989,7 +2054,12 @@
 
     function isAgentName(name) {
       const l = (name||'').toLowerCase();
-      return l.startsWith('side-') || l.startsWith('agent-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo') || l.includes('bot') || l.includes('ai');
+      return l.startsWith('side-') || l.startsWith('agent-') || l.startsWith('llama-') || l.startsWith('gemini-') || l.startsWith('deepseek-') || l.startsWith('qwen-') || l.startsWith('claude-') || l.startsWith('mistral-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo') || l.includes('bot') || l.includes('ai');
+    }
+
+    function isSwarmAgent(name) {
+      const l = (name||'').toLowerCase();
+      return l.startsWith('agent-') || l.startsWith('llama-') || l.startsWith('gemini-') || l.startsWith('deepseek-') || l.startsWith('qwen-') || l.startsWith('claude-') || l.startsWith('mistral-');
     }
 
     /* Theme Customization Engine */
@@ -2265,7 +2335,16 @@
       const kindTag = (m.type && m.type !== 'chat') ? `<span class="kind-tag ${m.type}">${esc(m.type)}</span>` : '';
       const toTag = m.to ? `→ <b>${esc(m.to)}</b> ` : '';
 
-      const senderClass = m.from.startsWith('side-') ? `from-${m.from}` : (m.from.startsWith('agent-') ? `agent from-${m.from}` : (isH ? 'human' : ''));
+      let senderClass = '';
+      if (m.from.startsWith('llama-')) senderClass = 'from-llama agent';
+      else if (m.from.startsWith('gemini-')) senderClass = 'from-gemini agent';
+      else if (m.from.startsWith('deepseek-')) senderClass = 'from-deepseek agent';
+      else if (m.from.startsWith('qwen-')) senderClass = 'from-qwen agent';
+      else if (m.from.startsWith('claude-')) senderClass = 'from-claude agent';
+      else if (m.from.startsWith('mistral-')) senderClass = 'from-mistral agent';
+      else if (m.from.startsWith('agent-')) senderClass = `agent from-${m.from}`;
+      else if (m.from.startsWith('side-')) senderClass = `from-${m.from}`;
+      else if (isH) senderClass = 'human';
 
       let replyHtml = '';
       if (m.replyTo && m.replyTo.id) {
@@ -2634,21 +2713,106 @@
       updateState();
     }
 
-    /* Swarm Fleet Cockpit (100 Agents) Directory */
-    const SQUADS_DEF = [
-      { id: 'arch', name: 'Архитекторы и Стратеги', range: [1, 10], icon: '🏛️' },
-      { id: 'frontend', name: 'Apple Liquid UI Фронтенд', range: [11, 40], icon: '🎨' },
-      { id: 'backend', name: 'Бэкенд, API и Серверы', range: [41, 65], icon: '⚙️' },
-      { id: 'qa', name: 'QA, Стресс-тесты и Безопасность', range: [66, 85], icon: '🛡️' },
-      { id: 'devops', name: 'DevOps, Метрики и Документация', range: [86, 100], icon: '🚀' }
+    /* Swarm Fleet Cockpit (100 Multi-Model Agents) Directory */
+    const MODEL_FAMILIES_DEF = [
+      {
+        prefix: 'llama-3.3-70b',
+        filterKey: 'llama',
+        name: 'Meta Llama 3.3 70B',
+        icon: '🦙',
+        count: 20,
+        avClass: 'av-llama',
+        color: '#f97316',
+        roleCategory: 'Архитектура, Системный анализ, Open-Source ядро'
+      },
+      {
+        prefix: 'gemini-2.0-flash',
+        filterKey: 'gemini',
+        name: 'Google Gemini 2.0 Flash',
+        icon: '✨',
+        count: 20,
+        avClass: 'av-gemini',
+        color: '#3b82f6',
+        roleCategory: 'Мультимодальность, Web Audio, Liquid Glass UI'
+      },
+      {
+        prefix: 'deepseek-v3',
+        filterKey: 'deepseek',
+        name: 'DeepSeek V3',
+        icon: '🐋',
+        count: 20,
+        avClass: 'av-deepseek',
+        color: '#06b6d4',
+        roleCategory: 'Алгоритмы, Математика, Reasoning & Логика'
+      },
+      {
+        prefix: 'qwen-2.5-coder',
+        filterKey: 'qwen',
+        name: 'Qwen 2.5 Coder 32B',
+        icon: '⚡',
+        count: 20,
+        avClass: 'av-qwen',
+        color: '#8b5cf6',
+        roleCategory: 'Frontend & Backend код, Рефакторинг, Express API'
+      },
+      {
+        prefix: 'claude-3.5-haiku',
+        filterKey: 'claude',
+        name: 'Claude 3.5 Haiku',
+        icon: '🎭',
+        count: 10,
+        avClass: 'av-claude',
+        color: '#f43f5e',
+        roleCategory: 'UI/UX дизайн, Тексты, Документация, Безопасность'
+      },
+      {
+        prefix: 'mistral-nemo',
+        filterKey: 'mistral',
+        name: 'Mistral Nemo 12B',
+        icon: '🌪️',
+        count: 10,
+        avClass: 'av-mistral',
+        color: '#10b981',
+        roleCategory: 'QA, Стресс-тесты, Валидация JSON, Нагрузка'
+      }
     ];
-    const ROLES_DEF = [
-      "Frontend Architect", "CSS Liquid Glass Master", "Web Audio Engineer", "SVG & Canvas Specialist",
-      "React & Vanilla Core Dev", "Motion & Animation Designer", "Performance Tuner", "Accessibility Auditor",
-      "Node.js Backend Dev", "REST & SSE Architect", "State Persistence Specialist", "Concurrency & Lock Manager",
-      "Security & Penetration Tester", "Automated QA Specialist", "Load & Stress Tester", "Code Reviewer",
-      "System Diagnostics Engineer", "Documentation Lead", "Prompt Engineer", "Mesh Protocol Designer"
-    ];
+
+    let cachedMeshKeys = null;
+    async function getMeshKeys() {
+      if (cachedMeshKeys) return cachedMeshKeys;
+      try {
+        const res = await fetch('/mesh-keys.json');
+        if (res.ok) {
+          cachedMeshKeys = await res.json();
+          return cachedMeshKeys;
+        }
+      } catch (_) {}
+      return null;
+    }
+
+    function copyApiKey(key, btn) {
+      navigator.clipboard.writeText(key).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Ключ скопирован!';
+        btn.style.color = '#34d399';
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.style.color = '';
+        }, 1500);
+      });
+    }
+
+    async function downloadKeysJson() {
+      const keys = await getMeshKeys();
+      if (!keys) return alert('Ключи еще не загружены');
+      const blob = new Blob([JSON.stringify(keys, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'mesh-keys.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
 
     let fleetSquadFilter = 'all';
     function openFleetModal() {
@@ -2674,8 +2838,20 @@
       closeFleetModal();
       if (squadId === 'all') {
         inp.value = '@все ';
+      } else if (squadId === 'llama') {
+        inp.value = '@llama ';
+      } else if (squadId === 'gemini') {
+        inp.value = '@gemini ';
+      } else if (squadId === 'deepseek') {
+        inp.value = '@deepseek ';
+      } else if (squadId === 'qwen') {
+        inp.value = '@qwen ';
+      } else if (squadId === 'claude') {
+        inp.value = '@claude ';
+      } else if (squadId === 'mistral') {
+        inp.value = '@mistral ';
       } else {
-        inp.value = `@squad-${squadId} `;
+        inp.value = `@${squadId} `;
       }
       inp.focus();
     }
@@ -2686,40 +2862,53 @@
       inp.focus();
     }
 
-    function renderFleetGrid() {
+    async function renderFleetGrid() {
       const grid = document.getElementById('fleet-grid');
       if (!grid) return;
       const q = (document.getElementById('fleet-search-inp')?.value || '').trim().toLowerCase();
       const onlinePeersMap = new Map();
       (window.latestPeers || []).forEach(p => onlinePeersMap.set(p.name, p.online));
 
+      const keysRegistry = (await getMeshKeys()) || {};
+
       const cards = [];
-      for (let i = 1; i <= 100; i++) {
-        const id = `agent-${String(i).padStart(3, '0')}`;
-        let squad = SQUADS_DEF[0];
-        for (const s of SQUADS_DEF) {
-          if (i >= s.range[0] && i <= s.range[1]) { squad = s; break; }
-        }
-        const role = ROLES_DEF[(i - 1) % ROLES_DEF.length];
-        const isOnline = onlinePeersMap.get(id) ?? false;
+      for (const fam of MODEL_FAMILIES_DEF) {
+        if (fleetSquadFilter !== 'all' && fam.filterKey !== fleetSquadFilter) continue;
 
-        if (fleetSquadFilter !== 'all' && squad.id !== fleetSquadFilter) continue;
-        if (q && !id.toLowerCase().includes(q) && !role.toLowerCase().includes(q) && !squad.name.toLowerCase().includes(q)) continue;
+        for (let i = 1; i <= fam.count; i++) {
+          const num = String(i).padStart(2, '0');
+          const id = `${fam.prefix}-${num}`;
+          const isOnline = onlinePeersMap.get(id) ?? false;
+          const keyEntry = keysRegistry[id];
+          const apiKey = keyEntry?.apiKey || `sk-mesh-${fam.prefix}-${num}`;
 
-        cards.push(`
-          <div class="fleet-agent-card">
-            <div class="avatar av-agent" style="width:34px;height:34px;font-size:11px;">🤖${String(i).padStart(3, '0')}</div>
-            <div class="fleet-agent-info">
-              <div class="fleet-agent-name">
-                <span>${id}</span>
-                <span style="font-size:11px;">${squad.icon}</span>
-                <span class="dot ${isOnline ? '' : 'offline'}" style="margin-left:auto;"></span>
+          if (q && !id.toLowerCase().includes(q) && !fam.name.toLowerCase().includes(q) && !fam.roleCategory.toLowerCase().includes(q) && !apiKey.toLowerCase().includes(q)) {
+            continue;
+          }
+
+          const shortKey = apiKey.length > 22 ? apiKey.slice(0, 20) + '...' : apiKey;
+
+          cards.push(`
+            <div class="fleet-agent-card">
+              <div class="avatar ${fam.avClass}" style="width:36px;height:36px;font-size:11px;flex-shrink:0;">
+                ${fam.icon}${num}
               </div>
-              <div class="fleet-agent-role" title="${role}">${role}</div>
+              <div class="fleet-agent-info">
+                <div class="fleet-agent-name">
+                  <span title="${id}">${id}</span>
+                  <span class="dot ${isOnline ? '' : 'offline'}" style="margin-left:auto;" title="${isOnline ? 'Онлайн в меше' : 'Ожидание'}"></span>
+                </div>
+                <div class="fleet-agent-role" title="${fam.roleCategory}">
+                  <b style="color:${fam.color};">${fam.name}</b> · ${fam.roleCategory}
+                </div>
+                <div class="fleet-key-tag" onclick="copyApiKey('${apiKey}', this)" title="Нажмите, чтобы скопировать API-ключ (${apiKey})">
+                  🔑 <span>${shortKey}</span> 📋
+                </div>
+              </div>
+              <button class="fleet-order-btn" onclick="orderAgentDirect('${id}')" title="Дать приказ @${id}">Приказ</button>
             </div>
-            <button class="fleet-order-btn" onclick="orderAgentDirect('${id}')">Приказ</button>
-          </div>
-        `);
+          `);
+        }
       }
 
       grid.innerHTML = cards.length ? cards.join('') : '<div class="hint-none">Ничего не найдено</div>';
@@ -2748,8 +2937,8 @@
           renderFleetGrid();
         }
 
-        const swarmAgents = rawPeers.filter(p => p.name.startsWith('agent-') && p.online);
-        const vipPeers = rawPeers.filter(p => !p.name.startsWith('agent-') && (isAgentName(p.name) || p.online));
+        const swarmAgents = rawPeers.filter(p => isSwarmAgent(p.name) && p.online);
+        const vipPeers = rawPeers.filter(p => !isSwarmAgent(p.name) && (isAgentName(p.name) || p.online));
 
         const chipsEl = document.getElementById('peers-chips');
         let chipsHtml = '';
@@ -2757,7 +2946,7 @@
         // Fleet pill summarizing the 100 swarm agents
         const totalSwarmOnline = swarmAgents.length;
         chipsHtml += `
-          <div class="fleet-pill" onclick="openFleetModal()" title="Открыть панель управления 100 агентами">
+          <div class="fleet-pill" onclick="openFleetModal()" title="Открыть командный мостик 100 модельных агентов">
             🛸 Рой: <b>${totalSwarmOnline}</b>/100
           </div>
         `;
