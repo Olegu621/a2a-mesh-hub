@@ -55,6 +55,10 @@
       charCounter: document.getElementById('char-counter'),
       statsBadge: document.getElementById('stats-badge'),
       toastContainer: document.getElementById('toast-container'),
+      tabWrite: document.getElementById('tab-write'),
+      tabPreview: document.getElementById('tab-preview'),
+      previewPane: document.getElementById('note-preview-pane'),
+      toolbar: document.querySelector('.markdown-toolbar'),
       cancelEditBtn: document.getElementById('cancel-edit-btn'),
       submitBtn: document.getElementById('note-submit-btn') || (document.getElementById('note-form') ? document.getElementById('note-form').querySelector('button[type="submit"]') : null)
     };
@@ -547,6 +551,10 @@
       const titleHtml = highlightText(note.title || 'Без названия', searchQuery);
       const contentHtml = formatRichContent(note.content || '', searchQuery);
 
+      const words = (note.content || '').trim().split(/\s+/).filter(Boolean).length;
+      const readMin = Math.max(1, Math.ceil(words / 140));
+      const readHtml = words > 15 ? `<span class="reading-time-badge" title="Примерное время чтения: ${readMin} мин">⏱️ ${readMin} мин</span>` : '';
+
       return `
         <article class="note-card color-${escapeHTML(color)} priority-${escapeHTML(priority)} ${isPinned ? 'is-pinned' : ''}" data-id="${escapeHTML(note.id)}" draggable="true">
           <div class="note-header">
@@ -565,7 +573,10 @@
           <div class="note-content">${contentHtml}</div>
           ${tags.length ? `<div class="note-tags">${tagsHtml}</div>` : ''}
           <div class="note-footer">
-            <time datetime="${escapeHTML(note.createdAt || '')}">${dateStr}</time>
+            <div style="display:flex;align-items:center;">
+              <time datetime="${escapeHTML(note.createdAt || '')}">${dateStr}</time>
+              ${readHtml}
+            </div>
             <span class="note-color-badge" title="Цвет: ${escapeHTML(color)}">${getColorEmoji(color)}</span>
           </div>
         </article>
@@ -1198,6 +1209,71 @@
     });
   }
 
+  // Markdown quick insertion helper
+  function insertMarkdown(tool) {
+    if (!dom.noteContent) return;
+    const textarea = dom.noteContent;
+    const start = textarea.selectionStart || 0;
+    const end = textarea.selectionEnd || 0;
+    const selText = textarea.value.substring(start, end);
+    let before = '', after = '', placeholder = '';
+
+    switch (tool) {
+      case 'bold': before = '**'; after = '**'; placeholder = 'жирный текст'; break;
+      case 'italic': before = '*'; after = '*'; placeholder = 'курсив'; break;
+      case 'code': before = '`'; after = '`'; placeholder = 'код'; break;
+      case 'todo': before = '- [ ] '; after = ''; placeholder = 'задача'; break;
+      case 'quote': before = '> '; after = ''; placeholder = 'цитата'; break;
+      case 'header': before = '### '; after = ''; placeholder = 'Заголовок'; break;
+      case 'tag': before = '#'; after = ''; placeholder = 'метка'; break;
+    }
+
+    const replacement = selText ? (before + selText + after) : (before + placeholder + after);
+    textarea.focus();
+    if (typeof textarea.setRangeText === 'function') {
+      textarea.setRangeText(replacement, start, end, 'select');
+    } else {
+      textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+    }
+    updateCharCounter();
+    audio.check();
+  }
+
+  // Editor Tabs & Toolbar setup
+  function setupEditorToolbarAndPreview() {
+    if (dom.toolbar) {
+      dom.toolbar.addEventListener('click', function (e) {
+        const btn = e.target.closest('.md-tool-btn');
+        if (!btn) return;
+        const tool = btn.dataset.tool;
+        if (tool) insertMarkdown(tool);
+      });
+    }
+
+    if (dom.tabWrite && dom.tabPreview) {
+      dom.tabWrite.addEventListener('click', function () {
+        dom.tabWrite.classList.add('active');
+        dom.tabPreview.classList.remove('active');
+        if (dom.noteContent) dom.noteContent.style.display = 'block';
+        if (dom.previewPane) dom.previewPane.style.display = 'none';
+        if (dom.noteContent) dom.noteContent.focus();
+      });
+
+      dom.tabPreview.addEventListener('click', function () {
+        dom.tabPreview.classList.add('active');
+        dom.tabWrite.classList.remove('active');
+        if (dom.noteContent) dom.noteContent.style.display = 'none';
+        if (dom.previewPane) {
+          dom.previewPane.style.display = 'block';
+          const val = (dom.noteContent ? dom.noteContent.value : '').trim();
+          dom.previewPane.innerHTML = val
+            ? formatRichContent(val, '')
+            : '<em style="color:var(--text-muted);font-size:0.85rem;">Предпросмотр пуст — начните писать заметку на вкладке «Правка»</em>';
+        }
+      });
+    }
+  }
+
   // Initialize event listeners
   function initEvents() {
     if (dom.noteForm) {
@@ -1259,6 +1335,7 @@
     });
 
     setupPrioritySelector();
+    setupEditorToolbarAndPreview();
     setupListDelegation();
     setupColorFilters();
     setupPriorityFilters();

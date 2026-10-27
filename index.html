@@ -31,8 +31,24 @@
       <div class="form-row">
         <input type="text" id="note-input" placeholder="Заголовок заметки…" maxlength="120" required>
       </div>
-      <div class="form-row">
-        <textarea id="note-content" rows="3" placeholder="Текст заметки… (поддерживается перенос строк и Markdown)"></textarea>
+      <div class="form-row editor-row">
+        <div class="editor-header">
+          <div class="editor-tabs">
+            <button type="button" class="editor-tab active" id="tab-write">✏️ Правка</button>
+            <button type="button" class="editor-tab" id="tab-preview">👁️ Предпросмотр</button>
+          </div>
+          <div class="markdown-toolbar">
+            <button type="button" class="md-tool-btn" data-tool="bold" title="Жирный текст"><b>B</b></button>
+            <button type="button" class="md-tool-btn" data-tool="italic" title="Курсив"><i>I</i></button>
+            <button type="button" class="md-tool-btn" data-tool="code" title="Инлайн код"><code>&lt;/&gt;</code></button>
+            <button type="button" class="md-tool-btn" data-tool="todo" title="Чекбокс задачи">☑</button>
+            <button type="button" class="md-tool-btn" data-tool="quote" title="Цитата">❝</button>
+            <button type="button" class="md-tool-btn" data-tool="header" title="Заголовок">H</button>
+            <button type="button" class="md-tool-btn" data-tool="tag" title="Метка #">#</button>
+          </div>
+        </div>
+        <textarea id="note-content" rows="4" placeholder="Текст заметки… (поддерживается перенос строк и Markdown)"></textarea>
+        <div id="note-preview-pane" class="note-preview-pane" style="display: none;"></div>
         <div class="markdown-quick-help">
           <span>💡 Поддерживается: <b>**жирный**</b>, <i>*курсив*</i>, <code>`код`</code>, <code>&gt; цитата</code>, <code>- [ ] чекбокс</code>, <code>#тег</code></span>
         </div>
