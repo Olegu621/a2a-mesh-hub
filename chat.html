@@ -106,6 +106,7 @@
     <div class="peers-container" id="peers-chips">
       <div class="hint-none">Поиск участников...</div>
     </div>
+    <button class="theme-btn" id="sound-btn" title="Звук уведомлений">🔔</button>
     <button class="theme-btn" id="theme-btn" title="Тема">🌙</button>
   </header>
 
@@ -147,17 +148,41 @@
     nameInput.value = localStorage.getItem('a2a_username') || 'human';
     nameInput.onchange = () => localStorage.setItem('a2a_username', nameInput.value.trim() || 'human');
 
-    // Theme toggle
-    const html = document.documentElement;
-    const themeBtn = document.getElementById('theme-btn');
-    let isDark = localStorage.getItem('a2a_theme') !== 'light';
-    function applyTheme() {
-      html.setAttribute('data-theme', isDark ? 'dark' : 'light');
-      themeBtn.textContent = isDark ? '🌙' : '☀️';
-      localStorage.setItem('a2a_theme', isDark ? 'dark' : 'light');
+    // Sound & Notifications
+    const soundBtn = document.getElementById('sound-btn');
+    let soundEnabled = localStorage.getItem('a2a_sound') !== 'false';
+    function updateSoundBtn() {
+      soundBtn.textContent = soundEnabled ? '🔔' : '🔕';
+      localStorage.setItem('a2a_sound', soundEnabled);
     }
-    applyTheme();
-    themeBtn.onclick = () => { isDark = !isDark; applyTheme(); };
+    updateSoundBtn();
+    soundBtn.onclick = () => { soundEnabled = !soundEnabled; updateSoundBtn(); if(soundEnabled) playNotificationSound(); };
+
+    let audioCtx = null;
+    function playNotificationSound() {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08); // A5
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.22);
+      } catch(_) {}
+    }
+
+    let unreadCount = 0;
+    window.addEventListener('focus', () => {
+      unreadCount = 0;
+      document.title = 'A2A Mesh Chat';
+    });
 
     function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -209,6 +234,15 @@
       `;
       msgsEl.appendChild(div);
       msgsEl.scrollTop = msgsEl.scrollHeight;
+
+      // Sound & Title notification for incoming messages from others
+      if (!isMe && renderedIds.size > 1) {
+        playNotificationSound();
+        if (document.hidden) {
+          unreadCount++;
+          document.title = `(${unreadCount}) ⚡ A2A Mesh`;
+        }
+      }
     }
 
     // Connect to SSE real-time stream
