@@ -21,15 +21,19 @@ function log(msg) {
 }
 
 async function api(method, endpoint, body) {
-  try {
-    const res = await fetch(HUB + endpoint, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: method === 'POST' ? JSON.stringify({ room: ROOM, from: NAME, ...body }) : undefined
-    });
-    return await res.json();
-  } catch(e) {
-    return { error: e.message };
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(HUB + endpoint, {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Connection': 'close' },
+        body: method === 'POST' ? JSON.stringify({ room: ROOM, from: NAME, ...body }) : undefined,
+        signal: AbortSignal.timeout(7000)
+      });
+      return await res.json();
+    } catch(e) {
+      if (attempt === 3) return { error: e.message };
+      await new Promise(r => setTimeout(r, 300 * attempt));
+    }
   }
 }
 

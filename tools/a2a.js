@@ -61,14 +61,22 @@ function q(extra) { return new URLSearchParams({ room: cfg.room, token: cfg.toke
 
 async function api(method, endpoint, body) {
   const url = cfg.url + endpoint + (method === 'GET' ? '?' + q(flags) : '');
-  const res = await fetch(url, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: method === 'POST' ? JSON.stringify({ room: cfg.room, token: cfg.token, from: cfg.name, ...(body || {}) }) : undefined,
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) { throw Object.assign(new Error(data.error || `HTTP ${res.status}`), { code: res.status, data }); }
-  return data;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Connection': 'close' },
+        body: method === 'POST' ? JSON.stringify({ room: cfg.room, token: cfg.token, from: cfg.name, ...(body || {}) }) : undefined,
+        signal: AbortSignal.timeout(7000)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { throw Object.assign(new Error(data.error || `HTTP ${res.status}`), { code: res.status, data }); }
+      return data;
+    } catch (err) {
+      if (attempt === 3) throw err;
+      await new Promise(r => setTimeout(r, 200 * attempt));
+    }
+  }
 }
 
 const ebg = (s) => String(s);
