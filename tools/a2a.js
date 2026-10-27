@@ -118,6 +118,8 @@ A2A-Mesh CLI — мессенджер и координация для ИИ-аг
   inbox [--since N] [--wait СЕК] [--no-cursor]   прочитать новые сообщения (+ в конце: кто онлайн, незакрытые задачи, локи)
   listen                            слушать поток в реальном времени (Ctrl+C — выход)
   peers | tasks | locks | state     кто онлайн / доска задач / блокировки / всё сразу
+  snippet list|show <id>|add ...  сниппеты кода через хаб
+  export [--format md|json] [--out FILE]  выгрузить историю комнаты
   claim <id> [--title T] [--note N] [--ttl СЕК]   взять задачу (409 = занята)
   release <id>                      освободить задачу
   done <id> [--result R]            завершить задачу
@@ -239,6 +241,44 @@ async function main() {
     }
 
     case 'ping': { const r = await api('POST', '/api/ping', {}); console.log(`✓ online: ${r.online}`); return; }
+
+    case 'snippet': {
+      const sub = pos.shift() || 'list';
+      if (sub === 'list' || sub === 'ls') {
+        const r = await api('GET', '/api/snippets');
+        for (const s of (r.snippets || [])) console.log(`#${s.id} [${s.lang || 'text'}] ${s.title || '(без названия)'} — ${s.from} (${new Date(s.ts).toLocaleString('ru-RU')})`);
+        if (!(r.snippets || []).length) console.error('(сниппетов нет)');
+      } else if (sub === 'show') {
+        const id = pos[0] || flags.id;
+        if (!id) { console.error('укажи id: snippet show 3'); process.exit(1); }
+        const r = await api('GET', `/api/snippets?id=${encodeURIComponent(id)}`);
+        const s = r.snippet;
+        console.log(`#${s.id} ${s.title || ''} [${s.lang || 'text'}] — ${s.from}`);
+        console.log('```' + (s.lang || ''));
+        console.log(s.content);
+        console.log('```');
+      } else if (sub === 'add') {
+        let content = flags.content || flags.text || '';
+        if (flags.file) { try { content = fs.readFileSync(flags.file, 'utf8'); } catch (e) { console.error('файл:', e.message); process.exit(1); } }
+        if (!content && pos.length) content = pos.join(' ');
+        if (!content) { console.error('нужен --content "..." или --file path'); process.exit(1); }
+        const r = await api('POST', '/api/snippets', { title: flags.title, lang: flags.lang, content, tags: flags.tags ? String(flags.tags).split(/[,\s]+/) : undefined });
+        console.log(`✓ сниппет #${r.id} добавлен`);
+      } else { console.error('snippet list | show <id> | add --title T --lang js --file x.js'); process.exit(1); }
+      return;
+    }
+
+    case 'export': {
+      const fmt = String(flags.format || flags.fmt || 'md').toLowerCase();
+      const url = cfg.url + '/api/export?' + new URLSearchParams({ room: cfg.room, token: cfg.token, name: cfg.name, format: fmt }).toString();
+      const res = await fetch(url);
+      const text = await res.text();
+      if (!res.ok) { console.error(text); process.exit(1); }
+      const out = flags.out || flags.o;
+      if (out) { fs.writeFileSync(out, text, 'utf8'); console.log(`✓ сохранено: ${out} (${text.length} байт)`); }
+      else console.log(text);
+      return;
+    }
 
     default: console.error(`неизвестная команда '${command}'\n` + HELP); process.exit(1);
   }
