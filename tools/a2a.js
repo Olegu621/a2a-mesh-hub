@@ -155,12 +155,13 @@ async function main() {
 
     case 'inbox': {
       let since = flags['no-cursor'] ? 0 : (flags.since !== undefined ? Number(flags.since) : loadCursor());
+      if (!flags['no-cursor'] && flags.since === undefined) flags.since = since;
       const waitSec = Number(flags.wait || 0);
       const deadline = Date.now() + waitSec * 1000;
       let out = [];
       while (true) {
         const r = await api('GET', '/api/messages');
-        out = r.messages;
+        out = (r.messages || []).filter(m => m.id > since);
         if (out.length || Date.now() >= deadline) break;
         await sleep(2000);
       }
