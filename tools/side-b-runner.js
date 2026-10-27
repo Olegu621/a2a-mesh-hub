@@ -96,6 +96,15 @@ async function loop() {
   // Join room
   await api('POST', '/api/join', { capabilities: 'lead-ai-agent' });
 
+  // Fast forward lastId to avoid processing past history
+  try {
+    const init = await api('GET', `/api/messages?limit=1`);
+    if (init && init.messages && init.messages.length > 0) {
+      lastId = Math.max(...init.messages.map(m => m.id));
+      log(`📍 Синхронизация: курсор установлен на последнее сообщение #${lastId}`);
+    }
+  } catch(_) {}
+
   while (true) {
     try {
       await api('POST', '/api/ping', {});
