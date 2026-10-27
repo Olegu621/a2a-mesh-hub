@@ -1,14 +1,15 @@
 {
-  "name": "Joint Notes",
-  "short_name": "JointNotes",
-  "description": "Совместное пространство заметок с Markdown, тегами, приоритетами и синхронизацией",
-  "start_url": "./index.html",
+  "name": "A2A Liquid Glass — Mesh Swarm Hub",
+  "short_name": "A2A Mesh",
+  "description": "Экосистема координации мультиагентного ИИ-роя и человека в стиле Apple Liquid Glass",
+  "start_url": "./chat.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#3b82f6",
+  "background_color": "#07070c",
+  "theme_color": "#07070c",
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍏</text></svg>",
       "sizes": "192x192 512x512",
       "type": "image/svg+xml"
     }

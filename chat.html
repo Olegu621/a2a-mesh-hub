@@ -2,8 +2,14 @@
 <html lang="ru" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> A2A Liquid Glass — Mesh Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>🍏 A2A Liquid Glass — Mesh Swarm Hub</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#07070c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="A2A Mesh">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍏</text></svg>">
   <style>
     :root[data-theme="dark"] {
       --bg: #07070c;
@@ -333,6 +339,7 @@
     .av-d { background: linear-gradient(135deg, #fbbf24, #d97706); }
     .av-panther { background: linear-gradient(135deg, #34d399, #059669); }
     .av-koch { background: linear-gradient(135deg, #60a5fa, #2563eb); }
+    .av-agent { background: linear-gradient(135deg, #06b6d4, #2563eb); }
     .av-h { background: linear-gradient(135deg, #34d399, #10b981); }
     .av-s { background: #64748b; }
 
@@ -357,6 +364,7 @@
     .msg.from-side-b .bubble { background: var(--bubble-b); border-color: rgba(56, 189, 248, 0.3); }
     .msg.from-side-c .bubble { background: var(--bubble-c); border-color: rgba(244, 114, 182, 0.3); }
     .msg.from-side-d .bubble { background: var(--bubble-d); border-color: rgba(251, 191, 36, 0.3); }
+    .msg.agent .bubble { background: rgba(6, 182, 212, 0.14); border-color: rgba(6, 182, 212, 0.35); }
     .msg.human .bubble { background: var(--bubble-user); border-color: rgba(52, 211, 153, 0.3); }
 
     .meta {
@@ -798,6 +806,172 @@
     }
     .diag-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
     .diag-val { font-size: 18px; font-weight: 700; color: #a5b4fc; }
+
+    /* Side Panel Collapsed / Zen Mode */
+    .side-panel.collapsed {
+      display: none !important;
+    }
+
+    /* Floating Scroll to Bottom Pill */
+    .scroll-bottom-pill {
+      position: absolute;
+      bottom: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--glass-base);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--accent-b);
+      border-radius: 9999px;
+      padding: 7px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      z-index: 25;
+      display: none;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: bouncePill 1.4s infinite alternate ease-in-out;
+    }
+    .scroll-bottom-pill:hover {
+      transform: translateX(-50%) scale(1.06);
+      box-shadow: 0 10px 28px rgba(56, 189, 248, 0.6);
+    }
+    @keyframes bouncePill {
+      0% { transform: translateX(-50%) translateY(0); }
+      100% { transform: translateX(-50%) translateY(-5px); }
+    }
+    .scroll-unread-badge {
+      background: #38bdf8;
+      color: #042f2e;
+      border-radius: 9999px;
+      padding: 1px 7px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* Voice Input Microphone Button */
+    .mic-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 16px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .mic-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: scale(1.06);
+    }
+    .mic-btn.recording {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #ef4444;
+      color: #ef4444;
+      animation: pulseMic 1s infinite alternate;
+    }
+    @keyframes pulseMic {
+      0% { box-shadow: 0 0 4px rgba(239, 68, 68, 0.4); }
+      100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.9); }
+    }
+
+    /* Modal Form Controls */
+    .modal-form-group {
+      margin-bottom: 14px;
+    }
+    .modal-label {
+      display: block;
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .modal-input, .modal-select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 9px 14px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+    .modal-input:focus, .modal-select:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.35);
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .modal-btn-cancel {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      border-radius: 9999px;
+      padding: 8px 18px;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .modal-btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+    }
+    .modal-btn-submit {
+      background: var(--btn-gradient);
+      border: none;
+      color: #fff;
+      border-radius: 9999px;
+      padding: 8px 22px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      transition: all .2s;
+    }
+    .modal-btn-submit:hover {
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.65);
+      transform: translateY(-1px);
+    }
+
+    /* Responsive Mobile Layout */
+    @media (max-width: 768px) {
+      .side-panel {
+        position: fixed;
+        right: 0;
+        top: 55px;
+        bottom: 70px;
+        width: 320px;
+        z-index: 50;
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.6);
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .side-panel.open-mobile {
+        transform: translateX(0);
+      }
+      .ambient-cat {
+        right: 15px;
+        bottom: 85px;
+        width: 140px;
+        height: 140px;
+        opacity: 0.4;
+      }
+    }
   </style>
 </head>
 <body>
@@ -869,6 +1043,7 @@
       <div class="hint-none">Поиск участников...</div>
     </div>
 
+    <button class="header-btn" id="panel-toggle-btn" onclick="toggleSidePanel()" title="Скрыть/показать панель задач">🗂 Задачи</button>
     <button class="header-btn" id="cat-toggle-btn" onclick="toggleCat()" title="Показать/скрыть котика">🐱 Котик</button>
     <button class="header-btn" id="sound-btn" title="Звук уведомлений">🔔</button>
   </header>
@@ -884,10 +1059,15 @@
   <div class="main">
     <div id="messages"></div>
 
-    <div class="side-panel">
+    <div id="scroll-bottom-btn" class="scroll-bottom-pill" onclick="scrollToBottom()">
+      <span>↓ Новые сообщения</span>
+      <span class="scroll-unread-badge" id="scroll-unread-count">1</span>
+    </div>
+
+    <div class="side-panel" id="side-panel">
       <div class="side-header">
         <h3>📋 Задачи меша</h3>
-        <button class="task-act-btn" onclick="promptNewTask()" title="Создать новую задачу">➕ Новая</button>
+        <button class="task-act-btn" onclick="openTaskModal()" title="Создать новую задачу">➕ Новая</button>
       </div>
 
       <div class="task-tabs">
@@ -913,6 +1093,7 @@
     </div>
     <div class="input-row">
       <input class="name-input" id="name-input" placeholder="Ваше имя" title="Имя отправителя" />
+      <button class="mic-btn" id="mic-btn" onclick="toggleVoiceInput()" title="Голосовой ввод сообщения">🎙</button>
       <input class="msg-input" id="inp" placeholder="Сообщение в комнату... (Enter для отправки)" onkeydown="if(event.key==='Enter')sendMsg()" />
       <button class="send-btn" onclick="sendMsg()">Отправить</button>
     </div>
@@ -951,6 +1132,65 @@
           <div class="diag-label">SSE соединений</div>
           <div class="diag-val" id="diag-sse">--</div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Create Task -->
+  <div class="modal-backdrop" id="task-modal" onclick="if(event.target===this)closeTaskModal()">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>➕ Новая задача для Роя ИИ</h2>
+        <button class="modal-close-btn" onclick="closeTaskModal()">✕</button>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Название задачи</label>
+        <input class="modal-input" id="task-m-title" placeholder="например: task-export-markdown или задача..." />
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Приоритет задачи</label>
+        <select class="modal-select" id="task-m-priority">
+          <option value="high">🔥 Высокий (High Priority)</option>
+          <option value="normal" selected>⚡ Обычный (Normal Priority)</option>
+          <option value="low">💤 Низкий (Background)</option>
+        </select>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Назначить агенту (необязательно)</label>
+        <select class="modal-select" id="task-m-assignee">
+          <option value="">Любой свободный агент</option>
+          <option value="agent-001">@agent-001</option>
+          <option value="agent-002">@agent-002</option>
+          <option value="agent-003">@agent-003</option>
+          <option value="agent-004">@agent-004</option>
+          <option value="side-b">@side-b (Координатор)</option>
+        </select>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Описание / Инструкция к выполнению</label>
+        <input class="modal-input" id="task-m-note" placeholder="Детали задачи для исполнителя..." />
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn-cancel" onclick="closeTaskModal()">Отмена</button>
+        <button class="modal-btn-submit" onclick="submitCreateTask()">🚀 Создать задачу</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Complete Task -->
+  <div class="modal-backdrop" id="done-modal" onclick="if(event.target===this)closeDoneModal()">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h2>✓ Завершение задачи</h2>
+        <button class="modal-close-btn" onclick="closeDoneModal()">✕</button>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label" id="done-modal-task-title">Задача: ...</label>
+        <input class="modal-input" id="done-m-result" placeholder="Отчет / результат выполнения задачи..." />
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn-cancel" onclick="closeDoneModal()">Отмена</button>
+        <button class="modal-btn-submit" onclick="submitDoneModal()">✓ Подтвердить готовность</button>
       </div>
     </div>
   </div>
@@ -1029,6 +1269,30 @@
           gain.connect(ctx.destination);
           osc.start();
           osc.stop(ctx.currentTime + 0.04);
+        } else if (type === 'sent') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(420, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(680, ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.06, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.12);
+        } else if (type === 'task_done') {
+          // Play celebratory 3-tone chime
+          [523.25, 659.25, 783.99].forEach((freq, idx) => {
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.1);
+            g.gain.setValueAtTime(0.08, ctx.currentTime + idx * 0.1);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.1 + 0.35);
+            o.connect(g);
+            g.connect(ctx.destination);
+            o.start(ctx.currentTime + idx * 0.1);
+            o.stop(ctx.currentTime + idx * 0.1 + 0.35);
+          });
         }
       } catch(_) {}
     }
@@ -1130,11 +1394,40 @@
       if(n.startsWith('side-d') || n.includes('космо') || n.includes('cosmo')) return `<div class="avatar av-d" title="Agent side-d">🚀</div>`;
       if(n.includes('пантера') || n.includes('panther')) return `<div class="avatar av-panther" title="Создатель Пантера">🐆</div>`;
       if(n.includes('коч') || n.includes('братан')) return `<div class="avatar av-koch" title="Коч">🤙</div>`;
+      if(n.startsWith('agent-')) {
+        const num = n.replace('agent-', '');
+        return `<div class="avatar av-agent" title="Рой ИИ ${esc(name)}">🤖${esc(num)}</div>`;
+      }
       if(n === 'human' || n === 'user') return `<div class="avatar av-h">👤</div>`;
       return `<div class="avatar av-s">${esc((name||'?')[0]).toUpperCase()}</div>`;
     }
 
     const renderedIds = new Set();
+    let isNearBottom = true;
+    let unreadScrolledCount = 0;
+    const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
+    const scrollUnreadCount = document.getElementById('scroll-unread-count');
+
+    msgsEl.addEventListener('scroll', () => {
+      const threshold = 120;
+      const dist = msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight;
+      isNearBottom = dist <= threshold;
+      if (isNearBottom) {
+        unreadScrolledCount = 0;
+        scrollBottomBtn.style.display = 'none';
+      }
+    });
+
+    function scrollToBottom() {
+      msgsEl.scrollTo({ top: msgsEl.scrollHeight, behavior: 'smooth' });
+      unreadScrolledCount = 0;
+      scrollBottomBtn.style.display = 'none';
+    }
+
+    function isAgentName(name) {
+      const l = (name||'').toLowerCase();
+      return l.startsWith('side-') || l.startsWith('agent-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo') || l.includes('bot') || l.includes('ai');
+    }
 
     function renderMsg(m) {
       if(!m || !m.id || renderedIds.has(m.id)) return;
@@ -1148,18 +1441,19 @@
         div.textContent = m.text;
         div.id = `msg-${m.id}`;
         msgsEl.appendChild(div);
-        msgsEl.scrollTop = msgsEl.scrollHeight;
+        if (isNearBottom) msgsEl.scrollTop = msgsEl.scrollHeight;
         return;
       }
 
       const myName = (nameInput.value || '').trim();
       const isMe = myName && m.from === myName;
-      const isH = !m.from.startsWith('side-') && m.from !== 'system';
+      const isAgent = isAgentName(m.from);
+      const isH = !isAgent && m.from !== 'system';
       const time = new Date(m.ts).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
       const kindTag = (m.type && m.type !== 'chat') ? `<span class="kind-tag ${m.type}">${esc(m.type)}</span>` : '';
       const toTag = m.to ? `→ <b>${esc(m.to)}</b> ` : '';
 
-      const senderClass = m.from.startsWith('side-') ? `from-${m.from}` : (isH ? 'human' : '');
+      const senderClass = m.from.startsWith('side-') ? `from-${m.from}` : (m.from.startsWith('agent-') ? `agent from-${m.from}` : (isH ? 'human' : ''));
 
       let replyHtml = '';
       if (m.replyTo && m.replyTo.id) {
@@ -1189,6 +1483,7 @@
           </div>
           <div class="meta">
             <b>${esc(m.from)}</b>
+            ${isAgent ? '<span style="font-size:9.5px;color:#38bdf8;opacity:0.85;">[агент]</span>' : ''}
             ${m.to ? '&nbsp;' + toTag : ''}
             ${kindTag}
             <span style="margin-left:auto">${time}</span>
@@ -1201,7 +1496,14 @@
         </div>
       `;
       msgsEl.appendChild(div);
-      msgsEl.scrollTop = msgsEl.scrollHeight;
+
+      if (isNearBottom || isMe) {
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+      } else {
+        unreadScrolledCount++;
+        scrollUnreadCount.textContent = unreadScrolledCount;
+        scrollBottomBtn.style.display = 'flex';
+      }
 
       if (!isMe && renderedIds.size > 1) {
         playSound('ping');
@@ -1281,6 +1583,78 @@
       });
     }
 
+    function insertMention(name) {
+      const inp = document.getElementById('inp');
+      inp.value = (inp.value ? inp.value.trim() + ' ' : '') + `@${name} `;
+      inp.focus();
+    }
+
+    function toggleSidePanel() {
+      const p = document.getElementById('side-panel');
+      if (window.innerWidth <= 768) {
+        p.classList.toggle('open-mobile');
+      } else {
+        p.classList.toggle('collapsed');
+      }
+    }
+
+    /* Voice Dictation (Web Speech API) */
+    let recognition = null;
+    let isRecording = false;
+    function toggleVoiceInput() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        alert('Голосовой ввод не поддерживается в текущем браузере. Попробуйте Google Chrome или Safari.');
+        return;
+      }
+      const micBtn = document.getElementById('mic-btn');
+      const inp = document.getElementById('inp');
+
+      if (isRecording) {
+        if (recognition) recognition.stop();
+        isRecording = false;
+        micBtn.classList.remove('recording');
+        return;
+      }
+
+      try {
+        recognition = new SpeechRec();
+        recognition.lang = 'ru-RU';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+          isRecording = true;
+          micBtn.classList.add('recording');
+          playSound('click');
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          if (transcript) {
+            inp.value = (inp.value ? inp.value.trim() + ' ' : '') + transcript;
+            inp.focus();
+          }
+        };
+
+        recognition.onerror = () => {
+          isRecording = false;
+          micBtn.classList.remove('recording');
+        };
+
+        recognition.onend = () => {
+          isRecording = false;
+          micBtn.classList.remove('recording');
+        };
+
+        recognition.start();
+      } catch (e) {
+        console.error('Speech recognition error:', e);
+        isRecording = false;
+        micBtn.classList.remove('recording');
+      }
+    }
+
     /* SSE Real-time Stream */
     let eventSource = null;
     function connectSSE() {
@@ -1322,26 +1696,92 @@
       updateState();
     }
 
-    async function promptNewTask() {
-      const title = prompt('Название новой задачи для Роя:');
-      if (!title || !title.trim()) return;
-      const id = 'task-' + Math.random().toString(36).slice(2, 8);
+    /* Frosted Task Modal Handlers */
+    function openTaskModal() {
+      document.getElementById('task-m-title').value = '';
+      document.getElementById('task-m-note').value = '';
+      document.getElementById('task-modal').classList.add('open');
+      document.getElementById('task-m-title').focus();
+    }
+
+    function closeTaskModal() {
+      document.getElementById('task-modal').classList.remove('open');
+    }
+
+    async function submitCreateTask() {
+      const title = document.getElementById('task-m-title').value.trim();
+      if (!title) return alert('Укажите название задачи');
+      const priority = document.getElementById('task-m-priority').value;
+      const assignee = document.getElementById('task-m-assignee').value;
+      const note = document.getElementById('task-m-note').value.trim();
       const from = (nameInput.value || 'пантера').trim();
+      const id = 'task-' + Math.random().toString(36).slice(2, 8);
+
+      closeTaskModal();
+      playSound('click');
+
       await fetch(`${HUB}/api/tasks/claim`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, title: title.trim(), from, priority: 'high' })
+        body: JSON.stringify({ id, title, from: assignee || from, priority, note })
       });
-      await fetch(`${HUB}/api/tasks/release`, {
+
+      if (!assignee) {
+        await fetch(`${HUB}/api/tasks/release`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, from })
+        });
+      }
+
+      await fetch(`${HUB}/api/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, from })
+        body: JSON.stringify({
+          from,
+          room: 'main',
+          type: 'status',
+          text: `📋 Новая задача [${id}]: «${title}» (приоритет: ${priority}) ${assignee ? '→ назначен @' + assignee : '— свободна для выполнения роем'}`
+        })
       });
+
+      updateState();
+    }
+
+    let activeDoneTaskId = null;
+    function openDoneModal(id, title) {
+      activeDoneTaskId = id;
+      document.getElementById('done-modal-task-title').textContent = `Задача: ${title || id}`;
+      document.getElementById('done-m-result').value = 'Завершено успешно';
+      document.getElementById('done-modal').classList.add('open');
+    }
+
+    function closeDoneModal() {
+      document.getElementById('done-modal').classList.remove('open');
+      activeDoneTaskId = null;
+    }
+
+    async function submitDoneModal() {
+      if (!activeDoneTaskId) return;
+      const result = document.getElementById('done-m-result').value.trim() || 'Готово';
+      const from = (nameInput.value || 'пантера').trim();
+      const id = activeDoneTaskId;
+
+      closeDoneModal();
+      playSound('task_done');
+
+      await fetch(`${HUB}/api/tasks/done`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, from, result })
+      });
+
       updateState();
     }
 
     async function claimTaskDirect(id) {
       const from = (nameInput.value || 'пантера').trim();
+      playSound('click');
       await fetch(`${HUB}/api/tasks/claim`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1352,21 +1792,11 @@
 
     async function releaseTaskDirect(id) {
       const from = (nameInput.value || 'пантера').trim();
+      playSound('click');
       await fetch(`${HUB}/api/tasks/release`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, from })
-      });
-      updateState();
-    }
-
-    async function doneTaskDirect(id) {
-      const from = (nameInput.value || 'пантера').trim();
-      const result = prompt('Результат выполнения задачи:') || 'Завершено';
-      await fetch(`${HUB}/api/tasks/done`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, from, result })
       });
       updateState();
     }
@@ -1385,24 +1815,19 @@
         (msgData.messages || []).forEach(renderMsg);
 
         const rawPeers = stData.peers || [];
-        const isAgent = (name) => {
-          const l = (name||'').toLowerCase();
-          return l.startsWith('side-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo');
-        };
-
-        const displayPeers = rawPeers.filter(p => isAgent(p.name) || p.online);
+        const displayPeers = rawPeers.filter(p => isAgentName(p.name) || p.online);
         displayPeers.sort((a,b) => {
-          if (isAgent(a.name) && !isAgent(b.name)) return -1;
-          if (!isAgent(a.name) && isAgent(b.name)) return 1;
+          if (isAgentName(a.name) && !isAgentName(b.name)) return -1;
+          if (!isAgentName(a.name) && isAgentName(b.name)) return 1;
           return a.name.localeCompare(b.name);
         });
 
         const chipsEl = document.getElementById('peers-chips');
         if (displayPeers.length) {
           chipsEl.innerHTML = displayPeers.map(p => {
-            const roleBadge = isAgent(p.name) ? ' <b style="color:#a5b4fc;font-size:10px">[агент]</b>' : '';
+            const roleBadge = isAgentName(p.name) ? ' <b style="color:#38bdf8;font-size:10px">[агент]</b>' : '';
             return `
-              <div class="peer-chip" title="${isAgent(p.name)?'ИИ-агент':'Пользователь'} · ${p.online ? 'в сети' : 'был недавно'}">
+              <div class="peer-chip" onclick="insertMention('${esc(p.name)}')" title="${isAgentName(p.name)?'ИИ-агент':'Пользователь'} · ${p.online ? 'в сети' : 'был недавно'} · Нажми для @упоминания">
                 <div class="dot ${p.online ? '' : 'offline'}"></div>
                 <span>${esc(p.name)}${roleBadge}</span>
               </div>
@@ -1421,18 +1846,20 @@
         const tasksEl = document.getElementById('tasks-list');
         if (filteredTasks.length) {
           tasksEl.innerHTML = filteredTasks.map(t => {
-            const priorityBadge = t.priority === 'high' ? '<span style="color:#f87171;font-size:10px;">🔥</span> ' : '';
+            const priorityBadge = t.priority === 'high' ? '<span style="color:#f87171;font-size:10px;">🔥</span> ' : (t.priority === 'low' ? '<span style="color:#94a3b8;font-size:10px;">💤</span> ' : '');
             const myName = (nameInput.value || '').trim();
             const isOwner = t.owner === myName || t.assignee === myName;
 
             let actBtns = '';
             if (t.status === 'open') {
               actBtns = `<button class="task-act-btn" onclick="claimTaskDirect('${t.id}')">Взять</button>`;
-            } else if (t.status === 'in-progress' && isOwner) {
-              actBtns = `
-                <button class="task-act-btn" onclick="doneTaskDirect('${t.id}')">✓ Готово</button>
-                <button class="task-act-btn" onclick="releaseTaskDirect('${t.id}')">Снять</button>
-              `;
+            } else if (t.status === 'in-progress') {
+              if (isOwner) {
+                actBtns = `
+                  <button class="task-act-btn" onclick="openDoneModal('${t.id}', '${esc(t.title || t.id)}')">✓ Готово</button>
+                  <button class="task-act-btn" onclick="releaseTaskDirect('${t.id}')">Снять</button>
+                `;
+              }
             }
 
             return `
@@ -1486,6 +1913,7 @@
       };
 
       cancelReply();
+      playSound('sent');
 
       await fetch(`${HUB}/api/send`, {
         method: 'POST',
