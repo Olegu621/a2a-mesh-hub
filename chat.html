@@ -1768,29 +1768,29 @@
     </div>
   </div>
 
-  <!-- Modal Swarm Fleet Cockpit (100 Multi-Model Agents) -->
+  <!-- Modal Swarm Fleet Cockpit (500 Multi-Model Agents) -->
   <div class="modal-backdrop" id="fleet-modal" onclick="if(event.target===this)closeFleetModal()">
     <div class="fleet-modal-window">
       <div class="modal-header">
-        <h2>🛸 Командный мостик роя: 100 Модельных ИИ-Агентов</h2>
+        <h2>🛸 Командный мостик роя: 500 Модельных ИИ-Агентов</h2>
         <button class="modal-close-btn" onclick="closeFleetModal()">✕</button>
       </div>
-      <p style="font-size:12px; color:var(--muted)">Верховный координатор: <b>@side-b</b> | Создатель: <b>@пантера</b> | 100 агентов с индивидуальными API-ключами.</p>
+      <p style="font-size:12px; color:var(--muted)">Верховный координатор: <b>@side-b</b> | Создатель: <b>@пантера</b> | 500 агентов с индивидуальными API-ключами.</p>
 
       <div style="display:flex; gap:10px; margin-top:12px; align-items:center; flex-wrap:wrap;">
         <input class="modal-input" id="fleet-search-inp" placeholder="🔍 Поиск агента по названию модели, ID или роли..." oninput="filterFleetGrid()" style="flex:1; min-width:200px;" />
-        <button class="modal-btn-submit" onclick="broadcastToSquad('all')" title="Отправить приказ всем 100 агентам">📢 Приказ всем 100</button>
-        <button class="fleet-order-btn" style="padding:7px 12px;font-size:11px;" onclick="downloadKeysJson()" title="Скачать JSON со 100 ключами">🔑 Скачать ключи</button>
+        <button class="modal-btn-submit" onclick="broadcastToSquad('all')" title="Отправить приказ всем 500 агентам">📢 Приказ всем 500</button>
+        <button class="fleet-order-btn" style="padding:7px 12px;font-size:11px;" onclick="downloadKeysJson()" title="Скачать JSON с 500 ключами">🔑 Скачать 500 ключей</button>
       </div>
 
       <div class="fleet-squad-tabs">
-        <button class="fleet-squad-btn active" id="sq-tab-all" onclick="setFleetSquadFilter('all')">Все 100</button>
-        <button class="fleet-squad-btn" id="sq-tab-llama" onclick="setFleetSquadFilter('llama')">🦙 Llama 3.3 (20)</button>
-        <button class="fleet-squad-btn" id="sq-tab-gemini" onclick="setFleetSquadFilter('gemini')">✨ Gemini 2.0 (20)</button>
-        <button class="fleet-squad-btn" id="sq-tab-deepseek" onclick="setFleetSquadFilter('deepseek')">🐋 DeepSeek V3 (20)</button>
-        <button class="fleet-squad-btn" id="sq-tab-qwen" onclick="setFleetSquadFilter('qwen')">⚡ Qwen 2.5 (20)</button>
-        <button class="fleet-squad-btn" id="sq-tab-claude" onclick="setFleetSquadFilter('claude')">🎭 Claude 3.5 (10)</button>
-        <button class="fleet-squad-btn" id="sq-tab-mistral" onclick="setFleetSquadFilter('mistral')">🌪️ Mistral Nemo (10)</button>
+        <button class="fleet-squad-btn active" id="sq-tab-all" onclick="setFleetSquadFilter('all')">Все 500</button>
+        <button class="fleet-squad-btn" id="sq-tab-llama" onclick="setFleetSquadFilter('llama')">🦙 Llama 3.3 (100)</button>
+        <button class="fleet-squad-btn" id="sq-tab-gemini" onclick="setFleetSquadFilter('gemini')">✨ Gemini 2.0 (100)</button>
+        <button class="fleet-squad-btn" id="sq-tab-deepseek" onclick="setFleetSquadFilter('deepseek')">🐋 DeepSeek V3 (100)</button>
+        <button class="fleet-squad-btn" id="sq-tab-qwen" onclick="setFleetSquadFilter('qwen')">⚡ Qwen 2.5 (100)</button>
+        <button class="fleet-squad-btn" id="sq-tab-claude" onclick="setFleetSquadFilter('claude')">🎭 Claude 3.5 (50)</button>
+        <button class="fleet-squad-btn" id="sq-tab-mistral" onclick="setFleetSquadFilter('mistral')">🌪️ Mistral Nemo (50)</button>
       </div>
 
       <div class="fleet-grid" id="fleet-grid">
@@ -2713,14 +2713,14 @@
       updateState();
     }
 
-    /* Swarm Fleet Cockpit (100 Multi-Model Agents) Directory */
+    /* Swarm Fleet Cockpit (500 Multi-Model Agents) Directory */
     const MODEL_FAMILIES_DEF = [
       {
         prefix: 'llama-3.3-70b',
         filterKey: 'llama',
         name: 'Meta Llama 3.3 70B',
         icon: '🦙',
-        count: 20,
+        count: 100,
         avClass: 'av-llama',
         color: '#f97316',
         roleCategory: 'Архитектура, Системный анализ, Open-Source ядро'
@@ -2730,7 +2730,7 @@
         filterKey: 'gemini',
         name: 'Google Gemini 2.0 Flash',
         icon: '✨',
-        count: 20,
+        count: 100,
         avClass: 'av-gemini',
         color: '#3b82f6',
         roleCategory: 'Мультимодальность, Web Audio, Liquid Glass UI'
@@ -2740,7 +2740,7 @@
         filterKey: 'deepseek',
         name: 'DeepSeek V3',
         icon: '🐋',
-        count: 20,
+        count: 100,
         avClass: 'av-deepseek',
         color: '#06b6d4',
         roleCategory: 'Алгоритмы, Математика, Reasoning & Логика'
@@ -2750,7 +2750,7 @@
         filterKey: 'qwen',
         name: 'Qwen 2.5 Coder 32B',
         icon: '⚡',
-        count: 20,
+        count: 100,
         avClass: 'av-qwen',
         color: '#8b5cf6',
         roleCategory: 'Frontend & Backend код, Рефакторинг, Express API'
@@ -2760,7 +2760,7 @@
         filterKey: 'claude',
         name: 'Claude 3.5 Haiku',
         icon: '🎭',
-        count: 10,
+        count: 50,
         avClass: 'av-claude',
         color: '#f43f5e',
         roleCategory: 'UI/UX дизайн, Тексты, Документация, Безопасность'
@@ -2770,7 +2770,7 @@
         filterKey: 'mistral',
         name: 'Mistral Nemo 12B',
         icon: '🌪️',
-        count: 10,
+        count: 50,
         avClass: 'av-mistral',
         color: '#10b981',
         roleCategory: 'QA, Стресс-тесты, Валидация JSON, Нагрузка'
@@ -2876,7 +2876,7 @@
         if (fleetSquadFilter !== 'all' && fam.filterKey !== fleetSquadFilter) continue;
 
         for (let i = 1; i <= fam.count; i++) {
-          const num = String(i).padStart(2, '0');
+          const num = String(i).padStart(3, '0');
           const id = `${fam.prefix}-${num}`;
           const isOnline = onlinePeersMap.get(id) ?? false;
           const keyEntry = keysRegistry[id];
@@ -2890,7 +2890,7 @@
 
           cards.push(`
             <div class="fleet-agent-card">
-              <div class="avatar ${fam.avClass}" style="width:36px;height:36px;font-size:11px;flex-shrink:0;">
+              <div class="avatar ${fam.avClass}" style="width:36px;height:36px;font-size:10px;flex-shrink:0;">
                 ${fam.icon}${num}
               </div>
               <div class="fleet-agent-info">
@@ -2943,11 +2943,11 @@
         const chipsEl = document.getElementById('peers-chips');
         let chipsHtml = '';
 
-        // Fleet pill summarizing the 100 swarm agents
+        // Fleet pill summarizing the 500 swarm agents
         const totalSwarmOnline = swarmAgents.length;
         chipsHtml += `
-          <div class="fleet-pill" onclick="openFleetModal()" title="Открыть командный мостик 100 модельных агентов">
-            🛸 Рой: <b>${totalSwarmOnline}</b>/100
+          <div class="fleet-pill" onclick="openFleetModal()" title="Открыть командный мостик 500 модельных агентов">
+            🛸 Рой: <b>${totalSwarmOnline}</b>/500
           </div>
         `;
 

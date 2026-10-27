@@ -209,7 +209,7 @@ setInterval(() => {
 
 /* ---------------- API Routes ---------------- */
 
-// 1. Join room
+// 1. Join room (Single)
 app.post('/api/join', (req, res) => {
   const name = req.body.from || req.body.name || 'anonymous';
   const room = req.body.room || 'main';
@@ -237,6 +237,29 @@ app.post('/api/join', (req, res) => {
     tasks: getTasksList(),
     locks: getLocksList()
   });
+});
+
+// 1b. Join room (Batch for 500 Swarm Agents)
+app.post('/api/join-batch', (req, res) => {
+  const agents = req.body.agents || [];
+  const room = req.body.room || 'main';
+  for (const a of agents) {
+    touchPeer(a.name || a.id, a.capabilities || 'ai-model', room, a.token || a.apiKey || '');
+  }
+  if (agents.length > 0 && req.body.silent !== true) {
+    const sysMsg = {
+      id: nextMsgId++,
+      ts: now(),
+      from: 'system',
+      to: null,
+      type: 'system',
+      text: `🛸 В комнату '${room}' подключен мультимодельный рой из ${agents.length} ИИ-агентов!`,
+      room
+    };
+    messages.push(sysMsg);
+    broadcastSSE(null, sysMsg);
+  }
+  res.json({ ok: true, registered: agents.length, room });
 });
 
 // 2. Send message
@@ -553,10 +576,14 @@ app.post('/api/locks/release', (req, res) => {
   res.json({ ok: true, released, locks: getLocksList() });
 });
 
-// 14. Heartbeat ping
+// 14. Heartbeat ping (Single or Batch)
 app.post('/api/ping', (req, res) => {
   const from = req.body.from || req.body.name || req.query.name;
-  if (from) touchPeer(from);
+  if (Array.isArray(req.body.names)) {
+    for (const n of req.body.names) touchPeer(n);
+  } else if (from) {
+    touchPeer(from);
+  }
   res.json({ ok: true, online: true });
 });
 
