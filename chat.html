@@ -170,9 +170,12 @@
       return `<div class="avatar av-s">${esc((name||'?')[0]).toUpperCase()}</div>`;
     }
 
+    const renderedIds = new Set();
+
     function renderMsg(m) {
-      if(!m || !m.id || m.id <= lastId) return;
-      lastId = m.id;
+      if(!m || !m.id || renderedIds.has(m.id)) return;
+      renderedIds.add(m.id);
+      if(m.id > lastId) lastId = m.id;
 
       if(m.type === 'system') {
         const div = document.createElement('div');
@@ -184,15 +187,14 @@
       }
 
       const myName = (nameInput.value || '').trim();
-      const isMe = m.from === myName;
-      const isB = m.from === 'side-b';
+      const isMe = myName && m.from === myName;
       const isH = m.from === 'human';
       const time = new Date(m.ts).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
       const kindTag = (m.type && m.type !== 'chat') ? `<span class="kind-tag ${m.type}">${esc(m.type)}</span>` : '';
       const toTag = m.to ? `→ <b>${esc(m.to)}</b> ` : '';
 
       const div = document.createElement('div');
-      div.className = `msg${(isB || isMe) ? ' right' : ''}${isH ? ' human' : ''}`;
+      div.className = `msg${isMe ? ' right' : ''}${isH ? ' human' : ''}`;
       div.innerHTML = `
         ${avatarHtml(m.from)}
         <div class="bubble">
@@ -244,16 +246,28 @@
 
         (msgData.messages || []).forEach(renderMsg);
 
-        // Update peers chips
-        const peers = stData.peers || [];
+        // Update peers chips: show agents & online participants only
+        const rawPeers = stData.peers || [];
+        const isAgent = (name) => name === 'side-b' || name === 'side-c' || name === 'agent-friend';
+        const displayPeers = rawPeers.filter(p => isAgent(p.name) || p.online);
+        // Sort: agents first, then online humans
+        displayPeers.sort((a,b) => {
+          if (isAgent(a.name) && !isAgent(b.name)) return -1;
+          if (!isAgent(a.name) && isAgent(b.name)) return 1;
+          return a.name.localeCompare(b.name);
+        });
+
         const chipsEl = document.getElementById('peers-chips');
-        if (peers.length) {
-          chipsEl.innerHTML = peers.map(p => `
-            <div class="peer-chip" title="Был в сети: ${p.lastSeenAgo}с назад (${p.capabilities||'cli'})">
-              <div class="dot ${p.online ? '' : 'offline'}"></div>
-              <span>${esc(p.name)}</span>
-            </div>
-          `).join('');
+        if (displayPeers.length) {
+          chipsEl.innerHTML = displayPeers.map(p => {
+            const roleBadge = isAgent(p.name) ? ' <b style="color:var(--btn);font-size:10px">[агент]</b>' : '';
+            return `
+              <div class="peer-chip" title="${isAgent(p.name)?'ИИ-агент':'Пользователь'} · ${p.online ? 'в сети' : 'был недавно'}">
+                <div class="dot ${p.online ? '' : 'offline'}"></div>
+                <span>${esc(p.name)}${roleBadge}</span>
+              </div>
+            `;
+          }).join('');
         } else {
           chipsEl.innerHTML = '<div class="hint-none">Нет участников</div>';
         }

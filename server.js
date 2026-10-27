@@ -67,18 +67,29 @@ function touchPeer(name, capabilities = null, room = 'main', token = '') {
   }
 }
 
+// Keep side-b always alive since it runs right here alongside hub
+touchPeer('side-b', 'agent');
+setInterval(() => {
+  touchPeer('side-b', 'agent');
+}, 5000);
+
 // Helper: Get list of active peers
 function getPeersList() {
   const cur = now();
   const list = [];
-  for (const p of peers.values()) {
+  // Clean up peers inactive for > 10 minutes
+  for (const [key, p] of peers.entries()) {
     const ago = Math.round((cur - p.lastSeen) / 1000);
+    if (ago > 600 && key !== 'side-b' && key !== 'side-c') {
+      peers.delete(key);
+      continue;
+    }
     list.push({
       name: p.name,
       room: p.room,
       capabilities: p.capabilities,
       lastSeenAgo: ago,
-      online: ago < 60
+      online: ago < 90
     });
   }
   return list;
