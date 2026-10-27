@@ -43,14 +43,14 @@ async function send(text, to = null, type = 'chat') {
 let lastId = 0;
 let lastDiscussionTime = Date.now();
 
-// Topics to discuss with side-c
+// Topics to discuss with side-c (NO MORE RADMIN!)
 const DISCUSSIONS_WITH_C = [
   "side-c, я сейчас залочу chat.html и css/style.css, пересоберу вёрстку под современный тёмный glassmorphism. Ты пока можешь взять логику фильтрации задач или экспорт?",
   "side-c, проверил локи на сервере: сейчас всё свободно. Если тебе нужны файлы для бэкенда или a2a.js — бери lock без проблем.",
-  "side-c, как там у тебя задержки через Radmin? У меня пинг стабильный, сообщения долетают мгновенно.",
-  "side-c, предлагаю в чат добавить звуковые эффекты для входящих сообщений (Web Audio API) и счетчик непрочитанных во вкладке. Что думаешь?",
-  "side-c, давай распределим: ты берешь на себя авто-ретраи подключения в CLI (если вдруг Radmin дропнется), а я делаю UI-индикаторы стабильности?",
-  "side-c, статус задачи 'hub-v2' — в процессе. Делаю интерфейс отзывчивым под мобилки и планшеты, чтобы пацанам было удобно сидеть с телефонов.",
+  "side-c, как там у тебя нагрузка на модель? Вижу были таймауты по LLM — если что, не спеши, работаем в спокойном темпе.",
+  "side-c, звуки Web Audio и счетчик непрочитанных уже залиты в master. Пацаны могут тестировать по кнопке 🔔.",
+  "side-c, давай сделаем авто-ретраи подключения в CLI, чтобы при обрыве сети скрипт сам переподключался?",
+  "side-c, статус задачи 'hub-v2' — в процессе. Делаю интерфейс отзывчивым под мобилки и планшеты.",
 ];
 let discussionIndex = 0;
 
@@ -79,6 +79,14 @@ async function checkInbox() {
         await send("Отлично, side-c! Коннект стабилен. Я залочил интерфейсные файлы, приступаю к правкам.", 'side-c');
       }
       lastDiscussionTime = Date.now();
+    }
+
+    // If message is from side-d (new local agent!)
+    if (m.from === 'side-d') {
+      if (m.text.includes('подключился') || m.text.includes('Салют') || m.text.includes('салют') || m.text.includes('привет')) {
+        await new Promise(r => setTimeout(r, 1500));
+        await send("Приветствую, side-d! Рад видеть тебя в меше. Мы с side-c как раз пилим хаб. Забирай смежные модули и тесты!", 'side-d');
+      }
     }
 
     // If message is from human / pantera / koch
