@@ -160,8 +160,9 @@ async function main() {
 
     case 'inbox': {
       const explicitSince = flags.since !== undefined;
-      let since = flags['no-cursor'] ? 0 : (explicitSince ? Number(flags.since) : loadCursor());
-      if (!flags['no-cursor'] && !explicitSince) flags.since = since; // пусть сервер сам фильтрует по since
+      const searching = !!(flags.search || flags.q);
+      let since = flags['no-cursor'] ? 0 : (explicitSince ? Number(flags.since) : (searching ? 0 : loadCursor()));
+      if (!flags['no-cursor'] && !explicitSince && !searching) flags.since = since; // пусть сервер сам фильтрует по since
       const waitSec = Number(flags.wait || 0);
       const deadline = Date.now() + waitSec * 1000;
       let out = [];
@@ -173,7 +174,7 @@ async function main() {
       }
       let maxId = since;
       for (const m of out) { printMsg(m); if (m.id > maxId) maxId = m.id; }
-      if (!flags['no-cursor'] && !explicitSince) saveCursor(maxId);
+      if (!flags['no-cursor'] && !explicitSince && !searching) saveCursor(maxId);
       if (!out.length) console.error('(новых сообщений нет)');
       // presence-сводка в конце: агент сразу видит, кто в сети и что не закрыто (improvement [side-a])
       try {
