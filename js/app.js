@@ -27,9 +27,8 @@
     dom = {
       app: document.getElementById('app'),
       noteForm: document.getElementById('note-form'),
-      noteInput: document.getElementById('note-input'),
-      noteTitle: document.getElementById('note-title') || document.querySelector('input[name="title"]'),
-      noteContent: document.getElementById('note-content') || document.getElementById('note-input') || document.querySelector('textarea[name="content"]'),
+      noteTitle: document.getElementById('note-title') || document.getElementById('note-input') || document.querySelector('input[name="title"]'),
+      noteContent: document.getElementById('note-content') || document.querySelector('textarea[name="content"]'),
       noteTags: document.getElementById('note-tags') || document.querySelector('input[name="tags"]'),
       colorPicker: document.getElementById('color-picker') || document.querySelector('.color-picker'),
       searchInput: document.getElementById('search-input'),
@@ -37,7 +36,7 @@
       themeToggle: document.getElementById('theme-toggle'),
       exportBtn: document.getElementById('export-btn'),
       cancelEditBtn: document.getElementById('cancel-edit-btn'),
-      submitBtn: document.getElementById('note-submit-btn') || (dom.noteForm ? dom.noteForm.querySelector('button[type="submit"]') : null)
+      submitBtn: document.getElementById('note-submit-btn') || (document.getElementById('note-form') ? document.getElementById('note-form').querySelector('button[type="submit"]') : null)
     };
   }
 
@@ -263,13 +262,7 @@
     if (e) e.preventDefault();
 
     const title = (dom.noteTitle ? dom.noteTitle.value : '').trim();
-    // noteContent can fall back to noteInput
-    let content = '';
-    if (dom.noteContent) {
-      content = dom.noteContent.value.trim();
-    } else if (dom.noteInput) {
-      content = dom.noteInput.value.trim();
-    }
+    const content = (dom.noteContent ? dom.noteContent.value : '').trim();
 
     if (!title && !content) {
       alert('Пожалуйста, введите заголовок или текст заметки');
@@ -316,11 +309,7 @@
     editingNoteId = noteId;
 
     if (dom.noteTitle) dom.noteTitle.value = note.title || '';
-    if (dom.noteContent) {
-      dom.noteContent.value = note.content || '';
-    } else if (dom.noteInput) {
-      dom.noteInput.value = note.content || '';
-    }
+    if (dom.noteContent) dom.noteContent.value = note.content || '';
 
     if (dom.noteTags) {
       dom.noteTags.value = Array.isArray(note.tags) ? note.tags.join(', ') : (note.tags || '');
@@ -363,7 +352,6 @@
   function resetForm() {
     if (dom.noteTitle) dom.noteTitle.value = '';
     if (dom.noteContent) dom.noteContent.value = '';
-    if (dom.noteInput && dom.noteInput !== dom.noteContent) dom.noteInput.value = '';
     if (dom.noteTags) dom.noteTags.value = '';
     setSelectedColor('default');
   }
