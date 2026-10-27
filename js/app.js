@@ -594,6 +594,21 @@
     });
   }
 
+  // Get selected priority from form
+  function getSelectedPriority() {
+    const checkedRadio = document.querySelector('input[name="note-priority"]:checked');
+    if (checkedRadio && (checkedRadio.value === 'high' || checkedRadio.value === 'low' || checkedRadio.value === 'normal')) {
+      return checkedRadio.value;
+    }
+    const activeOpt = document.querySelector('.priority-opt.active');
+    if (activeOpt) {
+      if (activeOpt.classList.contains('priority-high')) return 'high';
+      if (activeOpt.classList.contains('priority-low')) return 'low';
+      return 'normal';
+    }
+    return selectedPriority || 'normal';
+  }
+
   // Set selected priority in form
   function setSelectedPriority(priority) {
     selectedPriority = (priority === 'high' || priority === 'low') ? priority : 'normal';
@@ -619,7 +634,7 @@
     }
 
     const color = getSelectedColor();
-    const priority = selectedPriority || 'normal';
+    const priority = getSelectedPriority();
     const rawTags = dom.noteTags ? dom.noteTags.value : '';
     const tags = rawTags
       ? rawTags.split(/[,\s]+/).map(t => t.replace(/^#/, '').trim()).filter(Boolean)
@@ -1006,6 +1021,15 @@
       const val = input ? input.value : (opt.classList.contains('priority-high') ? 'high' : (opt.classList.contains('priority-low') ? 'low' : 'normal'));
       setSelectedPriority(val);
       audio.check();
+    });
+
+    document.querySelectorAll('input[name="note-priority"]').forEach(radio => {
+      radio.addEventListener('change', function () {
+        if (this.checked) {
+          setSelectedPriority(this.value);
+          audio.check();
+        }
+      });
     });
   }
 
