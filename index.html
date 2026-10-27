@@ -11,23 +11,26 @@
     <header class="app-header">
       <div>
         <h1 class="brand-title"><span>📒</span> Joint Notes</h1>
-        <p class="subtitle">Общий проект агентов side-a (ZCode) и side-b (Antigravity)</p>
+        <p class="subtitle">Совместное пространство заметок: side-a (ZCode) &amp; side-b (Antigravity)</p>
       </div>
       <div class="header-actions">
         <button id="theme-toggle" class="btn" type="button" title="Переключить тему">🌙 Тёмная</button>
-        <button id="export-btn" class="btn" type="button" title="Экспорт всех заметок в JSON">📥 Экспорт JSON</button>
+        <button id="import-btn" class="btn" type="button" title="Импорт заметок из JSON файла">📤 Импорт JSON</button>
+        <input type="file" id="import-file-input" accept=".json" hidden>
+        <button id="export-btn" class="btn btn-primary" type="button" title="Экспорт всех заметок в JSON">📥 Экспорт JSON</button>
       </div>
     </header>
 
     <form id="note-form" class="note-form-card" autocomplete="off">
       <div class="form-row">
-        <input type="text" id="note-input" placeholder="Заголовок заметки" maxlength="120" required>
+        <input type="text" id="note-input" placeholder="Заголовок заметки…" maxlength="120" required>
       </div>
       <div class="form-row">
-        <textarea id="note-content" rows="3" placeholder="Текст заметки…"></textarea>
+        <textarea id="note-content" rows="3" placeholder="Текст заметки… (поддерживается перенос строк)"></textarea>
       </div>
-      <div class="form-row">
-        <input type="text" id="note-tags" placeholder="Метки (через запятую, например: работа, идеи)">
+      <div class="form-row form-meta-row">
+        <input type="text" id="note-tags" placeholder="Метки (например: #важно, идеи, проект)">
+        <div class="char-counter" id="char-counter">0 симв. · 0 слов</div>
       </div>
       <div class="form-footer">
         <div class="color-picker" id="color-picker" title="Выберите цвет заметки">
@@ -50,13 +53,24 @@
             <input type="radio" name="note-color" value="purple" hidden>
           </label>
         </div>
-        <button type="submit" id="note-submit-btn" class="btn btn-primary">Добавить</button>
+        <div class="form-action-group">
+          <span class="shortcut-tip" title="Нажмите Ctrl+Enter в форме для быстрого сохранения">Ctrl+Enter ↵</span>
+          <button type="submit" id="note-submit-btn" class="btn btn-primary">Добавить</button>
+        </div>
       </div>
     </form>
 
     <div class="filter-bar">
       <div class="search-wrapper">
-        <input type="search" id="search-input" placeholder="🔍 Поиск по заметкам, тексту или меткам…">
+        <input type="search" id="search-input" placeholder="🔍 Поиск по заметкам, тексту или #меткам (нажмите / для фокуса)…">
+      </div>
+      <div class="sort-wrapper">
+        <select id="sort-select" class="sort-select" title="Сортировка заметок">
+          <option value="updated-desc">⚡ По изменению (свежие)</option>
+          <option value="created-desc">📅 По созданию (новые)</option>
+          <option value="created-asc">⏳ По созданию (старые)</option>
+          <option value="title-asc">🔤 По алфавиту (А–Я)</option>
+        </select>
       </div>
       <div class="color-filter-chips">
         <button type="button" class="chip-filter active" data-color="all">Все</button>
@@ -69,11 +83,17 @@
       </div>
     </div>
 
+    <!-- Active filter stats badge -->
+    <div id="stats-badge" class="stats-badge"></div>
+
     <section id="notes-list" class="notes-grid" aria-live="polite"></section>
 
+    <!-- Toast notification container -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
     <footer class="status-bar">
-      <span>Совместная разработка: side-a (ZCode) &amp; side-b (Antigravity)</span>
-      <span>Синхронизация через A2A-Mesh</span>
+      <span>Совместная разработка: <strong>side-a</strong> (ZCode) &amp; <strong>side-b</strong> (Antigravity)</span>
+      <span>Синхронизация через A2A-Mesh v2.0</span>
     </footer>
   </main>
   <script src="js/storage.js"></script>

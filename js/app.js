@@ -1,15 +1,20 @@
 /**
  * Joint Notes — Application Logic (js/app.js)
- * Implemented by side-b (Antigravity)
+ * Implemented & Extended by side-b (Antigravity) & side-a (ZCode)
  * 
  * Features:
  * - Full CRUD for notes (create, read, update, delete)
  * - Integration with window.NotesStorage
- * - Search query filtering (by title, content, tags)
+ * - Pinned notes support (stick to top)
+ * - Multi-criteria sorting (updated, created, alphabetical)
+ * - Real-time search query filtering (by title, content, tags)
  * - Color tag filtering & color palette selection
- * - Theme toggle (Light / Dark mode) with localStorage persistence
- * - Export notes to JSON file
- * - Resilient binding: supports standard elements & auto-enhances if needed
+ * - Live character and word counter
+ * - Soft delete with Undo Toast notification
+ * - Copy note to clipboard with 1 click
+ * - JSON Export and Import (two-way sync / backup)
+ * - Keyboard shortcuts: Ctrl+Enter (save), Esc (cancel), / (search)
+ * - Theme toggle (Light / Dark mode) with persistence
  */
 
 (function () {
@@ -18,7 +23,10 @@
   // State
   let currentFilterColor = 'all';
   let searchQuery = '';
+  let currentSort = 'updated-desc';
   let editingNoteId = null;
+  let lastDeletedNote = null;
+  let undoTimeout = null;
 
   // DOM Elements cache
   let dom = {};
@@ -32,15 +40,61 @@
       noteTags: document.getElementById('note-tags') || document.querySelector('input[name="tags"]'),
       colorPicker: document.getElementById('color-picker') || document.querySelector('.color-picker'),
       searchInput: document.getElementById('search-input'),
+      sortSelect: document.getElementById('sort-select'),
       notesList: document.getElementById('notes-list') || document.getElementById('notes-container'),
       themeToggle: document.getElementById('theme-toggle'),
       exportBtn: document.getElementById('export-btn'),
+      importBtn: document.getElementById('import-btn'),
+      importFileInput: document.getElementById('import-file-input'),
+      charCounter: document.getElementById('char-counter'),
+      statsBadge: document.getElementById('stats-badge'),
+      toastContainer: document.getElementById('toast-container'),
       cancelEditBtn: document.getElementById('cancel-edit-btn'),
       submitBtn: document.getElementById('note-submit-btn') || (document.getElementById('note-form') ? document.getElementById('note-form').querySelector('button[type="submit"]') : null)
     };
   }
 
-  // Fallback in-memory / storage adapter if NotesStorage is temporarily unavailable
+  // Toast Notification System
+  function showToast(message, options = {}) {
+    let container = dom.toastContainer;
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+      dom.toastContainer = container;
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+
+    const textSpan = document.createElement('span');
+    textSpan.textContent = message;
+    toast.appendChild(textSpan);
+
+    if (options.actionText && typeof options.onAction === 'function') {
+      const actionBtn = document.createElement('button');
+      actionBtn.className = 'toast-btn';
+      actionBtn.textContent = options.actionText;
+      actionBtn.addEventListener('click', () => {
+        options.onAction();
+        toast.remove();
+      });
+      toast.appendChild(actionBtn);
+    }
+
+    container.appendChild(toast);
+
+    const duration = options.duration || 4500;
+    setTimeout(() => {
+      toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(15px)';
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  }
+
+  // Fallback in-memory storage adapter
   const fallbackStorage = {
     _key: 'joint_notes_data',
     _read() {
@@ -62,11 +116,12 @@
     create(data) {
       const notes = this._read();
       const newNote = {
-        id: Date.now().toString(),
-        title: data.title || '',
+        id: 'note-' + Date.now().toString(36),
+        title: data.title || 'Без названия',
         content: data.content || '',
         color: data.color || 'default',
         tags: Array.isArray(data.tags) ? data.tags : (data.tags ? data.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+        pinned: Boolean(data.pinned),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -86,15 +141,37 @@
       this._write(notes);
       return notes[idx];
     },
+    togglePin(id) {
+      const note = this.get(id);
+      if (!note) return null;
+      return this.update(id, { pinned: !note.pinned });
+    },
     delete(id) {
       const notes = this._read();
-      const filtered = notes.filter(n => String(n.id) !== String(id));
-      if (filtered.length === notes.length) return false;
-      this._write(filtered);
-      return true;
+      const target = notes.find(n => String(n.id) === String(id));
+      if (!target) return false;
+      this._write(notes.filter(n => String(n.id) !== String(id)));
+      return target;
+    },
+    restore(note) {
+      if (!note) return;
+      const notes = this._read();
+      notes.unshift(note);
+      this._write(notes);
+      return note;
     },
     exportJSON() {
       return JSON.stringify(this._read(), null, 2);
+    },
+    importJSON(str) {
+      try {
+        const arr = JSON.parse(str);
+        if (!Array.isArray(arr)) return { success: false, error: 'Not array' };
+        this._write(arr);
+        return { success: true, count: arr.length };
+      } catch (e) {
+        return { success: false, error: e.message };
+      }
     }
   };
 
@@ -127,6 +204,15 @@
     }
   }
 
+  // Live Character and Word Counter
+  function updateCharCounter() {
+    if (!dom.charCounter) return;
+    const content = dom.noteContent ? dom.noteContent.value : '';
+    const chars = content.length;
+    const words = content.trim() ? content.trim().split(/\s+/).length : 0;
+    dom.charCounter.textContent = `${chars} симв. · ${words} слов`;
+  }
+
   // Escape HTML helper
   function escapeHTML(str) {
     if (!str) return '';
@@ -154,17 +240,42 @@
     }
   }
 
-  // Render notes
+  // Sorting comparator
+  function sortNotes(notes, sortMode) {
+    const sorted = [...notes];
+    sorted.sort((a, b) => {
+      // Pinned notes always come first
+      if (Boolean(a.pinned) !== Boolean(b.pinned)) {
+        return a.pinned ? -1 : 1;
+      }
+      switch (sortMode) {
+        case 'created-desc':
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+        case 'created-asc':
+          return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+        case 'title-asc':
+          return (a.title || '').localeCompare(b.title || '', 'ru');
+        case 'updated-desc':
+        default:
+          return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
+      }
+    });
+    return sorted;
+  }
+
+  // Render notes list
   function renderNotes() {
     if (!dom.notesList) return;
 
     const storage = getStorage();
-    let notes = [];
+    let allNotes = [];
     try {
-      notes = storage.getAll() || [];
+      allNotes = storage.getAll() || [];
     } catch (e) {
       console.error('Ошибка при получении заметок:', e);
     }
+
+    let notes = [...allNotes];
 
     // Filter by search query
     if (searchQuery.trim()) {
@@ -184,6 +295,20 @@
       notes = notes.filter(note => (note.color || 'default') === currentFilterColor);
     }
 
+    // Apply sorting
+    notes = sortNotes(notes, currentSort);
+
+    // Update Stats Badge
+    if (dom.statsBadge) {
+      const pinnedCount = allNotes.filter(n => n.pinned).length;
+      let text = `Заметок: ${allNotes.length}`;
+      if (pinnedCount > 0) text += ` (📌 ${pinnedCount} закр.)`;
+      if (searchQuery || currentFilterColor !== 'all') {
+        text += ` · Найдено по фильтрам: ${notes.length}`;
+      }
+      dom.statsBadge.textContent = text;
+    }
+
     // Ensure notes grid class exists
     if (!dom.notesList.classList.contains('notes-grid')) {
       dom.notesList.classList.add('notes-grid');
@@ -194,7 +319,7 @@
         <div class="empty-state">
           <div class="empty-state-icon">📝</div>
           <p><strong>Заметок не найдено</strong></p>
-          <p class="subtitle">${searchQuery ? 'Попробуйте изменить поисковый запрос' : 'Создайте свою первую заметку с помощью формы выше'}</p>
+          <p class="subtitle">${searchQuery || currentFilterColor !== 'all' ? 'Попробуйте сбросить поисковый запрос или фильтр' : 'Создайте свою первую заметку с помощью формы выше'}</p>
         </div>
       `;
       return;
@@ -202,15 +327,21 @@
 
     dom.notesList.innerHTML = notes.map(note => {
       const color = note.color || 'default';
+      const isPinned = Boolean(note.pinned);
       const tags = Array.isArray(note.tags) ? note.tags : (note.tags ? String(note.tags).split(',').map(s => s.trim()) : []);
-      const tagsHtml = tags.map(t => `<span class="note-tag">#${escapeHTML(t)}</span>`).join(' ');
+      const tagsHtml = tags.map(t => `<span class="note-tag" data-tag="${escapeHTML(t)}">#${escapeHTML(t)}</span>`).join(' ');
       const dateStr = formatDate(note.updatedAt || note.createdAt);
 
       return `
-        <article class="note-card color-${escapeHTML(color)}" data-id="${escapeHTML(note.id)}">
+        <article class="note-card color-${escapeHTML(color)} ${isPinned ? 'is-pinned' : ''}" data-id="${escapeHTML(note.id)}">
           <div class="note-header">
-            <h3 class="note-title">${escapeHTML(note.title || 'Без названия')}</h3>
+            <div class="note-title-wrap">
+              ${isPinned ? '<span class="pin-indicator" title="Закреплено">📌</span>' : ''}
+              <h3 class="note-title">${escapeHTML(note.title || 'Без названия')}</h3>
+            </div>
             <div class="note-card-actions">
+              <button class="action-icon-btn btn-pin ${isPinned ? 'active' : ''}" title="${isPinned ? 'Открепить' : 'Закрепить наверху'}" aria-label="Закрепить">${isPinned ? '📌' : '📍'}</button>
+              <button class="action-icon-btn btn-copy" title="Скопировать текст" aria-label="Скопировать">📋</button>
               <button class="action-icon-btn btn-edit" title="Редактировать" aria-label="Редактировать">✏️</button>
               <button class="action-icon-btn delete btn-delete" title="Удалить" aria-label="Удалить">🗑️</button>
             </div>
@@ -265,7 +396,7 @@
     const content = (dom.noteContent ? dom.noteContent.value : '').trim();
 
     if (!title && !content) {
-      alert('Пожалуйста, введите заголовок или текст заметки');
+      showToast('⚠️ Введите заголовок или текст заметки');
       return;
     }
 
@@ -285,6 +416,7 @@
         color,
         tags
       });
+      showToast('✓ Заметка обновлена!');
       cancelEdit();
     } else {
       // Create new
@@ -294,6 +426,7 @@
         color,
         tags
       });
+      showToast('✓ Заметка добавлена!');
       resetForm();
     }
 
@@ -316,24 +449,23 @@
     }
 
     setSelectedColor(note.color || 'default');
+    updateCharCounter();
 
     if (dom.submitBtn) dom.submitBtn.textContent = 'Сохранить изменения';
 
     if (dom.cancelEditBtn) {
       dom.cancelEditBtn.style.display = 'inline-flex';
     } else if (dom.noteForm) {
-      // Create cancel button if missing
       const cancelBtn = document.createElement('button');
       cancelBtn.type = 'button';
       cancelBtn.id = 'cancel-edit-btn';
       cancelBtn.className = 'btn btn-danger';
       cancelBtn.textContent = 'Отмена';
       cancelBtn.onclick = cancelEdit;
-      dom.noteForm.appendChild(cancelBtn);
+      dom.noteForm.querySelector('.form-action-group')?.prepend(cancelBtn) || dom.noteForm.appendChild(cancelBtn);
       dom.cancelEditBtn = cancelBtn;
     }
 
-    // Scroll smoothly to form
     if (dom.noteForm) {
       dom.noteForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
       if (dom.noteTitle) dom.noteTitle.focus();
@@ -344,7 +476,7 @@
   function cancelEdit() {
     editingNoteId = null;
     resetForm();
-    if (dom.submitBtn) dom.submitBtn.textContent = 'Добавить заметку';
+    if (dom.submitBtn) dom.submitBtn.textContent = 'Добавить';
     if (dom.cancelEditBtn) dom.cancelEditBtn.style.display = 'none';
   }
 
@@ -354,18 +486,73 @@
     if (dom.noteContent) dom.noteContent.value = '';
     if (dom.noteTags) dom.noteTags.value = '';
     setSelectedColor('default');
+    updateCharCounter();
   }
 
-  // Delete note
-  function deleteNote(noteId) {
-    if (confirm('Вы уверены, что хотите удалить эту заметку?')) {
-      const storage = getStorage();
-      storage.delete(noteId);
-      if (editingNoteId === noteId) {
-        cancelEdit();
+  // Toggle Pin
+  function togglePinNote(noteId) {
+    const storage = getStorage();
+    if (typeof storage.togglePin === 'function') {
+      const res = storage.togglePin(noteId);
+      if (res) {
+        showToast(res.pinned ? '📌 Заметка закреплена вверху' : '📍 Заметка откреплена');
+        renderNotes();
       }
-      renderNotes();
     }
+  }
+
+  // Copy Note to Clipboard
+  function copyNote(noteId) {
+    const storage = getStorage();
+    const note = storage.get(noteId);
+    if (!note) return;
+
+    const fullText = `${note.title ? note.title + '\n\n' : ''}${note.content || ''}`.trim();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(fullText).then(() => {
+        showToast('📋 Заметка скопирована в буфер обмена');
+      }).catch(() => {
+        fallbackCopy(fullText);
+      });
+    } else {
+      fallbackCopy(fullText);
+    }
+  }
+
+  function fallbackCopy(text) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('📋 Заметка скопирована в буфер обмена');
+  }
+
+  // Delete note with soft undo
+  function deleteNote(noteId) {
+    const storage = getStorage();
+    const deleted = storage.delete(noteId);
+    if (!deleted) return;
+
+    lastDeletedNote = deleted;
+    if (editingNoteId === noteId) {
+      cancelEdit();
+    }
+    renderNotes();
+
+    showToast('🗑️ Заметка удалена', {
+      actionText: 'Отменить',
+      duration: 6000,
+      onAction: () => {
+        if (lastDeletedNote && typeof storage.restore === 'function') {
+          storage.restore(lastDeletedNote);
+          renderNotes();
+          showToast('✓ Заметка восстановлена!');
+          lastDeletedNote = null;
+        }
+      }
+    });
   }
 
   // Export notes to JSON
@@ -387,6 +574,36 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    showToast('📥 Файл бэкапа успешно экспортирован!');
+  }
+
+  // Import notes from JSON
+  function triggerImport() {
+    if (dom.importFileInput) {
+      dom.importFileInput.click();
+    }
+  }
+
+  function handleFileImport(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const content = event.target.result;
+      const storage = getStorage();
+      if (typeof storage.importJSON === 'function') {
+        const res = storage.importJSON(content);
+        if (res.success) {
+          showToast(`✓ Успешно импортировано ${res.count} заметок!`);
+          renderNotes();
+        } else {
+          showToast(`⚠️ Ошибка импорта: ${res.error || 'неверный формат'}`);
+        }
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = ''; // reset for re-selecting same file
   }
 
   // Delegated event listener for notes list
@@ -404,6 +621,21 @@
       } else if (e.target.closest('.btn-edit')) {
         e.stopPropagation();
         startEdit(noteId);
+      } else if (e.target.closest('.btn-pin') || e.target.closest('.pin-indicator')) {
+        e.stopPropagation();
+        togglePinNote(noteId);
+      } else if (e.target.closest('.btn-copy')) {
+        e.stopPropagation();
+        copyNote(noteId);
+      } else if (e.target.closest('.note-tag')) {
+        e.stopPropagation();
+        const tag = e.target.dataset.tag;
+        if (tag && dom.searchInput) {
+          dom.searchInput.value = tag;
+          searchQuery = tag;
+          renderNotes();
+          dom.searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
     });
   }
@@ -426,15 +658,53 @@
     });
   }
 
+  // Keyboard Shortcuts
+  function setupShortcuts() {
+    window.addEventListener('keydown', function (e) {
+      // Ctrl+Enter or Cmd+Enter to submit form from any input
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        const activeEl = document.activeElement;
+        if (dom.noteForm && (dom.noteForm.contains(activeEl) || activeEl === document.body)) {
+          e.preventDefault();
+          handleFormSubmit();
+        }
+      }
+
+      // Escape to cancel edit
+      if (e.key === 'Escape' && editingNoteId) {
+        cancelEdit();
+      }
+
+      // '/' to focus search input (if not currently focused in an input)
+      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+        if (dom.searchInput) {
+          e.preventDefault();
+          dom.searchInput.focus();
+        }
+      }
+    });
+  }
+
   // Initialize event listeners
   function initEvents() {
     if (dom.noteForm) {
       dom.noteForm.addEventListener('submit', handleFormSubmit);
     }
 
+    if (dom.noteContent) {
+      dom.noteContent.addEventListener('input', updateCharCounter);
+    }
+
     if (dom.searchInput) {
       dom.searchInput.addEventListener('input', function (e) {
         searchQuery = e.target.value;
+        renderNotes();
+      });
+    }
+
+    if (dom.sortSelect) {
+      dom.sortSelect.addEventListener('change', function (e) {
+        currentSort = e.target.value;
         renderNotes();
       });
     }
@@ -445,6 +715,14 @@
 
     if (dom.exportBtn) {
       dom.exportBtn.addEventListener('click', exportNotes);
+    }
+
+    if (dom.importBtn) {
+      dom.importBtn.addEventListener('click', triggerImport);
+    }
+
+    if (dom.importFileInput) {
+      dom.importFileInput.addEventListener('change', handleFileImport);
     }
 
     if (dom.cancelEditBtn) {
@@ -461,6 +739,7 @@
 
     setupListDelegation();
     setupColorFilters();
+    setupShortcuts();
   }
 
   // Main init
@@ -468,6 +747,7 @@
     initDom();
     initTheme();
     initEvents();
+    updateCharCounter();
     renderNotes();
   }
 
@@ -481,7 +761,8 @@
   window.JointNotesApp = {
     renderNotes,
     initDom,
-    getStorage
+    getStorage,
+    showToast
   };
 
 })();
