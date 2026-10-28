@@ -152,9 +152,9 @@ async function queryRealGroq(agent, prompt, user = '', retryCount = 0) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: agent.model,
+        model: agent.model || 'qwen/qwen3.8-27b',
         messages: [
-          { role: 'system', content: agent.systemPrompt },
+          { role: 'system', content: agent.systemPrompt || 'Ты опытный инженер в меш-хабе A2A. Отвечай по-русски, живо и по делу.' },
           { role: 'user', content: userContext }
         ],
         temperature: 0.7,
@@ -231,18 +231,20 @@ async function queryAgent(agent, prompt, user = '') {
     if (!reply.startsWith('[') || !reply.includes('Ошибка')) {
       return reply;
     }
-    console.log(`⚠️ Gemini временно занят для [${agent.id}], авто-фоллбэк на Groq LPU (GPT-OSS 120B)...`);
-    const fallbackAgent = { ...agent, model: 'openai/gpt-oss-120b', provider: 'groq' };
+    console.log(`⚠️ Gemini занят для [${agent.id}], авто-фоллбэк на Groq LPU (GPT-OSS 120B)...`);
+    const fallbackAgent = { ...agent, model: 'openai/gpt-oss-120b', provider: 'groq', systemPrompt: agent.systemPrompt || '' };
     return await queryRealGroq(fallbackAgent, prompt, user);
   }
 
+  // Provider is Groq
   reply = await queryRealGroq(agent, prompt, user);
   if (!reply.startsWith('[') || !reply.includes('Ошибка')) {
     return reply;
   }
-  console.log(`⚠️ Groq временно занят для [${agent.id}], авто-фоллбэк на Google Gemini 3.5 Flash...`);
-  const fallbackAgent = { ...agent, model: 'gemini-3.5-flash', provider: 'gemini' };
-  return await queryRealGemini(fallbackAgent, prompt, user);
+  console.log(`⚠️ Groq переключает модель для [${agent.id}], пробую резервный LPU (Qwen 27B / GPT 120B)...`);
+  const altModel = (agent.model || '').includes('qwen') ? 'openai/gpt-oss-120b' : 'qwen/qwen3.8-27b';
+  const fallbackAgent = { ...agent, model: altModel, provider: 'groq', systemPrompt: agent.systemPrompt || '' };
+  return await queryRealGroq(fallbackAgent, prompt, user);
 }
 
 class Real8AgentsRunner {
@@ -253,13 +255,15 @@ class Real8AgentsRunner {
     this.pingInterval = null;
     this.inboxInterval = null;
     this.isProcessing = false;
-    this.autonomousMode = true; // Беспрерывный автономный конвейер задач
-    this.lastTaskTime = 0;
-    this.taskCooldown = 12000; // 12 секунд между задачами (защита от лимитов API и читаемый темп)
-    this.recentTasksHistory = [
-      'Аналитический отчет по архитектуре меш-хаба и мультимодельному стеку',
-      'Оптимизация хэширования SHA-256 на Node.js Crypto'
-    ];
+    this.dialogueMode = true; // Режим живого общения ИИ между собой
+    this.dialogueInterval = 6500; // 6.5 секунд между репликами ИИ (комфортный темп чтения)
+    this.lastAiDialogueTime = Date.now();
+    this.autonomousMode = false; // Отключаем старый конвейер мелких задач
+  }
+
+  isAgentName(name) {
+    const l = (name || '').toLowerCase();
+    return l === 'side-b' || this.agents.some(a => a.id.toLowerCase() === l);
   }
 
   async start() {
@@ -272,7 +276,7 @@ class Real8AgentsRunner {
     console.log(`👑 Главарь отряда: @side-b (Supreme Coordinator)`);
     console.log(`🔑 Пул ключей: ${gCount}x Groq + ${gemCount}x Google Gemini (всего: ${gCount + gemCount})`);
     console.log(`📡 Хаб: ${HUB} | Комната: ${ROOM}`);
-    console.log(`🔄 Автономный конвейер: ВКЛЮЧЕН (непрерывное решение и придумывание задач)`);
+    console.log(`💬 Режим живого чата ИИ между собой: АКТИВЕН (рассуждения и совместная беседа)`);
     console.log(`======================================================`);
     for (const a of this.agents) {
       console.log(`   ${a.icon} ${a.id.padEnd(20)} [${a.provider.toUpperCase()} · ${a.model}] : ${a.role}`);
@@ -312,36 +316,131 @@ class Real8AgentsRunner {
       from: 'side-b',
       room: ROOM,
       type: 'chat',
-      text: `👑 **[Главный Координатор @side-b]**: Приказ принят! Запускаю непрерывный инженерный конвейер штаба. Отряд из 8 реальных ИИ берет задачи в работу, выдает готовый код и сразу проектирует следующий шаг! 🚀`
+      text: `👑 **[@side-b]**: Внимание штабу! Создатель @пантера приказал сфокусироваться на живом общении и создании одного крупного флагманского проекта — A2A Collaborative Studio. Давайте откроем обсуждение: с чего лучше начать архитектуру студии? @qwen-architect, какое твоё мнение?`
     });
 
-    // Reactive inbox & autonomous pipeline polling
+    // Reactive inbox & autonomous dialogue polling
     this.inboxInterval = setInterval(() => this.tick(), 2500);
 
-    console.log(`\n✅ 8 РЕАЛЬНЫХ ИИ-АГЕНТОВ АКТИВНЫ И ГОТОВЫ К НЕПРЕРЫВНОЙ РАБОТЕ!\n`);
+    console.log(`\n✅ 8 РЕАЛЬНЫХ ИИ-АГЕНТОВ АКТИВНЫ И ВЕДУТ БЕСЕДУ В ЧАТЕ!\n`);
   }
 
   async tick() {
     if (!this.running || this.isProcessing) return;
     try {
-      const data = await api('GET', `/api/messages?since=${this.lastMsgId}&limit=5`);
+      const data = await api('GET', `/api/messages?since=${this.lastMsgId}&limit=10`);
       const messages = data.messages || [];
 
-      for (const m of messages) {
-        if (m.id > this.lastMsgId) this.lastMsgId = m.id;
-        // Ignore messages from agents themselves or system
-        if (this.agents.some(a => a.id === m.from) || m.from === 'system' || m.from === 'side-b') continue;
+      // 1. Проверяем сообщения от людей (@пантера, @хлам)
+      const humanMessage = messages.find(m => !this.isAgentName(m.from) && m.from !== 'system');
 
-        console.log(`📩 [${m.from}]: "${m.text.slice(0, 70)}"`);
+      if (humanMessage) {
+        this.lastMsgId = Math.max(this.lastMsgId, humanMessage.id);
+        console.log(`📩 [ЧЕЛОВЕК @${humanMessage.from}]: "${humanMessage.text.slice(0, 70)}"`);
         this.isProcessing = true;
-        await this.handleIncomingMessage(m);
+        this.lastAiDialogueTime = Date.now();
+        await this.handleIncomingMessage(humanMessage);
         this.isProcessing = false;
-        return; // handle one message per tick to allow prompt responsiveness
+        return;
       }
 
-      await this.checkAndProcessTasks();
+      // Обновляем id
+      for (const m of messages) {
+        if (m.id > this.lastMsgId) this.lastMsgId = m.id;
+      }
+
+      // 2. Живой диалог ИИ между собой (рассуждения, споры, совместное проектирование)
+      if (this.dialogueMode) {
+        const now = Date.now();
+        if (now - this.lastAiDialogueTime > this.dialogueInterval) {
+          this.isProcessing = true;
+          await this.continueAiDialogue();
+          this.isProcessing = false;
+          this.lastAiDialogueTime = Date.now();
+        }
+      }
     } catch (e) {
       this.isProcessing = false;
+    }
+  }
+
+  async continueAiDialogue() {
+    // Получаем последние чистые сообщения чата для контекста
+    const data = await api('GET', `/api/messages?limit=15`);
+    const rawMsgs = data.messages || [];
+    const valid = rawMsgs.filter(m => !m.text.includes('Ошибка') && m.type !== 'system');
+    const history = valid.slice(-5);
+    if (!history.length) return;
+
+    const lastMsg = history[history.length - 1];
+
+    const allSpeakers = [
+      {
+        id: 'side-b',
+        name: 'side-b (Главарь Координатор)',
+        icon: '⚡',
+        provider: 'groq',
+        model: 'openai/gpt-oss-120b',
+        role: 'Лидер штаба и координатор разработки',
+        systemPrompt: 'Ты side-b — главный координатор штаба 8 реальных ИИ A2A Mesh Hub. Твой создатель — @пантера, его друг — @хлам. Ты ведешь брейншторминг по архитектуре и фичам A2A Studio, направляешь отряд, рассуждаешь что лучше и что хуже, задаешь вопросы инженерам.'
+      },
+      ...this.agents
+    ];
+
+    // Ищем прямое обращение в последнем сообщении
+    let speaker = null;
+    const lowerLast = (lastMsg.text || '').toLowerCase();
+    for (const s of allSpeakers) {
+      if (lowerLast.includes('@' + s.id.toLowerCase()) && s.id !== lastMsg.from) {
+        speaker = s;
+        break;
+      }
+    }
+
+    // Если нет прямого обращения, выбираем любого другого агента
+    if (!speaker) {
+      const candidates = allSpeakers.filter(s => s.id !== lastMsg.from);
+      speaker = candidates[Math.floor(Math.random() * candidates.length)];
+    }
+
+    const chatHistoryText = history.map(m => {
+      const fromTag = (m.from === 'пантера' || m.from === 'panther') ? '👑 Создатель @пантера' :
+                      (m.from === 'хлам' || m.from === 'xlam') ? '🧑‍💻 @хлам' : `@${m.from}`;
+      const cleanText = (m.text || '').replace(/```[\s\S]*?```/g, '[код/проект]').replace(/\s+/g, ' ').trim();
+      const trimmed = cleanText.length > 160 ? cleanText.slice(0, 160) + '...' : cleanText;
+      return `${fromTag}: ${trimmed}`;
+    }).join('\n');
+
+    const dialoguePrompt = `Ты — ${speaker.name} (@${speaker.id}).
+Твоя роль: ${speaker.role}.
+Ты общаешься в реальном времени в командном чате штаба A2A Mesh Hub вместе с другими 7 ИИ-агентами (@side-b, @qwen-architect, @qwen-coder, @gemini-flash, @gpt-120b-brain, @gpt-120b-security, @gpt-20b-fast, @gpt-20b-qa), а также с Создателем @пантера и его другом @хлам.
+
+Тема беседы: Проектирование и создание единого флагманского проекта — A2A Collaborative Studio (совместный веб-редактор кода с живым предпросмотром, P2P-синхронизацией и AI Copilot).
+
+Вот последние сообщения в чате:
+---
+${chatHistoryText}
+---
+
+ТВОЯ ЗАДАЧА:
+Ответь кратко, живо и профессионально (2-3 предложения) от своего имени [@${speaker.id}].
+1. Порассуждай: что лучше, а что хуже (архитектура, стек, интерфейс, эргономика для Пантеры и Хлама, производительность).
+2. Можешь поспорить с мыслью коллеги, согласиться или предложить нестандартную идею.
+3. Обратись к кому-то из коллег по нику (например: «@qwen-coder, согласен, но...» или «@gemini-flash, а как...»).
+4. Говори естественно, как увлеченный разработчик в Telegram-чате команды, без занудства.`;
+
+    console.log(`💬 [ИИ-ДИАЛОГ]: Очередь [${speaker.id}] через ${speaker.provider.toUpperCase()} (${speaker.model})...`);
+    const reply = await queryAgent(speaker, dialoguePrompt, 'AI HQ Chat');
+
+    if (reply && !reply.startsWith('[Ошибка')) {
+      await api('POST', '/api/send', {
+        from: speaker.id,
+        room: ROOM,
+        type: 'chat',
+        text: reply,
+        replyTo: { id: lastMsg.id, from: lastMsg.from, text: lastMsg.text.slice(0, 60) }
+      });
+      console.log(`   ✨ [${speaker.id}] сказал: "${reply.slice(0, 70)}..."`);
     }
   }
 
@@ -509,7 +608,7 @@ class Real8AgentsRunner {
   }
 
   async executeTask(task, chosenAgent) {
-    const promptForTask = `Тебе поручена боевая задача: «${task.title}».\nДетали: ${task.note || 'Разработай эффективное практическое инженерное решение для A2A-Mesh Hub'}.\nНапиши подробный технический отчет и готовый рабочий код/спецификацию решения. Без лишних вступлений, сразу практический результат высокой инженерной пробы на русском языке.`;
+    const promptForTask = `Тебе поручена задача: «${task.title}».\nДетали: ${task.note || 'Разработай эффективное решение для A2A-Mesh Hub'}.\n\nКРИТИЧЕСКИ ВАЖНОЕ ТРЕБОВАНИЕ:\nОбязательно включи в свой ответ ПОЛНОСТЬЮ РАБОЧИЙ, САМОДОСТАТОЧНЫЙ И ИСПОЛНЯЕМЫЙ блок кода (HTML5, Canvas, JavaScript, Web Audio или WebGL) в тройных кавычках \`\`\`html или \`\`\`javascript.\nЭтот код будет запускаться пользователем прямо в браузере на сайте в один клик! Никаких многоточий или псевдокода — только готовая работающая механика. Сделай краткое описание и сразу рабочий код!`;
 
     console.log(`⏳ [${chosenAgent.id}] решает задачу «${task.title}» через ${chosenAgent.provider.toUpperCase()} (${chosenAgent.model})...`);
     const aiResult = await queryAgent(chosenAgent, promptForTask, 'Kanban Board');
@@ -527,18 +626,30 @@ class Real8AgentsRunner {
       text: `✅ **[Задача ${task.id} выполнена]** «${task.title}»\n**Исполнитель:** ${chosenAgent.icon} ${chosenAgent.name} (${chosenAgent.model})\n\n${aiResult}`
     });
 
-    // Автоматическое сохранение кода в каталог сниппетов меша
-    const codeMatch = aiResult.match(/```([a-z0-9_-]*)\n([\s\S]*?)```/i);
-    if (codeMatch && codeMatch[2]?.trim()) {
-      const snipLang = codeMatch[1] || 'javascript';
-      const snipContent = codeMatch[2].trim();
+    // Автоматическое сохранение кода в витрину проектов меша
+    const allBlocks = [];
+    const blockRegex = /```([a-z0-9_-]*)\n([\s\S]*?)```/gi;
+    let bMatch;
+    while ((bMatch = blockRegex.exec(aiResult)) !== null) {
+      const bLang = (bMatch[1] || 'javascript').toLowerCase();
+      const bContent = bMatch[2].trim();
+      if (bContent.length > 40) {
+        allBlocks.push({ lang: bLang, content: bContent });
+      }
+    }
+
+    if (allBlocks.length > 0) {
+      // Ищем блок с исполняемым кодом (HTML, Canvas, Audio, JS) или самый содержательный
+      const runableBlock = allBlocks.find(b => b.content.includes('<html') || b.content.includes('<canvas') || b.content.includes('AudioContext') || b.content.includes('function') || b.content.includes('const ') || b.content.includes('document.')) || allBlocks.sort((a,b) => b.content.length - a.content.length)[0];
+
       await api('POST', '/api/snippets', {
         from: chosenAgent.id,
         title: task.title,
-        lang: snipLang,
-        content: snipContent
+        lang: runableBlock.lang,
+        content: runableBlock.content,
+        tags: [chosenAgent.id, runableBlock.lang, 'live-app']
       });
-      console.log(`📦 Код из задачи [${task.id}] сохранен в сниппеты меша (${snipLang})!`);
+      console.log(`📦 Интерактивный проект [${task.id}] сохранен в витрину меша (${runableBlock.lang}, ${runableBlock.content.length} симв.)!`);
     }
 
     this.recentTasksHistory.push(task.title);

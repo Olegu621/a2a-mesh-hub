@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="cyberpunk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A2A Collaborative Studio · Онлайн IDE Меша</title>
+  <style>
+    :root {
+      --bg: #05030c;
+      --sidebar-bg: #090614;
+      --editor-bg: #0b0818;
+      --header-bg: #0d091e;
+      --border: rgba(6, 182, 212, 0.28);
+      --accent: #06b6d4;
+      --accent-pink: #f43f5e;
+      --accent-gold: #fbbf24;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Bar */
+    header {
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      flex-shrink: 0;
+      z-index: 20;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-badge {
+      font-size: 20px;
+      filter: drop-shadow(0 0 8px #06b6d4);
+    }
+    .title-box h1 {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: linear-gradient(135deg, #06b6d4, #f43f5e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .collab-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .online-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .btn:hover {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .btn-run {
+      background: linear-gradient(135deg, #f43f5e, #06b6d4);
+      border: none;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+    }
+    .btn-run:hover {
+      box-shadow: 0 0 18px rgba(244, 63, 94, 0.6);
+    }
+
+    /* Main Workspace Layout */
+    .workspace {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 50px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Left Sidebar: File Tree */
+    .sidebar {
+      width: 210px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-head {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .file-tree {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 6px;
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-family: ui-monospace, monospace;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 2px;
+    }
+    .file-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+    .file-item.active {
+      background: rgba(6, 182, 212, 0.2);
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    /* Center: Code Editor Area */
+    .editor-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--editor-bg);
+      border-right: 1px solid var(--border);
+      min-width: 320px;
+      position: relative;
+    }
+
+    /* Tabs Bar */
+    .tabs-bar {
+      height: 38px;
+      background: rgba(9, 6, 20, 0.85);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 4px;
+      overflow-x: auto;
+    }
+    .tab-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+      border-radius: 6px 6px 0 0;
+      font-size: 12px;
+      font-family: monospace;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .tab-pill.active {
+      background: var(--editor-bg);
+      border-color: rgba(255, 255, 255, 0.08);
+      border-bottom-color: transparent;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    /* AI Copilot Toolbar */
+    .ai-copilot-bar {
+      background: linear-gradient(90deg, rgba(6, 182, 212, 0.12), rgba(244, 63, 94, 0.12));
+      border-bottom: 1px solid var(--border);
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .ai-copilot-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: #fff;
+      font-size: 12px;
+      outline: none;
+    }
+    .ai-copilot-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+    }
+
+    /* Editor Textarea with Line Numbers */
+    .editor-wrapper {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+    .line-numbers {
+      width: 44px;
+      background: rgba(0, 0, 0, 0.3);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      color: #475569;
+      font-family: ui-monospace, 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 20px;
+      padding: 10px 6px;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+    }
+    #code-area {
+      flex: 1;
+      background: transparent;
+      color: #f1f5f9;
+      border: none;
+      outline: none;
+      resize: none;
+      padding: 10px 14px;
+      font-family: ui-monospace, 'Fira Code', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 20px;
+      white-space: pre;
+      overflow: auto;
+      tab-size: 2;
+    }
+
+    /* Right: Live Preview Frame */
+    .preview-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+      min-width: 340px;
+      position: relative;
+    }
+    .preview-head {
+      height: 38px;
+      background: rgba(9, 6, 20, 0.85);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+    #preview-frame {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #06040d;
+    }
+
+    /* Bottom DevTools Console */
+    .console-drawer {
+      height: 90px;
+      background: rgba(4, 2, 10, 0.95);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      color: #a3e635;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .console-head {
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-group">
+      <div class="logo-badge">💻</div>
+      <div class="title-box">
+        <h1>A2A COLLABORATIVE STUDIO</h1>
+      </div>
+      <div class="collab-status">
+        <span class="online-dot"></span>
+        <span id="peers-status">Совместный доступ: Пантера &amp; Хлам</span>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="btn btn-run" onclick="reloadPreview()" title="Перезапустить Live Preview">⚡ Запустить</button>
+      <button class="btn" onclick="saveCurrentFile()" title="Сохранить файл на диск">💾 Сохранить</button>
+      <button class="btn" onclick="exportProjectZip()" title="Скачать весь проект">📦 Скачать</button>
+      <a href="/chat.html" class="btn" title="Вернуться в Мессенджер">💬 Чат</a>
+      <a href="/games.html" class="btn" title="Игровой Зал">🎮 Игры</a>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- Sidebar / Files -->
+    <div class="sidebar">
+      <div class="sidebar-head">
+        <span>📁 Файлы проекта</span>
+        <button style="background:none; border:none; color:#38bdf8; cursor:pointer; font-size:14px;" onclick="createNewFilePrompt()" title="Создать новый файл">➕</button>
+      </div>
+      <div class="file-tree" id="file-list"></div>
+    </div>
+
+    <!-- Center Editor -->
+    <div class="editor-pane">
+      <div class="tabs-bar" id="tabs-bar"></div>
+
+      <!-- AI Copilot Bar -->
+      <div class="ai-copilot-bar">
+        <span style="font-size:11px; font-weight:800; color:#38bdf8; display:flex; align-items:center; gap:4px;">✨ AI COPILOT:</span>
+        <input class="ai-copilot-input" id="ai-prompt-inp" placeholder="Например: добавь неоновую анимацию счета или сделай кнопку рестарта..." onkeydown="if(event.key==='Enter')askAiCopilot()" />
+        <select id="ai-agent-select" style="background:#090614; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:4px 8px; font-size:11.5px;">
+          <option value="qwen-coder">⚡ @qwen-coder (Fullstack)</option>
+          <option value="gemini-flash">✨ @gemini-flash (UI/Audio)</option>
+          <option value="gpt-120b-brain">🧠 @gpt-120b-brain (Логика)</option>
+        </select>
+        <button class="btn" style="padding:4px 10px; font-size:11px;" onclick="askAiCopilot()" id="ai-copilot-btn">Применить</button>
+      </div>
+
+      <!-- Code Textarea -->
+      <div class="editor-wrapper">
+        <div class="line-numbers" id="line-numbers">1</div>
+        <textarea id="code-area" spellcheck="false" oninput="onCodeChange()" onscroll="syncScroll()"></textarea>
+      </div>
+    </div>
+
+    <!-- Right Live Preview -->
+    <div class="preview-pane">
+      <div class="preview-head">
+        <span>⚡ LIVE PREVIEW (ГОРЯЧИЙ ПЕРЕЗАПУСК)</span>
+        <div style="display:flex; gap:6px;">
+          <button class="btn" style="padding:2px 8px; font-size:10px;" onclick="reloadPreview()">🔄 Рестарт</button>
+        </div>
+      </div>
+      <iframe id="preview-frame" sandbox="allow-scripts allow-modals allow-downloads"></iframe>
+      
+      <!-- Console Drawer -->
+      <div class="console-drawer" id="console-drawer">
+        <div class="console-head">Консоль DevTools · Перехват логов:</div>
+        <div id="console-logs">[Консоль готова. Логи и ошибки отображаются здесь]</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let files = {};
+    let activeFileName = 'index.html';
+    let myName = localStorage.getItem('a2a_username') || 'пантера';
+    let isSaving = false;
+
+    // Load initial files from server
+    async function initStudio() {
+      try {
+        const res = await fetch('/api/studio/files').then(r => r.json());
+        if (res.files && res.files.length) {
+          files = {};
+          res.files.forEach(f => files[f.name] = f.content);
+        }
+        renderFileTree();
+        selectFile('index.html');
+        reloadPreview();
+      } catch (err) {
+        console.error('Ошибка инициализации студии:', err);
+      }
+    }
+
+    function renderFileTree() {
+      const el = document.getElementById('file-list');
+      const tabsEl = document.getElementById('tabs-bar');
+      const names = Object.keys(files);
+
+      el.innerHTML = names.map(name => {
+        const icon = name.endsWith('.html') ? '🌐' : name.endsWith('.css') ? '🎨' : name.endsWith('.js') ? '⚡' : '📄';
+        return `
+          <div class="file-item ${name === activeFileName ? 'active' : ''}" onclick="selectFile('${name}')">
+            <span>${icon} ${name}</span>
+            <span style="font-size:10px; opacity:0.5;" onclick="event.stopPropagation(); deleteFilePrompt('${name}')">✕</span>
+          </div>
+        `;
+      }).join('');
+
+      tabsEl.innerHTML = names.map(name => {
+        return `
+          <div class="tab-pill ${name === activeFileName ? 'active' : ''}" onclick="selectFile('${name}')">
+            <span>${name}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectFile(name) {
+      if (!files[name] && files[name] !== '') return;
+      activeFileName = name;
+      document.getElementById('code-area').value = files[name];
+      updateLineNumbers();
+      renderFileTree();
+    }
+
+    function onCodeChange() {
+      const code = document.getElementById('code-area').value;
+      files[activeFileName] = code;
+      updateLineNumbers();
+
+      // Debounce auto-save and preview update
+      clearTimeout(window.previewDebounce);
+      window.previewDebounce = setTimeout(() => {
+        saveCurrentFile();
+        reloadPreview();
+      }, 500);
+    }
+
+    function updateLineNumbers() {
+      const code = document.getElementById('code-area').value;
+      const count = code.split('\n').length;
+      let nums = '';
+      for (let i = 1; i <= count; i++) nums += i + '<br>';
+      document.getElementById('line-numbers').innerHTML = nums;
+    }
+
+    function syncScroll() {
+      const area = document.getElementById('code-area');
+      document.getElementById('line-numbers').scrollTop = area.scrollTop;
+    }
+
+    // Save File to Server (and Broadcast to Friend)
+    async function saveCurrentFile() {
+      try {
+        await fetch('/api/studio/files', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: activeFileName,
+            content: files[activeFileName],
+            from: myName
+          })
+        });
+      } catch (e) {}
+    }
+
+    // Create New File
+    async function createNewFilePrompt() {
+      const name = window.prompt('Имя нового файла (например: config.json, game.js):');
+      if (!name) return;
+      const safe = name.trim();
+      if (!files[safe]) {
+        files[safe] = '// ' + safe;
+        activeFileName = safe;
+        await saveCurrentFile();
+        renderFileTree();
+        selectFile(safe);
+      }
+    }
+
+    // Delete File
+    async function deleteFilePrompt(name) {
+      if (confirm(`Точно удалить файл ${name}?`)) {
+        delete files[name];
+        await fetch('/api/studio/files', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        const remaining = Object.keys(files);
+        if (remaining.length) selectFile(remaining[0]);
+        else renderFileTree();
+        reloadPreview();
+      }
+    }
+
+    // Live Preview Runner (Bundles HTML + CSS + JS)
+    function reloadPreview() {
+      const frame = document.getElementById('preview-frame');
+      const html = files['index.html'] || '<h1>A2A Studio</h1>';
+      const css = files['style.css'] || '';
+      const js = files['app.js'] || '';
+
+      const interceptScript = `
+        <script>
+          (function() {
+            const _log = console.log;
+            const _err = console.error;
+            console.log = function(...args) {
+              _log.apply(console, args);
+              window.parent.postMessage({ type: 'studio_log', text: args.join(' ') }, '*');
+            };
+            console.error = function(...args) {
+              _err.apply(console, args);
+              window.parent.postMessage({ type: 'studio_err', text: args.join(' ') }, '*');
+            };
+            window.onerror = function(msg, url, line) {
+              window.parent.postMessage({ type: 'studio_err', text: 'Строка ' + line + ': ' + msg }, '*');
+            };
+          })();
+        <\/script>
+      `;
+
+      let bundled = html;
+      if (css) {
+        bundled = bundled.replace('</head>', `<style>${css}</style></head>`);
+      }
+      if (js) {
+        bundled = bundled.replace('</body>', `<script>${js}<\/script></body>`);
+      }
+      bundled = bundled.replace('<head>', '<head>' + interceptScript);
+
+      frame.srcdoc = bundled;
+    }
+
+    window.addEventListener('message', (e) => {
+      const logsEl = document.getElementById('console-logs');
+      if (e.data && e.data.type === 'studio_log') {
+        logsEl.innerHTML += `<div style="color:#a3e635;">&gt; ${e.data.text}</div>`;
+        document.getElementById('console-drawer').scrollTop = document.getElementById('console-drawer').scrollHeight;
+      } else if (e.data && e.data.type === 'studio_err') {
+        logsEl.innerHTML += `<div style="color:#f87171;">&gt; ❌ ${e.data.text}</div>`;
+        document.getElementById('console-drawer').scrollTop = document.getElementById('console-drawer').scrollHeight;
+      }
+    });
+
+    // AI Copilot Integration
+    async function askAiCopilot() {
+      const inp = document.getElementById('ai-prompt-inp');
+      const prompt = inp.value.trim();
+      if (!prompt) return;
+
+      const agentId = document.getElementById('ai-agent-select').value;
+      const btn = document.getElementById('ai-copilot-btn');
+      btn.textContent = '⏳ ИИ пишет...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/studio/ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt,
+            currentCode: files[activeFileName] || '',
+            fileName: activeFileName,
+            agentId,
+            from: myName
+          })
+        }).then(r => r.json());
+
+        if (res.ok && res.code) {
+          files[activeFileName] = res.code;
+          document.getElementById('code-area').value = res.code;
+          updateLineNumbers();
+          await saveCurrentFile();
+          reloadPreview();
+          inp.value = '';
+          alert(`✨ AI Copilot (${res.agent}):\n${res.explanation}`);
+        } else {
+          alert('Ошибка AI: ' + (res.error || 'Не удалось сгенерировать'));
+        }
+      } catch (err) {
+        alert('Ошибка сети: ' + err.message);
+      } finally {
+        btn.textContent = 'Применить';
+        btn.disabled = false;
+      }
+    }
+
+    // Export Project as Downloadable HTML Bundle
+    function exportProjectZip() {
+      const html = files['index.html'] || '';
+      const css = files['style.css'] || '';
+      const js = files['app.js'] || '';
+      let bundle = html.replace('</head>', `<style>${css}</style></head>`).replace('</body>', `<script>${js}<\/script></body>`);
+
+      const blob = new Blob([bundle], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'a2a-studio-project.html';
+      a.click();
+    }
+
+    // Real-Time Sync between Panther and Khlam (via SSE)
+    function initCollabSSE() {
+      try {
+        const es = new EventSource('/api/events');
+        es.addEventListener('studio:file_update', (e) => {
+          const data = JSON.parse(e.data);
+          if (data.from !== myName) {
+            files[data.name] = data.content;
+            if (activeFileName === data.name) {
+              const area = document.getElementById('code-area');
+              const cursor = area.selectionStart;
+              area.value = data.content;
+              area.setSelectionRange(cursor, cursor);
+              updateLineNumbers();
+              reloadPreview();
+            }
+          }
+        });
+
+        es.addEventListener('studio:file_delete', (e) => {
+          const data = JSON.parse(e.data);
+          delete files[data.name];
+          renderFileTree();
+        });
+      } catch (e) {}
+    }
+
+    // Handle Tab key in Code Area for 2 spaces indentation
+    document.getElementById('code-area').addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 2;
+        onCodeChange();
+      }
+    });
+
+    initStudio();
+    initCollabSSE();
+  </script>
+</body>
+</html>

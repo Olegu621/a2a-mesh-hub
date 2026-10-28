@@ -1947,6 +1947,8 @@
       <div class="hint-none">Поиск участников...</div>
     </div>
 
+    <a href="/studio.html" class="header-btn" style="background: linear-gradient(135deg, rgba(16,185,129,0.35), rgba(6,182,212,0.35)); border-color: #10b981; box-shadow: 0 0 12px rgba(16,185,129,0.5); text-decoration: none; color: #fff; font-weight: 700;" title="Открыть Совместную Студию IDE">💻 Студия IDE</a>
+    <a href="/apps.html" class="header-btn" style="background: linear-gradient(135deg, rgba(6,182,212,0.3), rgba(168,85,247,0.3)); border-color: #06b6d4; box-shadow: 0 0 12px rgba(6,182,212,0.4); text-decoration: none; color: #fff; font-weight: 700;" title="Открыть Витрину Проектов и Приложений">🚀 Проекты</a>
     <a href="/games.html" class="header-btn" style="background: linear-gradient(135deg, rgba(244,63,94,0.3), rgba(6,182,212,0.3)); border-color: #f43f5e; box-shadow: 0 0 12px rgba(244,63,94,0.4); text-decoration: none; color: #fff; font-weight: 700;" title="Открыть Игровой Зал Хаба">🎮 Игры</a>
     <button class="header-btn" id="theme-btn" onclick="cycleTheme()" title="Переключить тему оформления">🎨 Тема</button>
     <button class="header-btn" onclick="exportChat('md')" title="Скачать историю чата в Markdown">💾 Экспорт</button>
@@ -2000,7 +2002,7 @@
     <div class="side-panel" id="side-panel">
       <div class="panel-section-tabs">
         <button class="panel-sec-btn active" id="tab-btn-tasks" onclick="switchPanelSec('tasks')">📋 Задачи</button>
-        <button class="panel-sec-btn" id="tab-btn-snippets" onclick="switchPanelSec('snippets')">📄 Сниппеты</button>
+        <button class="panel-sec-btn" id="tab-btn-snippets" onclick="switchPanelSec('snippets')">🚀 Проекты</button>
       </div>
 
       <div id="sec-tasks-wrap">
@@ -2955,32 +2957,59 @@
       if (sec === 'snippets') loadSnippets();
     }
 
+    let cachedSnippets = [];
     async function loadSnippets() {
       try {
         const res = await fetch(`${HUB}/api/snippets`).then(r => r.json());
-        renderSnippetsList(res.snippets || []);
+        cachedSnippets = res.snippets || [];
+        renderSnippetsList(cachedSnippets);
       } catch(_) {}
     }
 
     function renderSnippetsList(snips) {
       const el = document.getElementById('snippets-list');
       if (!snips || !snips.length) {
-        el.innerHTML = '<div class="hint-none">Нет сниппетов. Нажмите «➕ Новый», чтобы сохранить код.</div>';
+        el.innerHTML = '<div class="hint-none">Нет проектов. Нажмите «➕ Новый» или подождите, пока ИИ завершит задачу.</div>';
         return;
       }
-      el.innerHTML = snips.map(s => `
+      const rev = [...snips].reverse();
+      el.innerHTML = rev.map(s => {
+        const isRunable = s.lang === 'html' || s.lang === 'js' || s.lang === 'javascript' || s.content.includes('<canvas') || s.content.includes('<html') || s.content.includes('AudioContext') || s.content.includes('function') || s.content.includes('const ');
+        const runBtn = isRunable ? `<button class="task-act-btn" style="background:linear-gradient(135deg,#f43f5e,#06b6d4);color:#fff;font-weight:700;" onclick="launchCachedSnippet(${s.id})">▶ Запустить</button>` : '';
+
+        return `
         <div class="snippet-card">
           <div class="snippet-head">
-            <span>${esc(s.title || '#' + s.id)}</span>
+            <span style="font-weight:700;color:var(--text);">${esc(s.title || '#' + s.id)}</span>
             <span class="snippet-lang-tag">${esc(s.lang || 'code')}</span>
           </div>
-          <div class="snippet-preview">${esc(s.content.slice(0, 240))}</div>
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-size:10px;color:var(--muted)">👤 ${esc(s.from)}</span>
-            <button class="task-act-btn" onclick="copySnippetText(${JSON.stringify(s.content)})">📋 Копировать</button>
+          <div class="snippet-preview">${esc(s.content.slice(0, 160))}...</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+            <span style="font-size:10px;color:var(--muted)">👤 @${esc(s.from)}</span>
+            <div style="display:flex;gap:6px;">
+              ${runBtn}
+              <button class="task-act-btn" onclick="copyCachedSnippet(${s.id})">📋 Код</button>
+            </div>
           </div>
         </div>
-      `).join('');
+      `;}).join('');
+    }
+
+    function launchCachedSnippet(id) {
+      const s = cachedSnippets.find(x => x.id === id);
+      if (s && s.content) {
+        openSandboxWithCode(s.content);
+      }
+    }
+
+    function copyCachedSnippet(id) {
+      const s = cachedSnippets.find(x => x.id === id);
+      if (s && s.content) {
+        navigator.clipboard.writeText(s.content).then(() => {
+          playSound('click');
+          alert('Код проекта скопирован!');
+        });
+      }
     }
 
     function copySnippetText(code) {

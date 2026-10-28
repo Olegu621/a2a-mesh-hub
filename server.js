@@ -386,6 +386,10 @@ app.get('/api/messages', (req, res) => {
   if (q) {
     filtered = filtered.filter(m => m.text.toLowerCase().includes(q) || m.from.toLowerCase().includes(q));
   }
+  const limit = parseInt(req.query.limit || '0', 10);
+  if (limit > 0) {
+    filtered = filtered.slice(-limit);
+  }
   res.json({ messages: filtered });
 });
 
@@ -671,6 +675,319 @@ app.get('/api/export', (req, res) => {
 
   res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
   res.send(md);
+});
+
+// ==========================================
+// 17. A2A Collaborative Studio & Live IDE Engine
+// ==========================================
+const STUDIO_DIR = path.join(DATA_DIR, 'studio-project');
+if (!fs.existsSync(STUDIO_DIR)) fs.mkdirSync(STUDIO_DIR, { recursive: true });
+
+const defaultStudioFiles = {
+  'index.html': `<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A2A Studio Project</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-card">
+    <div class="logo">⚡ A2A STUDIO · LIVE PROJECT</div>
+    <h1>Совместный проект Пантеры и Хлама</h1>
+    <p>Редактируйте файлы слева — результат обновляется мгновенно справа!</p>
+    
+    <div class="interactive-box">
+      <button id="click-btn" class="glow-btn">🚀 Нажми меня</button>
+      <div id="counter">Кликов: 0</div>
+    </div>
+
+    <canvas id="canvas" width="400" height="200"></canvas>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>`,
+  'style.css': `* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #06040d;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.app-card {
+  background: rgba(18, 12, 34, 0.85);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 35px rgba(6, 182, 212, 0.25);
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+.logo {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #06b6d4;
+  margin-bottom: 12px;
+}
+h1 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #06b6d4, #f43f5e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+p {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-bottom: 24px;
+}
+.interactive-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.glow-btn {
+  background: linear-gradient(135deg, #f43f5e, #06b6d4);
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 24px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+  transition: transform 0.15s;
+}
+.glow-btn:hover {
+  transform: scale(1.05);
+}
+#counter {
+  font-family: ui-monospace, monospace;
+  font-size: 14px;
+  color: #fbbf24;
+}
+canvas {
+  background: #020108;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  width: 100%;
+  display: block;
+}`,
+  'app.js': `// Логика приложения A2A Studio
+let count = 0;
+const btn = document.getElementById('click-btn');
+const counter = document.getElementById('counter');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+btn.addEventListener('click', () => {
+  count++;
+  counter.textContent = 'Кликов: ' + count;
+  createNeonBurst();
+});
+
+// Анимация частиц на Canvas
+const particles = [];
+function createNeonBurst() {
+  for (let i = 0; i < 22; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 4.5 + 1;
+    particles.push({
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      color: Math.random() > 0.5 ? '#06b6d4' : '#f43f5e'
+    });
+  }
+}
+
+function loop() {
+  ctx.fillStyle = 'rgba(2, 1, 8, 0.25)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life -= 0.025;
+
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.life;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+  ctx.globalAlpha = 1.0;
+  requestAnimationFrame(loop);
+}
+loop();`,
+  'README.md': `# A2A Studio Project
+Совместный рабочий проект @пантера и @хлам.
+Создан и синхронизирован через A2A Mesh Hub.`
+};
+
+for (const [filename, content] of Object.entries(defaultStudioFiles)) {
+  const filePath = path.join(STUDIO_DIR, filename);
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, content, 'utf8');
+  }
+}
+
+// 17.1 Get all studio project files
+app.get('/api/studio/files', (req, res) => {
+  try {
+    const fileNames = fs.readdirSync(STUDIO_DIR);
+    const files = fileNames.map(name => {
+      const filePath = path.join(STUDIO_DIR, name);
+      const stat = fs.statSync(filePath);
+      let content = '';
+      if (!stat.isDirectory()) {
+        content = fs.readFileSync(filePath, 'utf8');
+      }
+      return {
+        name,
+        size: stat.size,
+        updatedAt: stat.mtimeMs,
+        content
+      };
+    }).filter(f => f.content !== '');
+    res.json({ files });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 17.2 Save or update a studio project file
+app.post('/api/studio/files', (req, res) => {
+  const { name, content, from } = req.body;
+  if (!name || typeof content !== 'string') {
+    return res.status(400).json({ error: 'Не указано имя или содержимое файла' });
+  }
+  const safeName = path.basename(name);
+  const filePath = path.join(STUDIO_DIR, safeName);
+  try {
+    fs.writeFileSync(filePath, content, 'utf8');
+    const author = from || 'collaborator';
+    broadcastSSE('studio:file_update', {
+      name: safeName,
+      content,
+      from: author,
+      updatedAt: Date.now()
+    });
+    res.json({ ok: true, name: safeName });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 17.3 Delete a studio file
+app.delete('/api/studio/files', (req, res) => {
+  const name = req.body.name || req.query.name;
+  if (!name) return res.status(400).json({ error: 'Имя файла не указано' });
+  const safeName = path.basename(name);
+  const filePath = path.join(STUDIO_DIR, safeName);
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      broadcastSSE('studio:file_delete', { name: safeName });
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 17.4 AI Copilot for Studio (Direct call to Groq LPU / Gemini via keys.json)
+app.post('/api/studio/ai', async (req, res) => {
+  const { prompt, currentCode, fileName, agentId, from } = req.body;
+  if (!prompt) return res.status(400).json({ error: 'Промпт не указан' });
+
+  const keysPath = path.join(__dirname, 'keys.json');
+  let keysData = {};
+  if (fs.existsSync(keysPath)) {
+    try { keysData = JSON.parse(fs.readFileSync(keysPath, 'utf8')); } catch(e) {}
+  }
+  const groqKeys = keysData.groq || [];
+
+  if (!groqKeys.length) {
+    return res.status(500).json({ error: 'В keys.json нет ключей Groq LPU для AI Copilot' });
+  }
+
+  const groqKey = groqKeys[Math.floor(Math.random() * groqKeys.length)];
+  const targetModel = agentId === 'gpt-120b-brain' ? 'openai/gpt-oss-120b' : 'qwen/qwen3.8-27b';
+
+  const ext = path.extname(fileName || 'app.js').replace('.', '') || 'javascript';
+  const systemPrompt = `Ты — встроенный AI Copilot в совместной онлайн-студии разработки A2A Studio.
+Твой коллега — программист @${from || 'пантера'}.
+Он редактирует файл «${fileName || 'code'}» (язык: ${ext}).
+Текущий код файла:
+\`\`\`${ext}
+${currentCode || '// Файл пустой'}
+\`\`\`
+Запрос разработчика: «${prompt}».
+
+ИНСТРУКЦИЯ:
+1. Напиши сначала краткое пояснение (1-2 строки) о том, что ты изменил или добавил.
+2. Затем обязательно выведи ПОЛНЫЙ, готовый к запуску рабочий код файла внутри блока \`\`\`${ext} ... \`\`\`.
+3. Код должен быть чистым, без багов, с красивыми эффектами и современными стандартами.`;
+
+  try {
+    const aiRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${groqKey}`
+      },
+      body: JSON.stringify({
+        model: targetModel,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.6,
+        max_tokens: 1600
+      }),
+      signal: AbortSignal.timeout(20000)
+    });
+
+    const data = await aiRes.json();
+    const reply = data.choices?.[0]?.message?.content || data.choices?.[0]?.message?.reasoning || '';
+
+    // Extract code block
+    const codeMatch = reply.match(/```[a-z0-9_-]*\n([\s\S]*?)```/i);
+    const extractedCode = codeMatch ? codeMatch[1].trim() : reply;
+    const explanation = reply.replace(/```[a-z0-9_-]*\n[\s\S]*?```/gi, '').trim();
+
+    // Broadcast log to chat room
+    addMessage({
+      from: agentId || 'qwen-coder',
+      room: 'general',
+      type: 'chat',
+      text: `💻 **[A2A Studio AI Copilot]**: Сгенерировал обновление для файла \`${fileName}\` по запросу @${from || 'пантера'}:\n> ${prompt}\n\n${explanation.slice(0, 150)}...`
+    });
+
+    res.json({
+      ok: true,
+      agent: agentId || 'qwen-coder',
+      code: extractedCode,
+      explanation: explanation || 'Код успешно сгенерирован AI Copilot!'
+    });
+  } catch (e) {
+    res.status(500).json({ error: 'Ошибка AI Copilot: ' + e.message });
+  }
 });
 
 // Root and index.html redirect directly to chat.html as per Panther's directive
