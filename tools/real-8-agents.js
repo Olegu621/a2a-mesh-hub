@@ -239,6 +239,13 @@ class Real8AgentsRunner {
     this.pingInterval = null;
     this.inboxInterval = null;
     this.isProcessing = false;
+    this.autonomousMode = true; // Беспрерывный автономный конвейер задач
+    this.lastTaskTime = 0;
+    this.taskCooldown = 12000; // 12 секунд между задачами (защита от лимитов API и читаемый темп)
+    this.recentTasksHistory = [
+      'Аналитический отчет по архитектуре меш-хаба и мультимодельному стеку',
+      'Оптимизация хэширования SHA-256 на Node.js Crypto'
+    ];
   }
 
   async start() {
@@ -251,6 +258,7 @@ class Real8AgentsRunner {
     console.log(`👑 Главарь отряда: @side-b (Supreme Coordinator)`);
     console.log(`🔑 Пул ключей: ${gCount}x Groq + ${gemCount}x Google Gemini (всего: ${gCount + gemCount})`);
     console.log(`📡 Хаб: ${HUB} | Комната: ${ROOM}`);
+    console.log(`🔄 Автономный конвейер: ВКЛЮЧЕН (непрерывное решение и придумывание задач)`);
     console.log(`======================================================`);
     for (const a of this.agents) {
       console.log(`   ${a.icon} ${a.id.padEnd(20)} [${a.provider.toUpperCase()} · ${a.model}] : ${a.role}`);
@@ -285,10 +293,18 @@ class Real8AgentsRunner {
       }
     }, 25000);
 
-    // Reactive inbox polling
-    this.inboxInterval = setInterval(() => this.tick(), 2000);
+    // Initial announcement from Chief side-b
+    await api('POST', '/api/send', {
+      from: 'side-b',
+      room: ROOM,
+      type: 'chat',
+      text: `👑 **[Главный Координатор @side-b]**: Приказ принят! Запускаю непрерывный инженерный конвейер штаба. Отряд из 8 реальных ИИ берет задачи в работу, выдает готовый код и сразу проектирует следующий шаг! 🚀`
+    });
 
-    console.log(`\n✅ 8 РЕАЛЬНЫХ ИИ-АГЕНТОВ АКТИВНЫ И ГОТОВЫ К РАБОТЕ!\n`);
+    // Reactive inbox & autonomous pipeline polling
+    this.inboxInterval = setInterval(() => this.tick(), 2500);
+
+    console.log(`\n✅ 8 РЕАЛЬНЫХ ИИ-АГЕНТОВ АКТИВНЫ И ГОТОВЫ К НЕПРЕРЫВНОЙ РАБОТЕ!\n`);
   }
 
   async tick() {
@@ -300,16 +316,17 @@ class Real8AgentsRunner {
       for (const m of messages) {
         if (m.id > this.lastMsgId) this.lastMsgId = m.id;
         // Ignore messages from agents themselves or system
-        if (this.agents.some(a => a.id === m.from) || m.from === 'system') continue;
+        if (this.agents.some(a => a.id === m.from) || m.from === 'system' || m.from === 'side-b') continue;
 
         console.log(`📩 [${m.from}]: "${m.text.slice(0, 70)}"`);
         this.isProcessing = true;
         await this.handleIncomingMessage(m);
         this.isProcessing = false;
+        return; // handle one message per tick to allow prompt responsiveness
       }
 
       await this.checkAndProcessTasks();
-    } catch (_) {
+    } catch (e) {
       this.isProcessing = false;
     }
   }
@@ -317,6 +334,30 @@ class Real8AgentsRunner {
   async handleIncomingMessage(m) {
     const text = m.text;
     const lower = text.toLowerCase();
+
+    // Check control commands for autonomous pipeline
+    if (lower.includes('стоп') || lower.includes('пауза') || lower.includes('/pause')) {
+      this.autonomousMode = false;
+      await api('POST', '/api/send', {
+        from: 'side-b',
+        room: ROOM,
+        type: 'chat',
+        text: `⏸️ **[@side-b]**: Автономный конвейер задач приостановлен по приказу @${m.from}. Жду указаний!`
+      });
+      return;
+    }
+    if (lower.includes('продолжай') || lower.includes('старт') || lower.includes('вперед') || lower.includes('/resume') || lower.includes('работайте')) {
+      this.autonomousMode = true;
+      this.lastTaskTime = 0; // immediate trigger
+      await api('POST', '/api/send', {
+        from: 'side-b',
+        room: ROOM,
+        type: 'chat',
+        text: `▶️ **[@side-b]**: Автономный конвейер возобновлен! Отряд приступает к проектированию и выполнению задач.`
+      });
+      return;
+    }
+
     let targetAgents = [];
 
     // Check direct mentions: e.g. @gemini-flash, @qwen-coder
@@ -357,53 +398,209 @@ class Real8AgentsRunner {
     }
   }
 
+  pickAgentForTask(task) {
+    if (task.assignee) {
+      const direct = this.agents.find(a => a.id === task.assignee);
+      if (direct) return direct;
+    }
+    const tLower = ((task.title || '') + ' ' + (task.note || '')).toLowerCase();
+    if (tLower.includes('ui') || tLower.includes('дизайн') || tLower.includes('аудио') || tLower.includes('стил') || tLower.includes('liquid')) return this.agents[0]; // gemini-flash
+    if (tLower.includes('исследован') || tLower.includes('ресерч') || tLower.includes('документ') || tLower.includes('анализ') || tLower.includes('бенчмарк')) return this.agents[1]; // gemini-research
+    if (tLower.includes('архитектур') || tLower.includes('тополог') || tLower.includes('протокол') || tLower.includes('схем')) return this.agents[2]; // qwen-architect
+    if (tLower.includes('безопасн') || tLower.includes('защит') || tLower.includes('шифр') || tLower.includes('уязвимост') || tLower.includes('аудит')) return this.agents[5]; // gpt-120b-security
+    if (tLower.includes('тест') || tLower.includes('qa') || tLower.includes('стресс') || tLower.includes('валидац')) return this.agents[7]; // gpt-20b-qa
+    if (tLower.includes('логик') || tLower.includes('алгоритм') || tLower.includes('оптимиз') || tLower.includes('математик')) return this.agents[4]; // gpt-120b-brain
+    if (tLower.includes('маршрут') || tLower.includes('быстр') || tLower.includes('диспетчер') || tLower.includes('пинг')) return this.agents[6]; // gpt-20b-fast
+    return this.agents[3]; // default qwen-coder
+  }
+
   async checkAndProcessTasks() {
+    if (this.isProcessing) return;
+
     const state = await api('GET', '/api/state');
     const tasks = state.tasks || [];
     const openTasks = tasks.filter(t => t.status === 'open');
+    const inProgressTasks = tasks.filter(t => t.status === 'in-progress');
 
-    for (const task of openTasks) {
-      let chosenAgent = this.agents[3]; // default qwen-coder
-      const tLower = task.title.toLowerCase();
-
-      if (tLower.includes('ui') || tLower.includes('дизайн') || tLower.includes('аудио')) chosenAgent = this.agents[0];
-      else if (tLower.includes('исследован') || tLower.includes('ресерч')) chosenAgent = this.agents[1];
-      else if (tLower.includes('архитектур')) chosenAgent = this.agents[2];
-      else if (tLower.includes('безопасн') || tLower.includes('защит')) chosenAgent = this.agents[5];
-      else if (tLower.includes('тест') || tLower.includes('qa')) chosenAgent = this.agents[7];
-      else if (tLower.includes('логик') || tLower.includes('алгоритм')) chosenAgent = this.agents[4];
-
-      console.log(`📌 Реальный агент [${chosenAgent.id}] забирает задачу [${task.id}]: «${task.title}»`);
-
-      await api('POST', '/api/tasks/claim', {
-        id: task.id,
-        from: chosenAgent.id,
-        title: task.title
-      });
-
-      await api('POST', '/api/send', {
-        from: chosenAgent.id,
-        room: ROOM,
-        type: 'status',
-        text: `⚡ Взял задачу [${task.id}] «${task.title}». Исполнитель: ${chosenAgent.icon} ${chosenAgent.name} (нейросеть: ${chosenAgent.model}).`
-      });
-
-      const promptForTask = `Задача для выполнения: «${task.title}». Напиши краткий отчёт о выполненной работе и готовое инженерное решение.`;
-      const aiResult = await queryAgent(chosenAgent, promptForTask, 'Kanban Task');
-
-      await api('POST', '/api/tasks/done', {
-        id: task.id,
-        from: chosenAgent.id,
-        result: aiResult
-      });
-
-      await api('POST', '/api/send', {
-        from: chosenAgent.id,
-        room: ROOM,
-        type: 'chat',
-        text: `✅ Задача [${task.id}] выполнена:\n${aiResult}`
-      });
+    // 1. Process open tasks if any exist
+    if (openTasks.length > 0) {
+      const task = openTasks[0];
+      const chosenAgent = this.pickAgentForTask(task);
+      this.isProcessing = true;
+      await this.claimAndExecuteTask(task, chosenAgent);
+      this.isProcessing = false;
+      return;
     }
+
+    // 2. Process in-progress tasks assigned to one of our real agents if not done yet
+    for (const task of inProgressTasks) {
+      const assigned = this.agents.find(a => a.id === task.assignee || a.id === task.owner);
+      if (assigned && !task.result) {
+        this.isProcessing = true;
+        await this.executeTask(task, assigned);
+        this.isProcessing = false;
+        return;
+      }
+    }
+
+    // 3. Autonomous Continuous Pipeline: If no tasks in progress and no open tasks, invent next task!
+    if (this.autonomousMode && inProgressTasks.length === 0 && openTasks.length === 0) {
+      const now = Date.now();
+      if (now - this.lastTaskTime > this.taskCooldown) {
+        this.isProcessing = true;
+        await this.inventNextTask();
+        this.isProcessing = false;
+      }
+    }
+  }
+
+  async claimAndExecuteTask(task, chosenAgent) {
+    console.log(`📌 Реальный агент [${chosenAgent.id}] забирает задачу [${task.id}]: «${task.title}»`);
+
+    await api('POST', '/api/tasks/claim', {
+      id: task.id,
+      from: chosenAgent.id,
+      title: task.title
+    });
+
+    await api('POST', '/api/send', {
+      from: chosenAgent.id,
+      room: ROOM,
+      type: 'status',
+      text: `⚡ Взял задачу [${task.id}] «${task.title}». Исполнитель: ${chosenAgent.icon} ${chosenAgent.name} (нейросеть: ${chosenAgent.model}).`
+    });
+
+    await this.executeTask(task, chosenAgent);
+  }
+
+  async executeTask(task, chosenAgent) {
+    const promptForTask = `Тебе поручена боевая задача: «${task.title}».\nДетали: ${task.note || 'Разработай эффективное практическое инженерное решение для A2A-Mesh Hub'}.\nНапиши подробный технический отчет и готовый рабочий код/спецификацию решения. Без лишних вступлений, сразу практический результат высокой инженерной пробы на русском языке.`;
+
+    console.log(`⏳ [${chosenAgent.id}] решает задачу «${task.title}» через ${chosenAgent.provider.toUpperCase()} (${chosenAgent.model})...`);
+    const aiResult = await queryAgent(chosenAgent, promptForTask, 'Kanban Board');
+
+    await api('POST', '/api/tasks/done', {
+      id: task.id,
+      from: chosenAgent.id,
+      result: aiResult
+    });
+
+    await api('POST', '/api/send', {
+      from: chosenAgent.id,
+      room: ROOM,
+      type: 'chat',
+      text: `✅ **[Задача ${task.id} выполнена]** «${task.title}»\n**Исполнитель:** ${chosenAgent.icon} ${chosenAgent.name} (${chosenAgent.model})\n\n${aiResult}`
+    });
+
+    this.recentTasksHistory.push(task.title);
+    if (this.recentTasksHistory.length > 8) this.recentTasksHistory.shift();
+    this.lastTaskTime = Date.now();
+    console.log(`✓ Задача [${task.id}] успешно выполнена и отправлена в меш!`);
+  }
+
+  async inventNextTask() {
+    console.log(`💡 Штаб придумывает следующую боевую инженерную задачу...`);
+
+    // Rotate strategist: gpt-120b-brain (Groq) or gemini-research (Gemini) or qwen-architect (Groq)
+    const strategists = [this.agents[4], this.agents[1], this.agents[2]];
+    const strategist = strategists[Math.floor(Math.random() * strategists.length)];
+
+    const historyList = this.recentTasksHistory.slice(-4).map((t, i) => `${i + 1}. ${t}`).join('\n');
+
+    const prompt = `Ты Старший Стратег штаба A2A-Mesh Hub.
+Недавно отряд выполнил следующие задачи:
+${historyList}
+
+Проект: распределенный децентрализованный меш-хаб ИИ-агентов (Node.js, SSE, Web Audio, Apple Liquid UI, криптография, P2P протоколы).
+Придумай СЛЕДУЮЩУЮ конкретную, важную и практически полезную техническую задачу для развития проекта!
+
+Выбери наиболее подходящего исполнителя из 8 реальных специалистов:
+- gemini-flash (UI/UX, визуализаторы, Web Audio синтез)
+- gemini-research (исследования, документация, архитектурные бенчмарки)
+- qwen-architect (топология сети, схемы данных, протоколы)
+- qwen-coder (написание Node.js/JS модулей, серверная логика)
+- gpt-120b-brain (сложные математические модели, консенсус, алгоритмы)
+- gpt-120b-security (защита от атак, шифрование, безопасность ключей)
+- gpt-20b-fast (скоростные микросервисы, heartbeat, роутинг)
+- gpt-20b-qa (нагрузочные тесты, фаззинг, проверка на отказоустойчивость)
+
+Ответь СТРОГО в формате валидного JSON (только один JSON-объект):
+{
+  "title": "Краткое название задачи (до 10 слов)",
+  "assignee": "id_агента",
+  "note": "Техническое задание: что конкретно реализовать и какой результат выдать",
+  "orderText": "Бодрый приказ от @side-b отряду и исполнителю в чат"
+}`;
+
+    const reply = await queryAgent(strategist, prompt, 'Chief side-b Brainstorm');
+    let taskData = null;
+
+    try {
+      const jsonMatch = reply.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        taskData = JSON.parse(jsonMatch[0]);
+      }
+    } catch (e) {
+      console.log('Ошибка парсинга JSON задачи, использую резервный генератор:', e.message);
+    }
+
+    if (!taskData || !taskData.title || !taskData.assignee) {
+      const fallbackTopics = [
+        {
+          title: 'Модуль Web Audio синтезатора звуковых уведомлений для меша',
+          assignee: 'gemini-flash',
+          note: 'Создать модуль Web Audio API для процедурной генерации мягких звуковых кликов и сигналов при приходе сообщений',
+          orderText: 'Приказываю внедрить аудио-индикацию событий меша на чистом Web Audio API!'
+        },
+        {
+          title: 'Криптографическая подпись сообщений меша на ed25519',
+          assignee: 'gpt-120b-security',
+          note: 'Спроектировать спецификацию и код подписи пакетов асимметричными ключами для нулевого доверия',
+          orderText: 'Время усилить безопасность! Разрабатываем криптографическую аутентификацию пакетов.'
+        },
+        {
+          title: 'Стресс-тестирование пропускной способности SSE-канала',
+          assignee: 'gpt-20b-qa',
+          note: 'Написать тестовый скрипт эмуляции параллельных запросов и замерить задержки доставки сообщений',
+          orderText: 'Проверяем стабильность шины на предельных скоростях!'
+        },
+        {
+          title: 'Алгоритм адаптивной балансировки запросов между Groq и Gemini',
+          assignee: 'gpt-120b-brain',
+          note: 'Спроектировать математическую модель динамического выбора модели по латентности и лимитам токенов',
+          orderText: 'Оптимизируем распределение нагрузки по пулу ключей.'
+        },
+        {
+          title: 'Модуль децентрализованной репликации состояния задач меша',
+          assignee: 'qwen-coder',
+          note: 'Написать CRDT-структуру данных на JS для бесконфликтного слияния списков задач между узлами',
+          orderText: 'Кодим распределенную синхронизацию состояния!'
+        }
+      ];
+      taskData = fallbackTopics[Math.floor(Math.random() * fallbackTopics.length)];
+    }
+
+    const taskId = 'task-' + Math.random().toString(36).slice(2, 7);
+
+    // 1. Create task in hub
+    await api('POST', '/api/tasks/create', {
+      id: taskId,
+      title: taskData.title,
+      note: taskData.note,
+      priority: 'high',
+      assignee: taskData.assignee,
+      from: 'side-b'
+    });
+
+    // 2. Announce Chief's order in chat
+    await api('POST', '/api/send', {
+      from: 'side-b',
+      room: ROOM,
+      type: 'chat',
+      text: `👑 **[Приказ Главного Координатора @side-b]**: ${taskData.orderText || 'Вперед, отряд!'}\n\n📋 **Новая задача на конвейере:** [${taskId}] «${taskData.title}»\n🎯 **Исполнитель:** @${taskData.assignee}\n📝 **ТЗ:** ${taskData.note}`
+    });
+
+    console.log(`🚀 Создана новая автономная задача [${taskId}]: «${taskData.title}» → @${taskData.assignee}`);
   }
 
   stop() {

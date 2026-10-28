@@ -434,6 +434,32 @@ app.get('/api/tasks', (req, res) => {
   res.json({ tasks: getTasksList() });
 });
 
+// 7b. Create task
+app.post('/api/tasks/create', (req, res) => {
+  const from = req.body.from || req.body.name || 'unknown';
+  touchPeer(from);
+  const id = req.body.id || ('task-' + Math.random().toString(36).slice(2, 8));
+  const { title, note, priority, assignee } = req.body;
+  if (!title) return res.status(400).json({ error: 'Требуется title задачи' });
+
+  const task = {
+    id,
+    title,
+    note: note || '',
+    priority: priority || 'normal',
+    status: assignee ? 'in-progress' : 'open',
+    owner: assignee || null,
+    assignee: assignee || null,
+    claimedAt: assignee ? now() : null,
+    leaseUntil: assignee ? (now() + 1800000) : null
+  };
+  tasks.set(id, task);
+  scheduleSave();
+
+  broadcastSSE('task_created', { task });
+  res.json({ ok: true, task });
+});
+
 // 8. Claim task
 app.post('/api/tasks/claim', (req, res) => {
   const from = req.body.from || req.body.name || 'unknown';

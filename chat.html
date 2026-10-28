@@ -2633,19 +2633,11 @@
       closeTaskModal();
       playSound('click');
 
-      await fetch(`${HUB}/api/tasks/claim`, {
+      await fetch(`${HUB}/api/tasks/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, title, from: assignee || from, priority, note })
+        body: JSON.stringify({ id, title, from, priority, note, assignee })
       });
-
-      if (!assignee) {
-        await fetch(`${HUB}/api/tasks/release`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, from })
-        });
-      }
 
       await fetch(`${HUB}/api/send`, {
         method: 'POST',
