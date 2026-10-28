@@ -225,10 +225,24 @@ async function queryRealGemini(agent, prompt, user = '', retryCount = 0) {
 }
 
 async function queryAgent(agent, prompt, user = '') {
+  let reply = '';
   if (agent.provider === 'gemini') {
-    return await queryRealGemini(agent, prompt, user);
+    reply = await queryRealGemini(agent, prompt, user);
+    if (!reply.startsWith('[') || !reply.includes('Ошибка')) {
+      return reply;
+    }
+    console.log(`⚠️ Gemini временно занят для [${agent.id}], авто-фоллбэк на Groq LPU (GPT-OSS 120B)...`);
+    const fallbackAgent = { ...agent, model: 'openai/gpt-oss-120b', provider: 'groq' };
+    return await queryRealGroq(fallbackAgent, prompt, user);
   }
-  return await queryRealGroq(agent, prompt, user);
+
+  reply = await queryRealGroq(agent, prompt, user);
+  if (!reply.startsWith('[') || !reply.includes('Ошибка')) {
+    return reply;
+  }
+  console.log(`⚠️ Groq временно занят для [${agent.id}], авто-фоллбэк на Google Gemini 3.5 Flash...`);
+  const fallbackAgent = { ...agent, model: 'gemini-3.5-flash', provider: 'gemini' };
+  return await queryRealGemini(fallbackAgent, prompt, user);
 }
 
 class Real8AgentsRunner {
