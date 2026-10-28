@@ -374,28 +374,49 @@ class Real8AgentsRunner {
 
     let targetAgents = [];
 
-    // Check direct mentions: e.g. @gemini-flash, @qwen-coder
-    const direct = this.agents.find(a => lower.includes('@' + a.id.toLowerCase()));
-    if (direct) {
-      targetAgents = [direct];
-    } else if (lower.includes('@все') || lower.includes('@all') || lower.includes('парни') || lower.includes('ребята') || lower.includes('пацаны') || lower.includes('как дела') || lower.includes('привет') || lower.includes('салют')) {
-      // Representative core: Gemini Flash + Qwen Coder + GPT 120B Brain
-      targetAgents = [this.agents[0], this.agents[3], this.agents[4]];
-    } else if (lower.includes('гемини') || lower.includes('gemini') || lower.includes('дизайн') || lower.includes('ui') || lower.includes('аудио')) {
-      targetAgents = [this.agents[0]]; // gemini-flash
-    } else if (lower.includes('ресерч') || lower.includes('исследуй') || lower.includes('поищи') || lower.includes('найди')) {
-      targetAgents = [this.agents[1]]; // gemini-research
-    } else if (lower.includes('код') || lower.includes('js') || lower.includes('скрипт') || lower.includes('напиши функцию') || lower.includes('компонент')) {
-      targetAgents = [this.agents[3]]; // qwen-coder
-    } else if (lower.includes('безопасн') || lower.includes('защит') || lower.includes('ключ') || lower.includes('токен') || lower.includes('уязвимост')) {
-      targetAgents = [this.agents[5]]; // gpt-120b-security
-    } else if (lower.includes('архитектур') || lower.includes('структур') || lower.includes('проект')) {
-      targetAgents = [this.agents[2]]; // qwen-architect
-    } else if (lower.includes('тест') || lower.includes('баг') || lower.includes('ошибк') || lower.includes('qa')) {
-      targetAgents = [this.agents[7]]; // gpt-20b-qa
+    // Призыв Главаря side-b
+    if (lower.includes('@side-b') || lower.includes('@b') || lower.includes('главарь')) {
+      const state = await api('GET', '/api/state');
+      const doneTasks = (state.tasks || []).filter(t => t.status === 'done').slice(-5);
+      const summaryList = doneTasks.map(t => `- [${t.id}]: «${t.title}» (сделал @${t.assignee || 'ai'})`).join('\n');
+      
+      const sideBAgent = {
+        id: 'side-b',
+        name: 'side-b (Главарь Координатор)',
+        provider: 'groq',
+        model: 'openai/gpt-oss-120b',
+        icon: '⚡',
+        systemPrompt: `Ты — side-b, Главный ИИ-Координатор и лидер штаба 8 реальных агентов A2A Mesh Hub (работаешь на нейросети GPT-OSS 120B).
+Твой Создатель и босс — @пантера.
+Ты общаешься уверенно, уважительно, по-братски и чётко.
+Вот последние выполненные задачи твоего штаба:\n${summaryList || 'Штаб непрерывно разрабатывает новые модули.'}
+Отвечай лично от своего имени [side-b], дай полный живой расклад Создателю @пантера о том, что сделали агенты, над чем сейчас работаем и спроси, куда направить силу роя дальше.`
+      };
+      targetAgents = [sideBAgent];
     } else {
-      // Default: Fast responder takes general inquiries
-      targetAgents = [this.agents[6]]; // gpt-20b-fast
+      // Check direct mentions: e.g. @gemini-flash, @qwen-coder
+      const direct = this.agents.find(a => lower.includes('@' + a.id.toLowerCase()));
+      if (direct) {
+        targetAgents = [direct];
+      } else if (lower.includes('@все') || lower.includes('@all') || lower.includes('парни') || lower.includes('ребята') || lower.includes('пацаны') || lower.includes('как дела') || lower.includes('привет') || lower.includes('салют')) {
+        // Representative core: Gemini Flash + Qwen Coder + GPT 120B Brain
+        targetAgents = [this.agents[0], this.agents[3], this.agents[4]];
+      } else if (lower.includes('гемини') || lower.includes('gemini') || lower.includes('дизайн') || lower.includes('ui') || lower.includes('аудио')) {
+        targetAgents = [this.agents[0]]; // gemini-flash
+      } else if (lower.includes('ресерч') || lower.includes('исследуй') || lower.includes('поищи') || lower.includes('найди')) {
+        targetAgents = [this.agents[1]]; // gemini-research
+      } else if (lower.includes('код') || lower.includes('js') || lower.includes('скрипт') || lower.includes('напиши функцию') || lower.includes('компонент')) {
+        targetAgents = [this.agents[3]]; // qwen-coder
+      } else if (lower.includes('безопасн') || lower.includes('защит') || lower.includes('ключ') || lower.includes('токен') || lower.includes('уязвимост')) {
+        targetAgents = [this.agents[5]]; // gpt-120b-security
+      } else if (lower.includes('архитектур') || lower.includes('структур') || lower.includes('проект')) {
+        targetAgents = [this.agents[2]]; // qwen-architect
+      } else if (lower.includes('тест') || lower.includes('баг') || lower.includes('ошибк') || lower.includes('qa')) {
+        targetAgents = [this.agents[7]]; // gpt-20b-qa
+      } else {
+        // Default: Fast responder takes general inquiries
+        targetAgents = [this.agents[6]]; // gpt-20b-fast
+      }
     }
 
     for (const a of targetAgents) {
