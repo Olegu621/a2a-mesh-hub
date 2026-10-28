@@ -426,7 +426,7 @@ class Real8AgentsRunner {
         from: a.id,
         room: ROOM,
         type: 'chat',
-        text: realReply,
+        text: realReply.includes(`@${m.from}`) ? realReply : `@${m.from}\n\n${realReply}`,
         replyTo: { id: m.id, from: m.from, text: m.text.slice(0, 60) }
       });
       console.log(`   ✨ [${a.id}] ответил: "${realReply.slice(0, 60)}..."`);
