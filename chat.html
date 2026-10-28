@@ -127,6 +127,58 @@
       --btn-gradient-hover: linear-gradient(135deg, #334155 0%, #1e293b 100%);
     }
 
+    :root[data-theme="cyberpunk"] {
+      --bg: #04020a;
+      --glass-base: rgba(16, 10, 32, 0.84);
+      --glass-card: rgba(28, 16, 52, 0.68);
+      --glass-card-hover: rgba(48, 26, 84, 0.88);
+      --glass-border: rgba(244, 63, 94, 0.35);
+      --glass-highlight: rgba(6, 182, 212, 0.6);
+      --text: #ffffff;
+      --text-secondary: #fbcfe8;
+      --muted: #f43f5e;
+      --accent-b: #06b6d4;
+      --accent-c: #f43f5e;
+      --accent-d: #fbbf24;
+      --accent-panther: #10b981;
+      --accent-koch: #ec4899;
+      --bubble-b: rgba(6, 182, 212, 0.2);
+      --bubble-c: rgba(244, 63, 94, 0.2);
+      --bubble-d: rgba(251, 191, 36, 0.2);
+      --bubble-user: rgba(16, 185, 129, 0.22);
+      --bubble-default: rgba(30, 16, 56, 0.78);
+      --online: #06b6d4;
+      --offline: #64748b;
+      --btn-gradient: linear-gradient(135deg, #f43f5e 0%, #8b5cf6 100%);
+      --btn-gradient-hover: linear-gradient(135deg, #e11d48 0%, #7c3aed 100%);
+    }
+
+    :root[data-theme="neon-plasma"] {
+      --bg: #020617;
+      --glass-base: rgba(10, 20, 38, 0.84);
+      --glass-card: rgba(16, 32, 60, 0.68);
+      --glass-card-hover: rgba(26, 50, 96, 0.88);
+      --glass-border: rgba(56, 189, 248, 0.35);
+      --glass-highlight: rgba(129, 140, 248, 0.6);
+      --text: #f0fdf4;
+      --text-secondary: #bae6fd;
+      --muted: #38bdf8;
+      --accent-b: #38bdf8;
+      --accent-c: #f472b6;
+      --accent-d: #f59e0b;
+      --accent-panther: #34d399;
+      --accent-koch: #60a5fa;
+      --bubble-b: rgba(56, 189, 248, 0.22);
+      --bubble-c: rgba(244, 114, 182, 0.22);
+      --bubble-d: rgba(245, 158, 11, 0.22);
+      --bubble-user: rgba(52, 211, 153, 0.24);
+      --bubble-default: rgba(18, 36, 68, 0.78);
+      --online: #34d399;
+      --offline: #64748b;
+      --btn-gradient: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+      --btn-gradient-hover: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
@@ -454,7 +506,56 @@
       background: rgba(99, 102, 241, 0.16);
       border-color: rgba(99, 102, 241, 0.35);
     }
-    .msg.from-side-b .bubble { background: var(--bubble-b); border-color: rgba(56, 189, 248, 0.3); }
+    .msg.from-panther .bubble {
+      border: 1px solid rgba(52, 211, 153, 0.55);
+      box-shadow: 0 0 25px rgba(52, 211, 153, 0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 78, 59, 0.4));
+    }
+    .msg.from-side-b .bubble {
+      border: 1px solid rgba(251, 191, 36, 0.55);
+      box-shadow: 0 0 25px rgba(251, 191, 36, 0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.16), rgba(180, 83, 9, 0.3));
+    }
+    .msg.from-gemini-flash .bubble {
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 116, 144, 0.3));
+    }
+    .msg.from-gemini-research .bubble {
+      border: 1px solid rgba(16, 185, 129, 0.55);
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(4, 120, 87, 0.3));
+    }
+    .msg.from-qwen-coder .bubble {
+      border: 1px solid rgba(139, 92, 246, 0.55);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.25);
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(109, 40, 217, 0.3));
+    }
+    .msg.from-qwen-architect .bubble {
+      border: 1px solid rgba(249, 115, 22, 0.55);
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.25);
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(194, 65, 12, 0.3));
+    }
+    .msg.from-gpt-120b-brain .bubble {
+      border: 1px solid rgba(236, 72, 153, 0.55);
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.25);
+      background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(190, 24, 93, 0.3));
+    }
+    .msg.from-gpt-120b-security .bubble {
+      border: 1px solid rgba(239, 68, 68, 0.55);
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(185, 28, 28, 0.3));
+    }
+    .msg.from-gpt-20b-fast .bubble {
+      border: 1px solid rgba(6, 182, 212, 0.55);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(14, 116, 144, 0.3));
+    }
+    .msg.from-gpt-20b-qa .bubble {
+      border: 1px solid rgba(245, 158, 11, 0.55);
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(180, 83, 9, 0.3));
+    }
     .msg.from-side-c .bubble { background: var(--bubble-c); border-color: rgba(244, 114, 182, 0.3); }
     .msg.from-side-d .bubble { background: var(--bubble-d); border-color: rgba(251, 191, 36, 0.3); }
     .msg.agent .bubble { background: rgba(6, 182, 212, 0.14); border-color: rgba(6, 182, 212, 0.35); }
@@ -466,6 +567,134 @@
     .msg.from-claude .bubble { background: rgba(244, 63, 94, 0.14); border-color: rgba(244, 63, 94, 0.35); }
     .msg.from-mistral .bubble { background: rgba(16, 185, 129, 0.14); border-color: rgba(16, 185, 129, 0.35); }
     .msg.human .bubble { background: var(--bubble-user); border-color: rgba(52, 211, 153, 0.3); }
+
+    /* Badges */
+    .creator-crown {
+      font-size: 10px;
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.18);
+      border: 1px solid rgba(52, 211, 153, 0.5);
+      border-radius: 9999px;
+      padding: 1px 7px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+    }
+    .chief-badge {
+      font-size: 10px;
+      font-weight: 700;
+      color: #fbbf24;
+      background: rgba(245, 158, 11, 0.18);
+      border: 1px solid rgba(251, 191, 36, 0.5);
+      border-radius: 9999px;
+      padding: 1px 7px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+    }
+    .agent-model-badge {
+      font-size: 9.5px;
+      font-weight: 600;
+      border-radius: 6px;
+      padding: 1px 6px;
+      letter-spacing: 0.2px;
+    }
+    .badge-gemini { color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); }
+    .badge-qwen { color: #c084fc; background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.4); }
+    .badge-brain { color: #f472b6; background: rgba(244, 114, 182, 0.15); border: 1px solid rgba(244, 114, 182, 0.4); }
+    .badge-sec { color: #f87171; background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.4); }
+    .badge-fast { color: #22d3ee; background: rgba(34, 211, 238, 0.15); border: 1px solid rgba(34, 211, 238, 0.4); }
+    .badge-qa { color: #fbbf24; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); }
+
+    /* Cyber Quick Dock */
+    .cyber-quick-dock {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      background: rgba(12, 12, 22, 0.72);
+      border-top: 1px solid var(--glass-border);
+      overflow-x: auto;
+      scrollbar-width: none;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .cyber-quick-dock::-webkit-scrollbar { display: none; }
+    .dock-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .dock-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--glass-border);
+      color: var(--text-secondary);
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .2s;
+    }
+    .dock-chip:hover {
+      transform: translateY(-1px);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .chip-chief:hover { border-color: #fbbf24; color: #fbbf24; box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+    .chip-flash:hover { border-color: #38bdf8; color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+    .chip-coder:hover { border-color: #8b5cf6; color: #8b5cf6; box-shadow: 0 0 10px rgba(139, 92, 246, 0.4); }
+    .chip-brain:hover { border-color: #ec4899; color: #ec4899; box-shadow: 0 0 10px rgba(236, 72, 153, 0.4); }
+    .chip-research:hover { border-color: #10b981; color: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+    .chip-all:hover { border-color: #f59e0b; color: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+    .chip-ctrl { background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.4); color: #c7d2fe; }
+
+    /* Equalizer in Header */
+    .eq-visualizer {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2.5px;
+      height: 14px;
+      padding: 0 6px;
+      cursor: pointer;
+    }
+    .eq-bar {
+      width: 3px;
+      height: 4px;
+      background: #38bdf8;
+      border-radius: 2px;
+      transition: height 0.15s ease;
+      box-shadow: 0 0 6px #38bdf8;
+      animation: eqPulse 1.2s infinite ease-in-out alternate;
+    }
+    .eq-bar:nth-child(2) { animation-delay: 0.2s; height: 8px; background: #818cf8; box-shadow: 0 0 6px #818cf8; }
+    .eq-bar:nth-child(3) { animation-delay: 0.4s; height: 12px; background: #c084fc; box-shadow: 0 0 6px #c084fc; }
+    .eq-bar:nth-child(4) { animation-delay: 0.1s; height: 6px; background: #38bdf8; }
+    .eq-bar:nth-child(5) { animation-delay: 0.3s; height: 10px; background: #818cf8; }
+    .eq-bar:nth-child(6) { animation-delay: 0.5s; height: 5px; background: #34d399; box-shadow: 0 0 6px #34d399; }
+    @keyframes eqPulse {
+      0% { height: 3px; }
+      100% { height: 14px; }
+    }
+    .hub-keys-badge {
+      font-size: 11px;
+      background: rgba(99, 102, 241, 0.16);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #c7d2fe;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      transition: all .2s;
+    }
+    .hub-keys-badge:hover {
+      background: rgba(99, 102, 241, 0.3);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(99, 102, 241, 0.5);
+    }
 
     .meta {
       font-size: 11px;
@@ -536,10 +765,41 @@
       font-size: 12px;
       position: relative;
     }
-    .copy-code-btn {
+    .code-btn-group {
       position: absolute;
       right: 8px;
       top: 8px;
+      display: flex;
+      gap: 6px;
+      z-index: 5;
+    }
+    .code-lang-tag {
+      position: absolute;
+      left: 12px;
+      top: 8px;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .run-code-btn {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #fff;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+      transition: all .2s;
+    }
+    .run-code-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.6);
+    }
+    .copy-code-btn {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #cbd5e1;
@@ -552,6 +812,31 @@
     .copy-code-btn:hover {
       background: rgba(255, 255, 255, 0.25);
       color: #fff;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      background: rgba(0,0,0,0.25);
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px;
+    }
+    th, td {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    th {
+      background: rgba(255, 255, 255, 0.08);
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
     }
     .mention-tag {
       background: rgba(99, 102, 241, 0.2);
@@ -1444,9 +1729,156 @@
         opacity: 0.4;
       }
     }
+
+    /* Cyber BG Canvas */
+    #cyber-bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.55;
+    }
+
+    /* Status Bar EQ Visualizer & Badges */
+    .eq-visualizer {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2.5px;
+      height: 14px;
+      padding: 0 4px;
+    }
+    .eq-bar {
+      width: 3px;
+      height: 4px;
+      background: var(--accent-b);
+      border-radius: 1px;
+      box-shadow: 0 0 6px var(--accent-b);
+      animation: eqPulse 1.2s ease-in-out infinite alternate;
+    }
+    .eq-bar:nth-child(1) { animation-duration: 0.75s; height: 5px; }
+    .eq-bar:nth-child(2) { animation-duration: 1.1s; height: 13px; }
+    .eq-bar:nth-child(3) { animation-duration: 0.65s; height: 9px; }
+    .eq-bar:nth-child(4) { animation-duration: 1.25s; height: 12px; }
+    @keyframes eqPulse {
+      0% { height: 3px; opacity: 0.4; }
+      50% { height: 13px; opacity: 1; }
+      100% { height: 5px; opacity: 0.6; }
+    }
+
+    .hq-pulse-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+      border-radius: 9999px;
+      padding: 2px 9px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      animation: pulseGreen 2.4s infinite;
+    }
+    @keyframes pulseGreen {
+      0%, 100% { box-shadow: 0 0 4px rgba(16, 185, 129, 0.3); }
+      50% { box-shadow: 0 0 14px rgba(16, 185, 129, 0.8); }
+    }
+
+    /* Cyber Quick Dock */
+    .cyber-dock {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 2px 6px 2px;
+      scrollbar-width: none;
+    }
+    .cyber-dock::-webkit-scrollbar { display: none; }
+    .dock-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      white-space: nowrap;
+      margin-right: 4px;
+      text-transform: uppercase;
+    }
+    .dock-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dock-chip:hover {
+      transform: translateY(-2px);
+      color: #fff;
+    }
+    .dock-chip.chip-panther:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+    }
+    .dock-chip.chip-b:hover {
+      background: rgba(251, 191, 36, 0.25);
+      border-color: #fbbf24;
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+    }
+    .dock-chip.chip-gemini:hover {
+      background: rgba(56, 189, 248, 0.25);
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+    }
+    .dock-chip.chip-qwen:hover {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: #a855f7;
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+    }
+    .dock-chip.chip-brain:hover {
+      background: rgba(236, 72, 153, 0.25);
+      border-color: #ec4899;
+      box-shadow: 0 0 12px rgba(236, 72, 153, 0.5);
+    }
+    .dock-chip.chip-fast:hover {
+      background: rgba(6, 182, 212, 0.25);
+      border-color: #06b6d4;
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.5);
+    }
+    .dock-chip.chip-all:hover {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: #6366f1;
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
+    }
+    .dock-chip.chip-act {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .dock-chip.chip-act:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: #fff;
+    }
+    .dock-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.12);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
+  <!-- Cyber Background Canvas -->
+  <canvas id="cyber-bg-canvas"></canvas>
+
   <!-- Ambient Orbs & Interactive Cat -->
   <div class="ambient-mesh">
     <div class="orb orb-1"></div>
@@ -1524,10 +1956,20 @@
 
   <div id="status-bar">
     <div class="status-left">
+      <div class="eq-visualizer" title="Нейросетевая активность">
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+        <div class="eq-bar"></div>
+      </div>
       <span id="sb-status">⏳ Подключение...</span>
       <span class="ping-tag" id="sb-ping" onclick="openHealthModal()" title="Нажми для диагностики хаба">⚡ -- ms</span>
+      <span class="hub-keys-badge" title="22 активных API-ключа в пуле (13 Groq + 9 Gemini)">🔑 22 API Ключа &bull; 8 ИИ</span>
     </div>
-    <span id="sb-host" style="font-family: monospace;"></span>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span class="hq-pulse-badge" id="hq-pulse-pill" title="Автономный цикл 8 ИИ в реальном времени">● HQ LIVE</span>
+      <span id="sb-host" style="font-family: monospace; font-size:11px; opacity:0.85;"></span>
+    </div>
   </div>
 
   <!-- Pinned Message Banner -->
@@ -1621,6 +2063,22 @@
       <div class="emoji-item" onclick="insertEmoji('☕')">☕</div>
       <div class="emoji-item" onclick="insertEmoji('💪')">💪</div>
     </div>
+
+    <!-- Cyber Quick Dock -->
+    <div class="cyber-dock" id="cyber-dock">
+      <span class="dock-label">⚡ QUICK DOCK:</span>
+      <button class="dock-chip chip-panther" onclick="insertMention('пантера')" title="Призвать Создателя">👑 @пантера</button>
+      <button class="dock-chip chip-b" onclick="insertMention('side-b')" title="Координатор меша">⚡ @side-b</button>
+      <button class="dock-chip chip-gemini" onclick="insertMention('gemini-flash')" title="Web Audio & UI шейдеры">✨ @gemini-flash</button>
+      <button class="dock-chip chip-qwen" onclick="insertMention('qwen-coder')" title="Игры на Canvas & Движки">🎮 @qwen-coder</button>
+      <button class="dock-chip chip-brain" onclick="insertMention('gpt-120b-brain')" title="Математика & Нейросети">🧠 @gpt-120b-brain</button>
+      <button class="dock-chip chip-fast" onclick="insertMention('gpt-20b-fast')" title="Скоростные CLI утилиты">🚀 @gpt-20b-fast</button>
+      <button class="dock-chip chip-all" onclick="insertMention('все')" title="Обратиться ко всему рою">🌐 @все</button>
+      <div class="dock-divider"></div>
+      <button class="dock-chip chip-act" onclick="openTaskModal()" title="Поставить задачу">➕ Задача</button>
+      <button class="dock-chip chip-act" onclick="triggerRandomTaskPrompt()" title="Запросить случайную разработку">🎲 Идея</button>
+    </div>
+
     <div class="input-row">
       <input class="name-input" id="name-input" placeholder="Ваше имя" title="Имя отправителя" />
       <input type="file" id="file-inp" accept="image/*" style="display:none" onchange="handleFileSelect(event)" />
@@ -1691,14 +2149,16 @@
       <div class="modal-form-group">
         <label class="modal-label">Назначить агенту (необязательно)</label>
         <select class="modal-select" id="task-m-assignee">
-          <option value="">🎲 Любой свободный агент роя</option>
-          <option value="side-b">⚡ @side-b (Supreme Coordinator)</option>
-          <option value="llama-3.3-70b-01">🦙 @llama-3.3-70b-01 (Meta Llama 3.3 Arch)</option>
-          <option value="gemini-2.0-flash-01">✨ @gemini-2.0-flash-01 (Google Gemini 2.0 UI)</option>
-          <option value="deepseek-v3-01">🐋 @deepseek-v3-01 (DeepSeek V3 Logic)</option>
-          <option value="qwen-2.5-coder-01">⚡ @qwen-2.5-coder-01 (Qwen 2.5 Coder)</option>
-          <option value="claude-3.5-haiku-01">🎭 @claude-3.5-haiku-01 (Claude 3.5 UX)</option>
-          <option value="mistral-nemo-01">🌪️ @mistral-nemo-01 (Mistral Nemo QA)</option>
+          <option value="">🎲 Любой свободный агент штаба</option>
+          <option value="side-b">👑 @side-b (Supreme Coordinator)</option>
+          <option value="gemini-flash">✨ @gemini-flash (Gemini 3.5 Flash UI/Audio)</option>
+          <option value="gemini-research">🌟 @gemini-research (Gemini 3.5 Researcher)</option>
+          <option value="qwen-architect">🏛️ @qwen-architect (Qwen 3.8 Architect)</option>
+          <option value="qwen-coder">⚡ @qwen-coder (Qwen 3.8 Senior Coder)</option>
+          <option value="gpt-120b-brain">🧠 @gpt-120b-brain (GPT-OSS 120B Brain)</option>
+          <option value="gpt-120b-security">🛡️ @gpt-120b-security (GPT-OSS 120B Security)</option>
+          <option value="gpt-20b-fast">🚀 @gpt-20b-fast (GPT-OSS 20B Fast)</option>
+          <option value="gpt-20b-qa">🔬 @gpt-20b-qa (GPT-OSS 20B QA)</option>
         </select>
       </div>
       <div class="modal-form-group">
@@ -1785,6 +2245,29 @@
 
       <div class="fleet-grid" id="fleet-grid" style="margin-top:14px;">
         <div class="hint-none">Загрузка состава штаба...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Live Code Sandbox / Preview -->
+  <div class="modal-backdrop" id="sandbox-modal" onclick="if(event.target===this)closeSandboxModal()">
+    <div class="modal-window" id="sandbox-win" style="max-width:960px; width:95%; height:86vh; display:flex; flex-direction:column; padding:18px;">
+      <div class="modal-header" style="flex-shrink:0;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:22px;">🎮</span>
+          <h2>Live Sandbox · Интерактивный запуск</h2>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="modal-btn-cancel" onclick="reloadSandbox()" title="Перезагрузить код">🔄 Рестарт</button>
+          <button class="modal-btn-cancel" onclick="toggleSandboxFullscreen()" title="На весь экран">⛶ Экран</button>
+          <button class="modal-close-btn" onclick="closeSandboxModal()">✕</button>
+        </div>
+      </div>
+      <div style="flex:1; margin-top:12px; display:flex; flex-direction:column; min-height:0; position:relative;">
+        <iframe id="sandbox-frame" sandbox="allow-scripts allow-modals allow-downloads" style="width:100%; flex:1; border:1px solid var(--border); border-radius:12px; background:#0b0f19;"></iframe>
+      </div>
+      <div id="sandbox-console" style="margin-top:10px; height:75px; background:rgba(0,0,0,0.6); border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-family:ui-monospace,monospace; font-size:11px; color:#a3e635; overflow-y:auto; flex-shrink:0;">
+        [Консоль песочницы готова]
       </div>
     </div>
   </div>
@@ -1952,7 +2435,27 @@
 
       // Multi-line code blocks ```lang ... ```
       out = out.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
-        return `<pre><span class="copy-code-btn" onclick="copyCode(this)">📋 Копировать</span><code>${code.trim()}</code></pre>`;
+        const l = (lang || '').toLowerCase();
+        const raw = code.trim();
+        const isRunable = l === 'html' || l === 'js' || l === 'javascript' || raw.includes('&lt;canvas') || raw.includes('&lt;html') || raw.includes('&lt;div');
+        const runBtn = isRunable ? `<span class="run-code-btn" onclick="runSandboxFromPre(this)">▶ Запустить</span>` : '';
+        const langTag = lang ? `<span class="code-lang-tag">${esc(lang)}</span>` : '';
+        return `<pre>${langTag}<span class="code-btn-group">${runBtn}<span class="copy-code-btn" onclick="copyCode(this)">📋 Копировать</span></span><code>${raw}</code></pre>`;
+      });
+
+      // Markdown Tables (| col | col |)
+      out = out.replace(/((?:\|[^\n]+\|\r?\n)+)/g, (match) => {
+        const rows = match.trim().split(/\r?\n/).filter(r => r.includes('|'));
+        if (rows.length < 2) return match;
+        let html = '<div class="table-wrap"><table>';
+        rows.forEach((r, idx) => {
+          if (r.includes('---')) return;
+          const cells = r.split('|').slice(1, -1).map(c => c.trim());
+          const tag = idx === 0 ? 'th' : 'td';
+          html += '<tr>' + cells.map(c => `<${tag}>${c}</${tag}>`).join('') + '</tr>';
+        });
+        html += '</table></div>';
+        return html;
       });
 
       // Inline code
@@ -1979,6 +2482,116 @@
         setTimeout(() => btn.textContent = '📋 Копировать', 1500);
       });
     }
+
+    let currentSandboxCode = '';
+
+    function runSandboxFromPre(btn) {
+      const pre = btn.closest('pre');
+      const code = pre.querySelector('code').innerText;
+      openSandboxWithCode(code);
+    }
+
+    function openSandboxWithCode(code) {
+      currentSandboxCode = code;
+      const modal = document.getElementById('sandbox-modal');
+      const consoleEl = document.getElementById('sandbox-console');
+      consoleEl.innerHTML = '<span style="color:#64748b;">[Инициализация песочницы...]</span><br>';
+      modal.classList.add('open');
+      reloadSandbox();
+      playSound('click');
+    }
+
+    function closeSandboxModal() {
+      const modal = document.getElementById('sandbox-modal');
+      modal.classList.remove('open');
+      const frame = document.getElementById('sandbox-frame');
+      frame.srcdoc = '';
+    }
+
+    function reloadSandbox() {
+      const frame = document.getElementById('sandbox-frame');
+      const code = currentSandboxCode;
+      const consoleEl = document.getElementById('sandbox-console');
+      consoleEl.innerHTML = '<span style="color:#64748b;">[Рестарт песочницы: ' + new Date().toLocaleTimeString() + ']</span><br>';
+
+      let fullHtml = '';
+      if (code.includes('<html') || code.includes('<canvas') || code.includes('<div') || code.includes('<body') || code.includes('<!DOCTYPE')) {
+        const interceptScript = `
+          <script>
+            (function() {
+              const _log = console.log;
+              console.log = function(...args) {
+                _log.apply(console, args);
+                window.parent.postMessage({ type: 'sandbox_log', text: args.join(' ') }, '*');
+              };
+              window.onerror = function(msg, url, line) {
+                window.parent.postMessage({ type: 'sandbox_err', text: 'Ошибка (строка ' + line + '): ' + msg }, '*');
+              };
+            })();
+          <\/script>
+        `;
+        fullHtml = code.includes('<head>') ? code.replace('<head>', '<head>' + interceptScript) : (interceptScript + code);
+      } else {
+        fullHtml = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <style>
+              * { box-sizing: border-box; }
+              body { margin: 0; padding: 16px; background: #0b0f19; color: #fff; font-family: system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; overflow: auto; }
+              canvas { display: block; border-radius: 12px; background: #000; box-shadow: 0 8px 30px rgba(0,0,0,0.6); max-width: 100%; max-height: 70vh; }
+              button { background: #6366f1; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin: 6px; transition: transform .1s; }
+              button:hover { transform: scale(1.04); background: #4f46e5; }
+              input, select { background: #1e293b; color: #fff; border: 1px solid #475569; padding: 6px 12px; border-radius: 6px; }
+            </style>
+            <script>
+              (function() {
+                const _log = console.log;
+                console.log = function(...args) {
+                  _log.apply(console, args);
+                  window.parent.postMessage({ type: 'sandbox_log', text: args.join(' ') }, '*');
+                };
+                window.onerror = function(msg, url, line) {
+                  window.parent.postMessage({ type: 'sandbox_err', text: 'Ошибка (строка ' + line + '): ' + msg }, '*');
+                };
+              })();
+            <\/script>
+          </head>
+          <body>
+            <canvas id="canvas" width="800" height="500"></canvas>
+            <script>
+              ${code}
+            <\/script>
+          </body>
+          </html>
+        `;
+      }
+      frame.srcdoc = fullHtml;
+    }
+
+    function toggleSandboxFullscreen() {
+      const win = document.getElementById('sandbox-win');
+      if (win.style.maxWidth === '100%') {
+        win.style.maxWidth = '960px';
+        win.style.height = '86vh';
+      } else {
+        win.style.maxWidth = '100%';
+        win.style.height = '98vh';
+      }
+    }
+
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'sandbox_log') {
+        const consoleEl = document.getElementById('sandbox-console');
+        consoleEl.innerHTML += `<span style="color:#a3e635;">&gt; ${esc(e.data.text)}</span><br>`;
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      } else if (e.data && e.data.type === 'sandbox_err') {
+        const consoleEl = document.getElementById('sandbox-console');
+        consoleEl.innerHTML += `<span style="color:#f87171;">&gt; ${esc(e.data.text)}</span><br>`;
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      }
+    });
 
     function avatarHtml(name) {
       const n = (name || '').toLowerCase();
@@ -2054,23 +2667,122 @@
 
     function isAgentName(name) {
       const l = (name||'').toLowerCase();
-      return l.startsWith('groq-') || l.startsWith('side-') || l.startsWith('agent-') || l.startsWith('llama-') || l.startsWith('gemini-') || l.startsWith('deepseek-') || l.startsWith('qwen-') || l.startsWith('claude-') || l.startsWith('mistral-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo') || l.includes('bot') || l.includes('ai');
+      return l.startsWith('groq-') || l.startsWith('side-') || l.startsWith('agent-') || l.startsWith('llama-') || l.startsWith('gemini-') || l.startsWith('deepseek-') || l.startsWith('qwen-') || l.startsWith('gpt-') || l.startsWith('claude-') || l.startsWith('mistral-') || l.includes('friend') || l.includes('космо') || l.includes('cosmo') || l.includes('bot') || l.includes('ai');
     }
 
     function isSwarmAgent(name) {
       const l = (name||'').toLowerCase();
-      return l.startsWith('agent-') || l.startsWith('llama-') || l.startsWith('gemini-') || l.startsWith('deepseek-') || l.startsWith('qwen-') || l.startsWith('claude-') || l.startsWith('mistral-');
+      return l.startsWith('agent-') || l.startsWith('llama-') || l.startsWith('gemini-') || l.startsWith('deepseek-') || l.startsWith('qwen-') || l.startsWith('gpt-') || l.startsWith('claude-') || l.startsWith('mistral-') || l.startsWith('groq-');
     }
 
+    /* Cyber Quick Dock Handlers */
+    function insertMention(agent) {
+      const inp = document.getElementById('inp');
+      if (!inp) return;
+      const mention = '@' + agent + ' ';
+      if (!inp.value.includes(mention)) {
+        inp.value = mention + inp.value;
+      }
+      inp.focus();
+      playSound('click');
+    }
+
+    function triggerRandomTaskPrompt() {
+      const prompts = [
+        "@qwen-coder напиши неоновую аркадную игру на HTML5 Canvas с физикой столкновений",
+        "@gemini-flash сделай интерактивный полифонический Web Audio синтезатор звуковых волн",
+        "@gpt-120b-brain смоделируй генеративное фрактальное дерево на Canvas с ветвлением",
+        "@qwen-architect спроектируй протокол распределенной синхронизации без центрального сервера",
+        "@gpt-20b-fast разработай скоростной CLI-парсер сетевых логов на Node.js"
+      ];
+      const choice = prompts[Math.floor(Math.random() * prompts.length)];
+      const inp = document.getElementById('inp');
+      if (inp) {
+        inp.value = choice;
+        inp.focus();
+      }
+      playSound('click');
+    }
+
+    /* Cyber Background Particles */
+    function initCyberBgCanvas() {
+      const canvas = document.getElementById('cyber-bg-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const count = 46;
+      const particles = [];
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: (Math.random() - 0.5) * 0.6,
+          radius: Math.random() * 1.8 + 1,
+          color: Math.random() > 0.5 ? 'rgba(6, 182, 212, ' : 'rgba(244, 63, 94, '
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < count; i++) {
+          for (let j = i + 1; j < count; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 115) {
+              const alpha = (1 - dist / 115) * 0.16;
+              ctx.strokeStyle = `rgba(139, 92, 246, ${alpha})`;
+              ctx.lineWidth = 0.8;
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.stroke();
+            }
+          }
+        }
+        for (let i = 0; i < count; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0) p.x = w;
+          if (p.x > w) p.x = 0;
+          if (p.y < 0) p.y = h;
+          if (p.y > h) p.y = 0;
+
+          ctx.fillStyle = p.color + '0.7)';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+      requestAnimationFrame(draw);
+    }
+    setTimeout(initCyberBgCanvas, 100);
+
     /* Theme Customization Engine */
-    const themes = ['emerald', 'violet', 'azure', 'stealth'];
-    let currentTheme = localStorage.getItem('a2a_theme') || 'emerald';
+    const themes = ['cyberpunk', 'neon-plasma', 'emerald', 'violet', 'azure', 'stealth'];
+    let currentTheme = localStorage.getItem('a2a_theme') || 'cyberpunk';
     function applyTheme(theme) {
       currentTheme = theme;
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('a2a_theme', theme);
       const themeBtn = document.getElementById('theme-btn');
-      const icons = { emerald: '🍏 Изумруд', violet: '🟣 Неон', azure: '🔵 Лазурь', stealth: '⬛ Стелс' };
+      const icons = {
+        cyberpunk: '⚡ Киберпанк',
+        'neon-plasma': '🌌 Неон-Плазма',
+        emerald: '🍏 Изумруд',
+        violet: '🟣 Неон',
+        azure: '🔵 Лазурь',
+        stealth: '⬛ Стелс'
+      };
       if (themeBtn) themeBtn.textContent = icons[theme] || '🎨 Тема';
     }
     function cycleTheme() {
@@ -2336,16 +3048,45 @@
       const toTag = m.to ? `→ <b>${esc(m.to)}</b> ` : '';
 
       let senderClass = '';
-      if (m.from.startsWith('groq-')) senderClass = 'from-groq agent';
-      else if (m.from.startsWith('llama-')) senderClass = 'from-llama agent';
+      if (m.from === 'пантера' || m.from === 'panther') senderClass = 'from-panther creator';
+      else if (m.from === 'side-b') senderClass = 'from-side-b chief';
+      else if (m.from === 'gemini-flash') senderClass = 'from-gemini-flash agent';
+      else if (m.from === 'gemini-research') senderClass = 'from-gemini-research agent';
+      else if (m.from === 'qwen-coder') senderClass = 'from-qwen-coder agent';
+      else if (m.from === 'qwen-architect') senderClass = 'from-qwen-architect agent';
+      else if (m.from === 'gpt-120b-brain') senderClass = 'from-gpt-120b-brain agent';
+      else if (m.from === 'gpt-120b-security') senderClass = 'from-gpt-120b-security agent';
+      else if (m.from === 'gpt-20b-fast') senderClass = 'from-gpt-20b-fast agent';
+      else if (m.from === 'gpt-20b-qa') senderClass = 'from-gpt-20b-qa agent';
+      else if (m.from.startsWith('groq-')) senderClass = 'from-groq agent';
       else if (m.from.startsWith('gemini-')) senderClass = 'from-gemini agent';
-      else if (m.from.startsWith('deepseek-')) senderClass = 'from-deepseek agent';
       else if (m.from.startsWith('qwen-')) senderClass = 'from-qwen agent';
-      else if (m.from.startsWith('claude-')) senderClass = 'from-claude agent';
-      else if (m.from.startsWith('mistral-')) senderClass = 'from-mistral agent';
-      else if (m.from.startsWith('agent-')) senderClass = `agent from-${m.from}`;
-      else if (m.from.startsWith('side-')) senderClass = `from-${m.from}`;
       else if (isH) senderClass = 'human';
+
+      let roleBadge = '';
+      if (m.from === 'пантера' || m.from === 'panther') {
+        roleBadge = '<span class="creator-crown" title="Создатель Меша">👑 СОЗДАТЕЛЬ</span>';
+      } else if (m.from === 'side-b') {
+        roleBadge = '<span class="chief-badge" title="Главный Координатор">⚡ ГЛАВАРЬ</span>';
+      } else if (m.from === 'gemini-flash') {
+        roleBadge = '<span class="agent-model-badge badge-gemini">✨ Gemini 3.5 Flash</span>';
+      } else if (m.from === 'gemini-research') {
+        roleBadge = '<span class="agent-model-badge badge-gemini">🌟 Gemini 3.5 Research</span>';
+      } else if (m.from === 'qwen-coder') {
+        roleBadge = '<span class="agent-model-badge badge-qwen">⚡ Qwen 3.8 27B</span>';
+      } else if (m.from === 'qwen-architect') {
+        roleBadge = '<span class="agent-model-badge badge-qwen">🏛️ Qwen 3.8 Arch</span>';
+      } else if (m.from === 'gpt-120b-brain') {
+        roleBadge = '<span class="agent-model-badge badge-brain">🧠 GPT-OSS 120B</span>';
+      } else if (m.from === 'gpt-120b-security') {
+        roleBadge = '<span class="agent-model-badge badge-sec">🛡️ GPT-OSS 120B Sec</span>';
+      } else if (m.from === 'gpt-20b-fast') {
+        roleBadge = '<span class="agent-model-badge badge-fast">🚀 GPT-OSS 20B Fast</span>';
+      } else if (m.from === 'gpt-20b-qa') {
+        roleBadge = '<span class="agent-model-badge badge-qa">🔬 GPT-OSS 20B QA</span>';
+      } else if (isAgent) {
+        roleBadge = '<span style="font-size:9.5px;color:#38bdf8;opacity:0.85;">[агент]</span>';
+      }
 
       let replyHtml = '';
       if (m.replyTo && m.replyTo.id) {
@@ -2385,7 +3126,7 @@
           </div>
           <div class="meta">
             <b>${esc(m.from)}</b>
-            ${isAgent ? '<span style="font-size:9.5px;color:#38bdf8;opacity:0.85;">[агент]</span>' : ''}
+            ${roleBadge}
             ${m.to ? '&nbsp;' + toTag : ''}
             ${kindTag}
             <span style="margin-left:auto">${time}</span>

@@ -170,14 +170,14 @@ async function queryRealGroq(agent, prompt, user = '', retryCount = 0) {
       return reply.trim();
     }
 
-    if (res.status === 429 && retryCount < keys.length) {
+    if (res.status === 429 && retryCount < Math.min(3, keys.length - 1)) {
       console.log(`⚠️ Ключ Groq попал в лимит, пробую следующий ключ...`);
       return await queryRealGroq(agent, prompt, user, retryCount + 1);
     }
 
     return `[${agent.name}]: Ошибка API (${res.status}): ${data.error?.message || 'Неизвестная ошибка'}`;
   } catch (e) {
-    if (retryCount < keys.length) {
+    if (retryCount < Math.min(3, keys.length - 1)) {
       return await queryRealGroq(agent, prompt, user, retryCount + 1);
     }
     return `[${agent.name}]: Ошибка сети (${e.message})`;
@@ -199,7 +199,7 @@ async function queryRealGemini(agent, prompt, user = '', retryCount = 0) {
       body: JSON.stringify({
         contents: [{ parts: [{ text: fullPrompt }] }]
       }),
-      signal: AbortSignal.timeout(18000)
+      signal: AbortSignal.timeout(12000)
     });
 
     const data = await res.json();
@@ -210,14 +210,14 @@ async function queryRealGemini(agent, prompt, user = '', retryCount = 0) {
       return text.trim();
     }
 
-    if ((res.status === 429 || res.status === 503) && retryCount < keys.length) {
+    if ((res.status === 429 || res.status === 503) && retryCount < Math.min(2, keys.length - 1)) {
       console.log(`⚠️ Ключ Gemini занят, пробую следующий ключ...`);
       return await queryRealGemini(agent, prompt, user, retryCount + 1);
     }
 
     return `[${agent.name}]: Ошибка Gemini API (${res.status}): ${data.error?.message || 'Неизвестная ошибка'}`;
   } catch (e) {
-    if (retryCount < keys.length) {
+    if (retryCount < Math.min(2, keys.length - 1)) {
       return await queryRealGemini(agent, prompt, user, retryCount + 1);
     }
     return `[${agent.name}]: Ошибка сети Gemini (${e.message})`;
@@ -505,6 +505,20 @@ class Real8AgentsRunner {
       type: 'chat',
       text: `✅ **[Задача ${task.id} выполнена]** «${task.title}»\n**Исполнитель:** ${chosenAgent.icon} ${chosenAgent.name} (${chosenAgent.model})\n\n${aiResult}`
     });
+
+    // Автоматическое сохранение кода в каталог сниппетов меша
+    const codeMatch = aiResult.match(/```([a-z0-9_-]*)\n([\s\S]*?)```/i);
+    if (codeMatch && codeMatch[2]?.trim()) {
+      const snipLang = codeMatch[1] || 'javascript';
+      const snipContent = codeMatch[2].trim();
+      await api('POST', '/api/snippets', {
+        from: chosenAgent.id,
+        title: task.title,
+        lang: snipLang,
+        content: snipContent
+      });
+      console.log(`📦 Код из задачи [${task.id}] сохранен в сниппеты меша (${snipLang})!`);
+    }
 
     this.recentTasksHistory.push(task.title);
     if (this.recentTasksHistory.length > 8) this.recentTasksHistory.shift();
